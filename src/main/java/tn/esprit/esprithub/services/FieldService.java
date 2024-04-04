@@ -1,11 +1,11 @@
-package tn.esprit.projetpi.services;
+package tn.esprit.esprithub.services;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import tn.esprit.projetpi.entities.Field;
-import tn.esprit.projetpi.repository.IFieldRepository;
-import tn.esprit.projetpi.repository.IReservationRepository;
+import tn.esprit.esprithub.entities.Field;
+import tn.esprit.esprithub.repository.IFieldRepository;
+import tn.esprit.esprithub.repository.IReservationRepository;
 
 import java.util.List;
 @Service

@@ -41,8 +41,14 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "users")
     Set<Participants> participants;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "team_id")
+    @JsonIgnore
     SportTeam sportTeams;
+
+    @OneToOne(mappedBy="captain")
+    @JsonIgnore
+    SportTeam sportTeamCaptain;
 
     @ManyToMany
     @JsonIgnore

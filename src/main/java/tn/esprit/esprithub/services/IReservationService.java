@@ -1,6 +1,6 @@
-package tn.esprit.projetpi.services;
+package tn.esprit.esprithub.services;
 
-import tn.esprit.projetpi.entities.Reservation;
+import tn.esprit.esprithub.entities.Reservation;
 
 import java.util.List;
 
@@ -10,5 +10,13 @@ public interface IReservationService {
     void deleteReservation(Long reservationId);
     Reservation getReservationById(Long reservationId);
     List<Reservation> getAll();
+    Reservation addReservationForUser(Long userId, Reservation reservation);
 
-}
+    Reservation getReservationWithField(Long reservationId);
+
+    List<Reservation> getAllReservationsWithField();
+
+
+
+
+    }

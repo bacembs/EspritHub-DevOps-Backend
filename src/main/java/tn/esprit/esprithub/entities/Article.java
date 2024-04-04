@@ -16,9 +16,9 @@ public class Article implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long articleId;
     @Enumerated(EnumType.STRING)
-    Mycategory category;
+    Mycategory categoryArticle;
     @Enumerated(EnumType.STRING)
-    Mycondition condition;
+    Mycondition conditionArticle;
     String imgArticle;
     String descriptionArticle;
     Float priceArticle;

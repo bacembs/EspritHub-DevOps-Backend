@@ -1,7 +1,7 @@
-package tn.esprit.projetpi.services;
+package tn.esprit.esprithub.services;
 
-import tn.esprit.projetpi.entities.Field;
-import tn.esprit.projetpi.entities.Reservation;
+import tn.esprit.esprithub.entities.Field;
+import tn.esprit.esprithub.entities.Reservation;
 
 import java.util.List;
 
