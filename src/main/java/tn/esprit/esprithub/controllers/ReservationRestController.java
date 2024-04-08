@@ -35,22 +35,9 @@ public class ReservationRestController {
 
 
 
-
-
     @GetMapping("/allWithField")
     public List<Reservation> getAllReservationsWithField() {
         return reservationService.getAllReservationsWithField();
-    }
-    // New endpoint to make reservation for a specific user
-    @PostMapping("/users/{userId}/reserve")
-    public ResponseEntity<Reservation> makeReservationForUser(@PathVariable Long userId,
-                                                              @RequestBody Reservation reservation) {
-        Reservation savedReservation = reservationService.addReservationForUser(userId, reservation);
-        if (savedReservation != null) {
-            return ResponseEntity.ok(savedReservation);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
     }
 
     @GetMapping("/getWithField/{reservationId}")
@@ -62,4 +49,56 @@ public class ReservationRestController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+
+    @PostMapping("/users/{userId}/{fieldId}/reserve")
+    public ResponseEntity<Reservation> makeReservationForUser(@PathVariable Long userId,
+                                                              @PathVariable Long fieldId,
+                                                              @RequestBody Reservation reservation) {
+        if (reservation == null || reservation.getStartDate() == null || reservation.getEndDate() == null || reservation.getNbPlayers() <= 0 ||
+                reservation.getResStatus() == null || reservation.getResType() == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        Reservation savedReservation = reservationService.addReservationForUser(userId, fieldId, reservation);
+        if (savedReservation != null) {
+            return ResponseEntity.ok(savedReservation);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+
+    @DeleteMapping("/users/{userId}/{reservationId}")
+    public ResponseEntity<Void> deleteReservationForUser(@PathVariable Long userId,
+                                                         @PathVariable Long reservationId) {
+        reservationService.deleteReservationForUser(userId, reservationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/users/{userId}/{reservationId}")
+    public ResponseEntity<Reservation> updateReservationForUser(@PathVariable Long userId,
+                                                                @PathVariable Long reservationId,
+                                                                @RequestBody Reservation updatedReservation) {
+        Reservation updated = reservationService.updateReservationForUser(userId, reservationId, updatedReservation);
+        if (updated != null) {
+            return ResponseEntity.ok(updated);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @GetMapping("/users/{userId}/reservations")
+    public ResponseEntity<List<Reservation>> getReservationsForUser(@PathVariable Long userId) {
+        List<Reservation> reservations = reservationService.getReservationsForUser(userId);
+        if (reservations != null && !reservations.isEmpty()) {
+            return ResponseEntity.ok(reservations);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 }

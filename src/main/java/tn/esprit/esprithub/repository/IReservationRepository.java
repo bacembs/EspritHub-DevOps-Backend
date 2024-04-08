@@ -16,7 +16,10 @@ public interface IReservationRepository extends JpaRepository<Reservation,Long> 
     @Query("SELECT r FROM Reservation r JOIN FETCH r.fields WHERE r.reservationId = :reservationId")
     Reservation findByIdWithField(@Param("reservationId") Long reservationId);
 
-   // List<Reservation> findByStatus(Rstatus rstatus);
+    List<Reservation> findByUsersUserId(Long userId);
+
+
+    // List<Reservation> findByStatus(Rstatus rstatus);
 
    // @Query("select s from Reservation s  where s.resStatus = :type")
  //   List<Reservation> retrieveReservationsByStatusType(@Param("type") Rstatus typeStatus);

@@ -10,11 +10,17 @@ public interface IReservationService {
     void deleteReservation(Long reservationId);
     Reservation getReservationById(Long reservationId);
     List<Reservation> getAll();
-    Reservation addReservationForUser(Long userId, Reservation reservation);
+    void deleteReservationForUser(Long userId, Long reservationId);
+    Reservation updateReservationForUser(Long userId, Long reservationId, Reservation updatedReservation);
+
+   // List<Reservation> getReservationsForUser(Long userId);
+    Reservation addReservationForUser(Long userId,Long fieldId, Reservation reservation);
 
     Reservation getReservationWithField(Long reservationId);
 
     List<Reservation> getAllReservationsWithField();
+
+    List<Reservation> getReservationsForUser(Long userId);
 
 
 

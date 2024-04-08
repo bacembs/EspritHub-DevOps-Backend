@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -42,7 +43,7 @@ public class User implements Serializable {
     Set<Participants> participants;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "team_id")
+//    @JoinColumn(name = "team_id")
     @JsonIgnore
     SportTeam sportTeams;
 
@@ -50,9 +51,15 @@ public class User implements Serializable {
     @JsonIgnore
     SportTeam sportTeamCaptain;
 
-    @ManyToMany
     @JsonIgnore
-    Set<Reservation>reservations;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "user_reservation",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "reservation_id"))
+    private Set<Reservation> reservations = new HashSet<>();
+//    @ManyToMany
+//    @JsonIgnore
+//    Set<Reservation>reservations= new HashSet<>();
 
     @OneToMany(mappedBy = "users")
     Set<FreelanceJob> jobs;

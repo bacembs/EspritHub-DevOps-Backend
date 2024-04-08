@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -7,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -27,11 +29,17 @@ public class Reservation implements Serializable {
     @Enumerated(EnumType.STRING)
     TypeR  resType;
 
-    @ManyToMany(mappedBy="reservations")
-    Set<User> users ;
+    @ManyToMany(mappedBy = "reservations")
+    @JsonIgnore
+    private Set<User> users = new HashSet<>();
+//    @ManyToMany(mappedBy="reservations")
+//    @JsonIgnore
+//    Set<User> users = new HashSet<>();
 
     @ManyToOne
+    @JsonIgnore
     Field fields;
+
 
 
 }
