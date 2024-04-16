@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,4 +27,9 @@ public class Transaction implements Serializable {
 
     @OneToMany(mappedBy = "transactions")
     Set<Article> articles;
+    @OneToOne(mappedBy = "transaction")
+    Housing housing;
+
+    @ManyToOne
+    User users;
 }

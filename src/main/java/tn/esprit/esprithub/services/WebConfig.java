@@ -9,10 +9,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**") // L'URL de votre API
-                .allowedOrigins("http://localhost:4200") // L'URL de votre application Angular
+        registry.addMapping("/**")
+                .allowedOriginPatterns("http://localhost:4200") // Utiliser allowedOriginPatterns
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("*")
+                .exposedHeaders("Access-Control-Allow-Origin")
                 .allowCredentials(true)
                 .maxAge(3600);
     }

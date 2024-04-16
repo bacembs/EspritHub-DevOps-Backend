@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -16,9 +17,9 @@ public class Article implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long articleId;
     @Enumerated(EnumType.STRING)
-    Mycategory category;
+    Mycategory categoryArticle;
     @Enumerated(EnumType.STRING)
-    Mycondition condition;
+    Mycondition conditionArticle;
     String imgArticle;
     String descriptionArticle;
     Float priceArticle;
@@ -27,5 +28,7 @@ public class Article implements Serializable {
     User users;
 
     @ManyToOne
+    @JsonIgnore
+
     Transaction transactions;
 }

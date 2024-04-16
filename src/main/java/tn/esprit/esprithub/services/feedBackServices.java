@@ -14,8 +14,14 @@ public class feedBackServices implements IfeedBackServices {
 
 
     @Override
-    public Feedback addFeedback(Feedback Feedback) {
-        return feedBackRepository.save(Feedback);
+    public boolean addFeedback(Feedback feedback) {
+        if (feedback.getCommentFeedback() == null || feedback.getCommentFeedback().isEmpty()) {
+            return false;
+        }
+
+        feedBackRepository.save(feedback);
+
+        return true;
     }
 
     @Override
@@ -24,9 +30,17 @@ public class feedBackServices implements IfeedBackServices {
     }
 
     @Override
-    public void deleteFeedback(Long Feedback) {
-feedBackRepository.deleteById(Feedback);
+    public boolean deleteFeedback(Long feedbackId) {
+        Feedback feedbackOptional = feedBackRepository.findById(feedbackId).orElse(null);
+
+        if (feedbackOptional!=null) {
+            feedBackRepository.deleteById(feedbackId);
+            return true; // La suppression s'est déroulée avec succès
+        } else {
+            return false; // L'élément n'existe pas, la suppression est impossible
+        }
     }
+
 
     @Override
     public Feedback getById(Long numFeedback) {

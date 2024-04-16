@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +23,8 @@ public class Feedback implements Serializable {
     LocalDateTime dateFeedback;
 
     @ManyToOne
+    @JsonIgnore
+
     Transaction transactions;
 
 

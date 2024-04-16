@@ -30,7 +30,15 @@ public class User implements Serializable {
     String lastLogin;
 
     @OneToMany(mappedBy = "users")
+    @JsonIgnore
+
     Set<Article> articles;
+
+
+    @OneToMany(mappedBy = "users")
+    @JsonIgnore
+
+    Set<Transaction> transactions;
 
     @OneToMany(mappedBy = "users")
     Set<Complaint> complaints;

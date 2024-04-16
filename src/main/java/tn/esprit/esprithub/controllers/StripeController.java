@@ -1,10 +1,7 @@
 package tn.esprit.esprithub.controllers;
 import com.google.gson.Gson;
 import com.stripe.param.checkout.SessionCreateParams;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
@@ -17,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api")
+@CrossOrigin(origins = "http://localhost:4200")
 public class StripeController {
 
     // create a Gson object
@@ -50,6 +48,15 @@ public class StripeController {
                 .build();
         // create a stripe session
         Session session = Session.create(params);
+
+        if (session != null) {
+            // Print success message
+            System.out.println("Payment session created successfully. Session ID: " + session.getId());
+        } else {
+            // Print error message
+            System.out.println("Failed to create payment session.");
+        }
+
         Map<String, String> responseData = new HashMap<>();
         // We get the sessionId and we putted inside the response data you can get more info from the session object
         responseData.put("id", session.getId());

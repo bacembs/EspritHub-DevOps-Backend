@@ -9,9 +9,9 @@ public interface IfeedBackServices {
 
 
 
-    Feedback  addFeedback(Feedback Feedback);
+    boolean  addFeedback(Feedback Feedback);
     Feedback updateFeedback(Feedback Feedback);
-    void deleteFeedback(Long Feedback);
+    public boolean deleteFeedback(Long feedbackId) ;
     Feedback getById(Long numFeedback);
     List<Feedback> getAll();
 }
