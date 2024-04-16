@@ -25,7 +25,7 @@ public class Reservation implements Serializable {
     LocalDateTime endDate;
     Long nbPlayers;
     @Enumerated(EnumType.STRING)
-    Rstatus resStatus;
+    Rstatus resStatus = Rstatus.pending;
     @Enumerated(EnumType.STRING)
     TypeR  resType;
 
@@ -39,6 +39,14 @@ public class Reservation implements Serializable {
     @ManyToOne
     @JsonIgnore
     Field fields;
+
+    public void updateStatus() {
+        if (nbPlayers >= fields.getCapacityField()) {
+            this.resStatus = Rstatus.confirmed;
+        } else {
+            this.resStatus = Rstatus.pending;
+        }
+    }
 
 
 

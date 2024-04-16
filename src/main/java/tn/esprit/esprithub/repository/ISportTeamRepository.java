@@ -12,4 +12,6 @@ public interface ISportTeamRepository extends JpaRepository<SportTeam,Long> {
     @Query("SELECT u FROM User u JOIN u.sportTeams st WHERE st.teamId = :sportTeamId")
   //  List<Long> findUserIdsBySportTeamId(Long sportTeamId);
     List<User> findUserIdsBySportTeamId(@Param("sportTeamId") Long sportTeamId);
+
+
 }

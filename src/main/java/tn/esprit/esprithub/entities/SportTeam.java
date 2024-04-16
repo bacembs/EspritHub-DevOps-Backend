@@ -22,10 +22,12 @@ public class SportTeam implements Serializable {
     String logoTeam;
 
     @OneToMany(mappedBy = "sportTeams", cascade = CascadeType.ALL)
+ //   @OneToMany(mappedBy = "sportTeams")
     @JsonIgnore
     Set<User> users;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+  //  @OneToOne
     @JsonIgnore
     User captain;
 

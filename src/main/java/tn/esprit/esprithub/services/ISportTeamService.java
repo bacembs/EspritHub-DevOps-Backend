@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.services;
 
+import tn.esprit.esprithub.entities.Reservation;
 import tn.esprit.esprithub.entities.SportTeam;
 import tn.esprit.esprithub.entities.User;
 
@@ -16,11 +17,17 @@ public interface ISportTeamService {
     SportTeam addSportTeamCap(SportTeam sportTeam, Long captainId);
 
     SportTeam updateSportTeamCap(SportTeam sportTeam,Long sportTeamId);
-    void deleteSportTeamCap(Long sportTeamId);
-    void participateSportTeam(Long sportTeamId);
-    void cancelParticipation(Long sportTeamId);
+   // void deleteSportTeamCap(Long sportTeamId);
+    void deleteSportTeamCap(Long sportTeamId, Long captainId);
+    void participateSportTeam(Long sportTeamId, Long userId);
+    void cancelParticipation(Long sportTeamId,Long userId);
     void removeUserFromSportTeam(Long sportTeamId, Long userId);
 
     List<User> getUsersBySportTeamId(Long sportTeamId);
+  //  void makeTeamReservation(Long sportTeamId, Long captainId, Reservation reservation);
 
-    }
+   // void makeTeamReservation(Long sportTeamId, Reservation reservation);
+
+    public void makeTeamReservation(Long sportTeamId, Long captainId, Long fieldId, Reservation reservation);
+
+}

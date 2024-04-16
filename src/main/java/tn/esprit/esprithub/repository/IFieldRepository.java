@@ -13,6 +13,9 @@ import java.util.List;
 public interface IFieldRepository extends JpaRepository<Field,Long> {
     List<Field> findByTypeField(TypeF typeField);
 
+  //  List<Field> findByLocation(String locationField);
+
+
     //@Query("select s from Field s  where s.typeField = :type")
   //  List<Field> retrieveFieldByFieldType(@Param("type") TypeF typeField);
 

@@ -6,8 +6,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tn.esprit.esprithub.entities.Reservation;
 import tn.esprit.esprithub.entities.Rstatus;
+import tn.esprit.esprithub.entities.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+
 @Repository
 public interface IReservationRepository extends JpaRepository<Reservation,Long> {
 
@@ -17,6 +21,13 @@ public interface IReservationRepository extends JpaRepository<Reservation,Long> 
     Reservation findByIdWithField(@Param("reservationId") Long reservationId);
 
     List<Reservation> findByUsersUserId(Long userId);
+
+    List<Reservation> findByFieldsFieldId(Long fieldId);
+    List<Reservation> findByUsersUserIdAndFieldsFieldId(Long userId, Long fieldId);
+    List<Reservation> findByStartDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    long countByUsersUserId(Long userId);
+
+
 
 
     // List<Reservation> findByStatus(Rstatus rstatus);

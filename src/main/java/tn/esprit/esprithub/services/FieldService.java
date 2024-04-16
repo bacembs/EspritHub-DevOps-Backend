@@ -7,6 +7,7 @@ import tn.esprit.esprithub.entities.Field;
 import tn.esprit.esprithub.repository.IFieldRepository;
 import tn.esprit.esprithub.repository.IReservationRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 @Service
 @AllArgsConstructor
@@ -37,6 +38,12 @@ public class FieldService implements IFieldService{
     public List<Field> getAll() {
         return (List<Field>) fieldRepository.findAll();
     }
+
+//    @Override
+//    public List<Field> searchFieldsByLocation(String locationField) {
+//        return fieldRepository.findByLocation(locationField);
+//    }
+
 
 
 }
