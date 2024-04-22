@@ -6,6 +6,9 @@ import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -27,6 +30,26 @@ public class Internship implements Serializable {
     String responsibilitiesInternship;
     LocalDateTime deadlineInternship;
 
+
+
     @OneToMany(mappedBy = "internships")
     Set<User> users;
+
+    @OneToMany(mappedBy = "internship", cascade = CascadeType.ALL)
+    private List<Filee> files = new ArrayList<>();
+
+    public void setFiles() {
+        this.files = files;
+
+    }
+   /* @ManyToMany
+    @JoinTable(
+            name = "internship_applications",
+            joinColumns = @JoinColumn(name = "internship_id"),
+            inverseJoinColumns = @JoinColumn(name = "cv")
+
+    )
+    Set<User> applicants;*/
+
+
 }

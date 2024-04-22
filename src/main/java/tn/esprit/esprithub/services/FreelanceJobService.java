@@ -12,7 +12,9 @@ import tn.esprit.esprithub.repository.FreelanceJobRepository;
 import java.util.List;
 
 @Service
-public class FreelanceJobService {
+public class FreelanceJobService implements IFreelanceJobService{
+    @Autowired
+
     private final FreelanceJobRepository freelanceJobRepository;
 
     @Autowired
@@ -20,20 +22,28 @@ public class FreelanceJobService {
         this.freelanceJobRepository = freelanceJobRepository;
     }
 
+    @Override
+    public FreelanceJob createFreelanceJob(FreelanceJob freelanceJob) {
+        return freelanceJobRepository.save(freelanceJob);
+    }
+
+    @Override
+    public FreelanceJob getFreelanceJobById(Long jobId) {
+        return freelanceJobRepository.findById(jobId).orElse(null);
+    }
+
+    @Override
     public List<FreelanceJob> getAllFreelanceJobs() {
         return freelanceJobRepository.findAll();
     }
 
-    public FreelanceJob getFreelanceJobById(Long id) {
-        return freelanceJobRepository.findById(id).orElse(null);
-    }
-
-    public FreelanceJob saveFreelanceJob(FreelanceJob freelanceJob) {
+    @Override
+    public FreelanceJob updateFreelanceJob(FreelanceJob freelanceJob) {
         return freelanceJobRepository.save(freelanceJob);
     }
 
-    public void deleteFreelanceJob(Long id) {
-        freelanceJobRepository.deleteById(id);
+    @Override
+    public void deleteFreelanceJob(Long jobId) {
+        freelanceJobRepository.deleteById(jobId);
     }
-
 }

@@ -29,6 +29,7 @@ public class User implements Serializable {
     String imgUser;
     String lastLogin;
 
+
     @OneToMany(mappedBy = "users")
     Set<Article> articles;
 
@@ -37,6 +38,7 @@ public class User implements Serializable {
 
     @ManyToOne
     Internship internships;
+
 
     @OneToMany(mappedBy = "users")
     Set<Participants> participants;
