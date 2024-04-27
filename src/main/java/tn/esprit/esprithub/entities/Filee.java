@@ -5,9 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -28,7 +25,7 @@ public class Filee  {
     private String contentType;
 
     @Lob
-    @Column(name = "file")
+    @Column(name = "file",length = 10485760)
     private byte[] data;
 
     @ManyToOne

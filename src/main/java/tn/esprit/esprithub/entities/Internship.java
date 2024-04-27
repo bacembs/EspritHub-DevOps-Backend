@@ -7,7 +7,6 @@ import lombok.experimental.FieldDefaults;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,14 +41,7 @@ public class Internship implements Serializable {
         this.files = files;
 
     }
-   /* @ManyToMany
-    @JoinTable(
-            name = "internship_applications",
-            joinColumns = @JoinColumn(name = "internship_id"),
-            inverseJoinColumns = @JoinColumn(name = "cv")
 
-    )
-    Set<User> applicants;*/
 
 
 }

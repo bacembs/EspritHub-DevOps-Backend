@@ -9,8 +9,9 @@ import tn.esprit.esprithub.services.IFreelanceJobService;
 
 import java.util.List;
 @RestController
-@RequestMapping("/freelance-jobs")
+@RequestMapping("/freelance")
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class FreelanceJobRestController {
     private IFreelanceJobService freelanceJobService;
 

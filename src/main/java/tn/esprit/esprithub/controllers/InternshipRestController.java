@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.List;
 @RestController
 @RequestMapping("/internships")
+@CrossOrigin(origins = "http://localhost:4200")
+
 public class InternshipRestController {
 
     @Autowired
@@ -89,7 +91,6 @@ public class InternshipRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
   /*  @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
