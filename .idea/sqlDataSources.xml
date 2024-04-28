@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="94f09721-4b37-494d-bc43-2cb64b737d36" name="jwt_securi">
+      <data-sources db="f7306753-2599-410e-b8c2-a5ca4bada5a6" ddl="b6f1bf89-fbc5-43de-a5fc-068046b22b68" />
+    </mapping>
+    <mapping uuid="94f09721-4b37-494d-bc43-2cb64b737d36" name="jwt_securi">
+      <data-sources db="f7306753-2599-410e-b8c2-a5ca4bada5a6" ddl="b6f1bf89-fbc5-43de-a5fc-068046b22b68" />
+    </mapping>
+    <mapping uuid="94f09721-4b37-494d-bc43-2cb64b737d36" name="jwt_securi">
+      <data-sources db="f7306753-2599-410e-b8c2-a5ca4bada5a6" ddl="b6f1bf89-fbc5-43de-a5fc-068046b22b68" />
+    </mapping>
+  </component>
+</project>
