@@ -69,4 +69,3 @@ public class StripeController {
         Stripe.apiKey = "sk_test_51Oz6fDRqZpxfJakawVJ9naLxVgbpu5ZXmq52JupRG5OlSVQFvp1pJnRgAZUNsU51JYZ0A2mvZn4RcFNVtHJY2UPJ00TIouEuI4";
     }
 }
-

@@ -32,4 +32,26 @@ public class Transaction implements Serializable {
 
     @ManyToOne
     User users;
+
+
+    public Transaction(Long transactionId,Float amountTransaction, LocalDateTime
+            payementDateTransaction, Set<Feedback> feedbacks, Set<Article> articles, User users) {
+        this.transactionId = transactionId;
+
+        this.amountTransaction = amountTransaction;
+        this.payementDateTransaction = payementDateTransaction;
+        this.feedbacks = feedbacks;
+        this.articles = articles;
+        this.users = users;
+    }
+
+    public Transaction(Long transactionId, Float amountTransaction, LocalDateTime payementDateTransaction,
+                       Set<Feedback> feedbacks, Housing housing, User users) {
+        this.transactionId = transactionId;
+        this.amountTransaction = amountTransaction;
+        this.payementDateTransaction = payementDateTransaction;
+        this.feedbacks = feedbacks;
+        this.housing = housing;
+        this.users = users;
+    }
 }

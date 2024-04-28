@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.esprithub.DTO.statistics;
 import tn.esprit.esprithub.entities.Feedback;
 import tn.esprit.esprithub.entities.Transaction;
 import tn.esprit.esprithub.entities.TransactionRequest;
@@ -29,18 +30,9 @@ public class TransactionRestController {
     }
 
     @PostMapping("/add2")
-    public ResponseEntity<String> add2Transaction(@RequestBody TransactionRequest transaction) {
-        ResponseEntity<Transaction> responseEntity = serviceTransaction.affection(transaction);
+    public Transaction add2Transaction(@RequestBody Transaction transaction) {
 
-        if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND) {
-            // L'utilisateur n'est pas trouvé, renvoyer la même réponse avec le statut NOT_FOUND
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("le user n'existe pas "); // Ou un message d'erreur approprié dans le corps de la réponse
-        }
-
-        // L'utilisateur est trouvé, ajouter la transaction et renvoyer une réponse OK avec la transaction ajoutée
-        Transaction addedTransaction = serviceTransaction.addTransaction(responseEntity.getBody());
-        return ResponseEntity.ok("addedTransaction");
+        return serviceTransaction.addTransaction(transaction);
     }
     @PostMapping("/add/feedback/{id}")
     public boolean addfeedbacktoTransaction(@PathVariable Long id ,@RequestBody Feedback f){
@@ -59,6 +51,17 @@ public class TransactionRestController {
         // Des transactions sont trouvées, renvoyer une réponse OK avec la liste de transactions
         return transactions;
     }
+
+
+
+    @GetMapping("/statistique")
+    public  statistics stat() {
+
+        return serviceTransaction.statistics();
+
+    }
+
+
 
 }
 

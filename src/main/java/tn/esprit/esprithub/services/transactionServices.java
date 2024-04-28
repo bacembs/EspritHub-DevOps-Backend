@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import tn.esprit.esprithub.DTO.statistics;
 import tn.esprit.esprithub.entities.*;
 import tn.esprit.esprithub.repository.IHousingRepository;
 import tn.esprit.esprithub.repository.IarticleRepository;
@@ -28,9 +29,7 @@ public class transactionServices  implements ItransactionServices{
     @Override
     public Transaction addTransaction(Transaction transaction) {
 
-        userService.getByNom(transaction.getUsers().getUsername());
         Transaction savedTransaction = transactionRepository.save(transaction);
-        System.out.println(savedTransaction.toString());
 if(savedTransaction.getFeedbacks() !=null) {
     for (Feedback feedback : savedTransaction.getFeedbacks()) {
         feedback.setTransactions(savedTransaction);
@@ -38,12 +37,10 @@ if(savedTransaction.getFeedbacks() !=null) {
     }
 }
 
-        if(savedTransaction.getArticles().size()>0) {
-            System.out.println("aaloo");
+       if(!savedTransaction.getArticles().isEmpty()) {
             for (Article article : savedTransaction.getArticles()) {
 
                 article.setTransactions(savedTransaction);
-                System.out.println("aalooallo");
 
                 articleRepository.save(article);
 
@@ -53,14 +50,14 @@ if(savedTransaction.getFeedbacks() !=null) {
 
 
 
+        if(savedTransaction.getHousing()!=null) {
+            System.out.println("debut");
+            savedTransaction.getHousing().setTransaction(savedTransaction);
+            housingRepository.save(savedTransaction.getHousing());
+            System.out.println(savedTransaction.getHousing());
+            System.out.println("fin");
 
-        System.out.println("debut");
-        savedTransaction.getHousing().setTransaction(savedTransaction);
-        housingRepository.save(savedTransaction.getHousing());
-        System.out.println(savedTransaction.getHousing());
-        System.out.println("fin");
-
-
+        }
 
         return transaction;
         }
@@ -102,23 +99,51 @@ if(savedTransaction.getFeedbacks() !=null) {
 
 
     @Override
-    public ResponseEntity<Transaction> affection(TransactionRequest transaction) {
-        User user = userService.getByNom(transaction.getUsername());
+    public ResponseEntity<Transaction> affection(Transaction transaction) {
+        User user = userService.getByNom(transaction.getUsers().getUsername());
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(null); // Ou un message d'erreur approprié dans le corps de la réponse
         }
 
-        Transaction t = new Transaction(transaction.getTransactionId(), transaction.getAmountTransaction(),
-                LocalDateTime.now(), transaction.getFeedbacks(), transaction.getArticles(),
-                transaction.getHousing(),null);
-        t.setUsers(user);
 
-        return ResponseEntity.ok(t);
+        transaction.setUsers(user);
+
+        return ResponseEntity.ok(transaction);
     }
 
+    @Override
+    public statistics statistics() {
+        statistics stat = new statistics(0,0,0,0,0);
+        List <Feedback> a= (List<Feedback>) feedBackRepository.findAll();
+        for(int i = 0; i <a.size(); i++){
+            if(a.get(i).getGradeFeedback()==1){
+                stat.setNote1(stat.getNote1()+1);
 
+            }
+
+            if(a.get(i).getGradeFeedback()==2){
+                stat.setNote2(stat.getNote2()+1);
+
+            }
+
+            if(a.get(i).getGradeFeedback()==3){
+                stat.setNote3(stat.getNote3()+1);
+
+            }
+            if(a.get(i).getGradeFeedback()==4){
+                stat.setNote4(stat.getNote4()+1);
+
+            }
+
+            if(a.get(i).getGradeFeedback()==5){
+                stat.setNote5(stat.getNote5()+1);
+
+            }
+        }
+        return stat;
+    }
 
 
 }
