@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import tn.esprit.esprithub.DTO.statistics;
+import tn.esprit.esprithub.DTO.statisticsTransaction;
+import tn.esprit.esprithub.DTO.statisticsfeedbacks;
 import tn.esprit.esprithub.entities.*;
 import tn.esprit.esprithub.repository.IHousingRepository;
 import tn.esprit.esprithub.repository.IarticleRepository;
@@ -73,8 +74,8 @@ if(savedTransaction.getFeedbacks() !=null) {
     }
 
     @Override
-    public Transaction getById(Long numTransaction) {
-        return null;
+    public List<Transaction> getByIduser(Long iduser) {
+        return (List<Transaction>) transactionRepository.findByUsersUserId(iduser);
     }
 
     @Override
@@ -114,8 +115,8 @@ if(savedTransaction.getFeedbacks() !=null) {
     }
 
     @Override
-    public statistics statistics() {
-        statistics stat = new statistics(0,0,0,0,0);
+    public statisticsfeedbacks statistics() {
+        statisticsfeedbacks stat = new statisticsfeedbacks(0,0,0,0,0);
         List <Feedback> a= (List<Feedback>) feedBackRepository.findAll();
         for(int i = 0; i <a.size(); i++){
             if(a.get(i).getGradeFeedback()==1){
@@ -142,6 +143,60 @@ if(savedTransaction.getFeedbacks() !=null) {
 
             }
         }
+        return stat;
+    }
+
+    @Override
+    public statisticsTransaction statisticsTransaction() {
+        List<Transaction>list=(List<Transaction>) transactionRepository.findAll();
+        statisticsTransaction stat = new statisticsTransaction(0,0,0,0,0,0,0,0,0,0,0,0);
+
+
+        for(int i= 0 ; i<list.size();i++){
+
+            if(list.get(i).getPayementDateTransaction().getMonthValue() == 1){
+                stat.setJanvier(stat.getJanvier()+1);
+            }
+            if(list.get(i).getPayementDateTransaction().getMonthValue() == 2){
+                stat.setFevrier(stat.getFevrier()+1);
+                if(list.get(i).getPayementDateTransaction().getMonthValue() == 3){
+                    stat.setMars(stat.getMars()+1);
+                }
+            } if(list.get(i).getPayementDateTransaction().getMonthValue() == 4){
+                stat.setAvril(stat.getAvril()+1);
+            }
+            if(list.get(i).getPayementDateTransaction().getMonthValue() == 5){
+                stat.setMai(stat.getMai()+1);
+            }
+            if(list.get(i).getPayementDateTransaction().getMonthValue() == 6){
+                stat.setJuin(stat.getJuin()+1);
+            }
+            if(list.get(i).getPayementDateTransaction().getMonthValue() == 7){
+                stat.setJuillet(stat.getJuillet()+1);
+            }
+            if(list.get(i).getPayementDateTransaction().getMonthValue() == 8){
+                stat.setAout(stat.getAout()+1);
+            }
+            if(list.get(i).getPayementDateTransaction().getMonthValue() == 9){
+                stat.setSeptembre(stat.getSeptembre()+1);
+
+            }
+            if(list.get(i).getPayementDateTransaction().getMonthValue() == 10){
+                stat.setOctobre(stat.getOctobre()+1);
+
+            }
+            if(list.get(i).getPayementDateTransaction().getMonthValue() == 11){
+                stat.setNovembre(stat.getNovembre()+1);
+
+            }
+
+            if(list.get(i).getPayementDateTransaction().getMonthValue() == 12){
+                stat.setDecembre(stat.getDecembre()+1);
+
+            }
+
+
+}
         return stat;
     }
 

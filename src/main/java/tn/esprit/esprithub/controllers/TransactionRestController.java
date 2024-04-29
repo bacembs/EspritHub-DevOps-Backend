@@ -1,18 +1,17 @@
 package tn.esprit.esprithub.controllers;
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.esprithub.DTO.statistics;
+import tn.esprit.esprithub.DTO.statisticsTransaction;
+import tn.esprit.esprithub.DTO.statisticsfeedbacks;
+import tn.esprit.esprithub.DTO.transactionFeedback;
 import tn.esprit.esprithub.entities.Feedback;
 import tn.esprit.esprithub.entities.Transaction;
-import tn.esprit.esprithub.entities.TransactionRequest;
-import tn.esprit.esprithub.services.IfeedBackServices;
 import tn.esprit.esprithub.services.ItransactionServices;
 import tn.esprit.esprithub.services.UserServices;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @RestController
@@ -54,10 +53,69 @@ public class TransactionRestController {
 
 
 
+
+
+
+
+    @GetMapping("/byId/{id}")
+
+    public transactionFeedback getByIdIfBnned(@PathVariable Long id) {
+        List<Transaction> transactions = serviceTransaction.getByIduser(id);
+        int diffDays =0;
+        if (transactions.isEmpty()) {
+            return null;
+        }
+
+        boolean containsXXX = false;
+        for (Transaction transaction : transactions) {
+            for (Feedback feedback : transaction.getFeedbacks()) {
+                if (feedback.getCommentFeedback().contains("***")) {
+                    containsXXX = true;
+                    long  period = ChronoUnit.DAYS.between(feedback.getDateFeedback(),LocalDateTime.now());
+                    System.out.println(period);
+diffDays=(int)period;
+                    break;
+                }
+            }
+
+        }
+if(!containsXXX){
+            transactionFeedback transactionFeedback = new transactionFeedback(transactions, 0,0);
+    return transactionFeedback;
+        }
+
+        if(containsXXX){
+            if(diffDays==0){
+                transactionFeedback transactionFeedback = new transactionFeedback(transactions,  1  ,30);
+                return transactionFeedback;
+
+            }
+
+            else if(diffDays>=30){
+                transactionFeedback transactionFeedback = new transactionFeedback(transactions, 0 ,0);
+                return transactionFeedback;
+
+            }
+            else  if (diffDays > 0 && diffDays < 30){
+                transactionFeedback transactionFeedback = new transactionFeedback(transactions, 1, 30-diffDays);
+                return transactionFeedback;
+
+            }
+        }
+        return null;
+    }
+
     @GetMapping("/statistique")
-    public  statistics stat() {
+    public statisticsfeedbacks stat() {
 
         return serviceTransaction.statistics();
+
+    }
+
+    @GetMapping("/statistiquetransaction")
+    public statisticsTransaction statistiquetransaction() {
+
+        return serviceTransaction.statisticsTransaction();
 
     }
 
