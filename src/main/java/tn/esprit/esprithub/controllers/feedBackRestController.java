@@ -4,7 +4,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.esprithub.DTO.bannedUser;
 import tn.esprit.esprithub.entities.Feedback;
+import tn.esprit.esprithub.entities.Transaction;
+import tn.esprit.esprithub.entities.User;
 import tn.esprit.esprithub.services.IfeedBackServices;
 import java.util.List;
 
@@ -16,6 +19,17 @@ import java.util.List;
 @RequestMapping("/feedBack")
 public class feedBackRestController {
     private IfeedBackServices serviceFeedBack ;
+
+
+    @GetMapping("/badfeedback")
+    public ResponseEntity<List<bannedUser>> getAlluserWithbadFeedback() {
+
+        List<bannedUser> users = serviceFeedBack.getAllbanned();
+
+
+
+        return ResponseEntity.ok(users);
+    }
     @PostMapping("/add")
     public boolean addFeedback(@RequestBody Feedback Feedback){
         return serviceFeedBack.addFeedback(Feedback);
@@ -55,3 +69,7 @@ public class feedBackRestController {
     }
 
 }
+
+
+
+

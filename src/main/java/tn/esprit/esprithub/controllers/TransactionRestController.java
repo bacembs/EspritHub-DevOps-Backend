@@ -54,11 +54,17 @@ public class TransactionRestController {
 
 
 
-
+    @GetMapping("/transactionbyIdUser/{id}")
+    public List<Transaction> getTransactionbyIdUser(@PathVariable Long id) {
+        return serviceTransaction.getByIduser(id);
+    }
 
 
     @GetMapping("/byId/{id}")
-
+    public transactionFeedback getByIdIfBanned(@PathVariable Long id) {
+        return serviceTransaction.getByIdIfBanned(id);
+    }
+/*
     public transactionFeedback getByIdIfBnned(@PathVariable Long id) {
         List<Transaction> transactions = serviceTransaction.getByIduser(id);
         int diffDays =0;
@@ -104,7 +110,7 @@ if(!containsXXX){
         }
         return null;
     }
-
+*/
     @GetMapping("/statistique")
     public statisticsfeedbacks stat() {
 

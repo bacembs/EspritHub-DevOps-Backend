@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tn.esprit.esprithub.DTO.statisticsTransaction;
 import tn.esprit.esprithub.DTO.statisticsfeedbacks;
+import tn.esprit.esprithub.DTO.transactionFeedback;
 import tn.esprit.esprithub.entities.*;
 import tn.esprit.esprithub.repository.IHousingRepository;
 import tn.esprit.esprithub.repository.IarticleRepository;
@@ -13,6 +14,7 @@ import tn.esprit.esprithub.repository.IfeedBackRepository;
 import tn.esprit.esprithub.repository.ItransactionRepository;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -29,7 +31,7 @@ public class transactionServices  implements ItransactionServices{
 
     @Override
     public Transaction addTransaction(Transaction transaction) {
-
+        transaction.setPayementDateTransaction(LocalDateTime.now());
         Transaction savedTransaction = transactionRepository.save(transaction);
 if(savedTransaction.getFeedbacks() !=null) {
     for (Feedback feedback : savedTransaction.getFeedbacks()) {
@@ -199,6 +201,57 @@ if(savedTransaction.getFeedbacks() !=null) {
 }
         return stat;
     }
+    @Override
+    public transactionFeedback getByIdIfBanned(Long id) {
+        List<Transaction> transactions = getByIduser(id);
 
+        if(transactions.size()==0){
+             transactionFeedback transactionFeedback = new transactionFeedback(transactions, 0, 0);
+            return transactionFeedback;
+        }
+        int diffDays = 0;
+
+
+
+        boolean containsXXX = false;
+        for (Transaction transaction : transactions) {
+if(transaction.getFeedbacks().size()==0){
+    transactionFeedback transactionFeedback = new transactionFeedback(transactions, 0, 0);
 
 }
+            for (Feedback feedback : transaction.getFeedbacks()) {
+                if (feedback.getCommentFeedback().contains("***")) {
+                    containsXXX = true;
+                    long period = ChronoUnit.DAYS.between(feedback.getDateFeedback(), LocalDateTime.now());
+                    System.out.println(period);
+                    diffDays = (int) period;
+                    break;
+                }
+            }
+}
+        if (!containsXXX) {
+            transactionFeedback transactionFeedback = new transactionFeedback(transactions, 0, 0);
+            return transactionFeedback;
+        }
+
+        if (containsXXX) {
+            if (diffDays == 0) {
+                transactionFeedback transactionFeedback = new transactionFeedback(transactions, 1, 30);
+                return transactionFeedback;
+
+            } else if (diffDays >= 30) {
+                transactionFeedback transactionFeedback = new transactionFeedback(transactions, 0, 0);
+                return transactionFeedback;
+
+            } else if (diffDays > 0 && diffDays < 30) {
+                transactionFeedback transactionFeedback = new transactionFeedback(transactions, 1, 30 - diffDays);
+                return transactionFeedback;
+
+            }
+        }
+
+        return null;
+    }
+
+
+    }

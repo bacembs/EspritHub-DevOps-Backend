@@ -3,6 +3,7 @@ package tn.esprit.esprithub.services;
 import org.springframework.http.ResponseEntity;
 import tn.esprit.esprithub.DTO.statisticsTransaction;
 import tn.esprit.esprithub.DTO.statisticsfeedbacks;
+import tn.esprit.esprithub.DTO.transactionFeedback;
 import tn.esprit.esprithub.entities.Feedback;
 import tn.esprit.esprithub.entities.Transaction;
 
@@ -18,5 +19,6 @@ public interface ItransactionServices {
     public ResponseEntity<Transaction> affection(Transaction transaction);
     public statisticsfeedbacks statistics() ;
     public statisticsTransaction statisticsTransaction() ;
+    public transactionFeedback getByIdIfBanned(Long id) ;
 
     }
