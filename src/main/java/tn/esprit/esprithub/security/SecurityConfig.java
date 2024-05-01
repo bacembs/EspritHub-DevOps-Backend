@@ -28,7 +28,20 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)  //security measure, not needed khater nesta3mlou fel jwt
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(
-                                "/auth/**"
+                                        "/auth/**",
+                                        "/v2/api-docs",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources",
+                                        "/swagger-resources/**",
+                                        "/configuration/ui",
+                                        "/configuration/security",
+                                        "/swagger-ui/**",
+                                        "/api/v1/v3/api-docs",
+                                        "/api/v3/api-docs",
+                                        "/webjars/**",
+                                        "/swagger-ui.html"
+
                         ).permitAll()    //dont require login
                                 .anyRequest()
                                 .authenticated()  //require login

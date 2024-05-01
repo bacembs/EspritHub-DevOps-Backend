@@ -1,4 +1,4 @@
-package tn.esprit.esprithub.controllers;
+package tn.esprit.esprithub.requestsresponses;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
@@ -10,8 +10,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class RegistrationRequest {
-    @NotEmpty(message = "Username name is mandatory")
-    @NotBlank(message = "Username name is mandatory")
     private String username;
     @NotEmpty(message = "First name is mandatory")
     @NotBlank(message = "First name is mandatory")

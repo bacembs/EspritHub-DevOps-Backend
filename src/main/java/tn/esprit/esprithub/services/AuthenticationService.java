@@ -1,7 +1,6 @@
 package tn.esprit.esprithub.services;
 
 import jakarta.mail.MessagingException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,14 +8,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import tn.esprit.esprithub.controllers.AuthenticationResponse;
-import tn.esprit.esprithub.controllers.AuthenticationRequest;
-import tn.esprit.esprithub.controllers.RegistrationRequest;
+import tn.esprit.esprithub.config.EmailTemplateName;
+import tn.esprit.esprithub.requestsresponses.AuthenticationResponse;
+import tn.esprit.esprithub.requestsresponses.AuthenticationRequest;
+import tn.esprit.esprithub.requestsresponses.RegistrationRequest;
 import tn.esprit.esprithub.entities.Roles;
 import tn.esprit.esprithub.entities.Token;
 import tn.esprit.esprithub.entities.User;
 import tn.esprit.esprithub.repositories.TokenRepository;
-import tn.esprit.esprithub.repositories.UserRepository;
+import tn.esprit.esprithub.repositories.IUserRepository;
 import tn.esprit.esprithub.security.JwtService;
 
 import java.security.SecureRandom;
@@ -28,7 +28,7 @@ import java.util.HashMap;
 public class AuthenticationService {
 
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
+    private final IUserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final EmailService emailService;
     private final AuthenticationManager authenticationManager;

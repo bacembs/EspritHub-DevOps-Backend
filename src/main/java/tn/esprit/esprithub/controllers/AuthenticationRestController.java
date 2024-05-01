@@ -7,13 +7,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.esprithub.requestsresponses.AuthenticationRequest;
+import tn.esprit.esprithub.requestsresponses.AuthenticationResponse;
+import tn.esprit.esprithub.requestsresponses.RegistrationRequest;
 import tn.esprit.esprithub.services.AuthenticationService;
 
 @RestController
 @RequestMapping("auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "**")
 public class AuthenticationRestController {
 
     private final AuthenticationService service;

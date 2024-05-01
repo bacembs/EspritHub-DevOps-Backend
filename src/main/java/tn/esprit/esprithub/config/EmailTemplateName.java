@@ -1,4 +1,4 @@
-package tn.esprit.esprithub.services;
+package tn.esprit.esprithub.config;
 
 import lombok.Getter;
 

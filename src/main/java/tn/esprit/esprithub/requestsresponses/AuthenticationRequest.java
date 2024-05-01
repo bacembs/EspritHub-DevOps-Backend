@@ -1,4 +1,4 @@
-package tn.esprit.esprithub.controllers;
+package tn.esprit.esprithub.requestsresponses;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package tn.esprit.esprithub.controllers;
+package tn.esprit.esprithub.requestsresponses;
 
 import lombok.Builder;
 import lombok.Getter;
