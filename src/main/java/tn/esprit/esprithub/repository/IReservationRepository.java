@@ -15,8 +15,14 @@ import java.util.Set;
 @Repository
 public interface IReservationRepository extends JpaRepository<Reservation,Long> {
 
-    @Query("SELECT r FROM Reservation r JOIN FETCH r.fields")
+    @Query("SELECT r FROM Reservation r LEFT JOIN FETCH r.fields")
     List<Reservation> findAllWithField();
+
+    @Query("SELECT r, r.fields FROM Reservation r")
+    List<Object[]> findAllReservationsWithFieldId();
+
+
+
     @Query("SELECT r FROM Reservation r JOIN FETCH r.fields WHERE r.reservationId = :reservationId")
     Reservation findByIdWithField(@Param("reservationId") Long reservationId);
 
@@ -27,8 +33,17 @@ public interface IReservationRepository extends JpaRepository<Reservation,Long> 
     List<Reservation> findByStartDateBetween(LocalDateTime startDate, LocalDateTime endDate);
     long countByUsersUserId(Long userId);
 
+    List<Reservation> findByEndDateBeforeAndResStatus(LocalDateTime date,Rstatus rstatus);
+
+    List<Reservation>findByStartDateBeforeAndEndDateAfter(LocalDateTime date, LocalDateTime datefin );
 
 
+
+    @Query("SELECT u.email FROM Reservation r JOIN r.users u WHERE r.reservationId = :reservationId")
+    String getUserEmailByReservationId(@Param("reservationId") Long reservationId);
+
+    @Query("SELECT r FROM Reservation r JOIN FETCH r.users WHERE r.reservationId = :reservationId")
+    Reservation findByIdWithUsers(@Param("reservationId") Long reservationId);
 
     // List<Reservation> findByStatus(Rstatus rstatus);
 

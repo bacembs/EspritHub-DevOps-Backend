@@ -26,7 +26,7 @@ public class Field implements Serializable {
     TypeF typeField;
 
     @OneToMany(mappedBy = "fields")
-    @JsonIgnore
+ //   @JsonIgnore
     Set<Reservation> reservations;
 
 }

@@ -4,14 +4,21 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.esprithub.entities.Reservation;
 import tn.esprit.esprithub.entities.SportTeam;
 import tn.esprit.esprithub.entities.User;
 import tn.esprit.esprithub.services.ISportTeamService;
+import tn.esprit.esprithub.services.SportTeamService;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 @AllArgsConstructor
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/SportTeam")
 public class SportTeamRestController {
     private ISportTeamService sportTeamService;
@@ -23,37 +30,73 @@ public class SportTeamRestController {
     public SportTeam updateSportTeam (@RequestBody SportTeam sportTeam){
         return sportTeamService.updateSportTeam(sportTeam);
     }
+
+
+    //Ok angular
     @GetMapping("/get/{numSportTeam}")
     public SportTeam getSportTeam (@PathVariable Long numSportTeam){
         return sportTeamService.getSportTeamById(numSportTeam);
     }
+
+
     @DeleteMapping  ("/delete/{numSportTeam}")
     public void removeSportTeam (@PathVariable Long numSportTeam){
         sportTeamService.deleteSportTeam(numSportTeam);
     }
 
+
+    //ok angular
     @GetMapping  ("/all")
     public List<SportTeam> getAll (){
         return sportTeamService.getAll();}
 
 
+    //ok angular
+    @PostMapping("/add-with-photo/{captainId}")
+    public ResponseEntity<SportTeam> addSportTeamWithPhoto(
+            @RequestParam("nameTeam") String teamName,
+            @PathVariable Long captainId,
+            @RequestParam("logo") MultipartFile photoFile) {
+        System.out.println("Received photo file: " + photoFile);
+        // Call the method to save the SportTeam with the photo
+        SportTeam savedTeam = sportTeamService.addSportTeamCap3(teamName, captainId, photoFile);
+        return ResponseEntity.ok(savedTeam);
+    }
+
+    //ok angular but no photo
+    @PutMapping("/update-with-photo/{sportTeamId}")
+    public ResponseEntity<SportTeam> updateSportTeamWithPhoto(
+            @PathVariable Long sportTeamId,
+            @RequestParam("nameTeam") String teamName,
+            @RequestParam(value = "logo", required = false) MultipartFile photoFile) {
+        // Call the method to update the SportTeam with the photo
+        System.out.println("Received photo file: " + photoFile);
+        SportTeam updatedTeam = sportTeamService.updateSportTeamCapWithPhoto(teamName,sportTeamId , photoFile);
+        if (updatedTeam != null) {
+            return ResponseEntity.ok(updatedTeam);
+        } else {
+            return ResponseEntity.notFound().build(); // Return 404 if the team with the specified ID is not found
+        }
+    }
 
 
 
+    //ok angular
     @PostMapping("/addCap/{captainId}")
     public SportTeam addSportTeamCap (@RequestBody SportTeam sportTeam,@PathVariable Long captainId){
         return sportTeamService.addSportTeamCap(sportTeam,captainId);
     }
+
 
     @PutMapping("/updateCap/{sportTeamId}")
     public SportTeam updateSportTeamCap (@RequestBody SportTeam sportTeam,@PathVariable Long sportTeamId){
         return sportTeamService.updateSportTeamCap(sportTeam,sportTeamId);
     }
 
-//    @DeleteMapping  ("/deleteCap/{numSportTeam}")
-//    public void deleteSportTeamCap (@PathVariable Long numSportTeam){
-//        sportTeamService.deleteSportTeamCap(numSportTeam);
-//    }
+
+
+
+
 
     @DeleteMapping("/deleteCap/{numSportTeam}/{captainId}")
     public void deleteSportTeamCap(@PathVariable Long numSportTeam, @PathVariable Long captainId) {
@@ -62,23 +105,32 @@ public class SportTeamRestController {
 
 
 
-
-
-
-
-
+    //ok angular ama zeyda
     @PostMapping("/addUser/{sportTeamId}/{userId}")
     public ResponseEntity<String> addUserToSportTeam(@PathVariable Long sportTeamId, @PathVariable Long userId) {
         sportTeamService.addUserToSportTeam(sportTeamId, userId);
         return ResponseEntity.ok("User added to sport team successfully.");
     }
 
+
+
+//ok angular
+    @PostMapping("/{sportTeamId}/add-user")
+    public ResponseEntity<String> addUserByEmailToSportTeamEmail(
+            @PathVariable Long sportTeamId,
+            @RequestParam String userEmail) {
+        System.out.println(userEmail);
+        sportTeamService.addUserByEmailToSportTeam(sportTeamId, userEmail);
+        return ResponseEntity.ok("User added to sport team successfully.");
+    }
+
+
+    //ok angular
     @PostMapping("/removeUser/{sportTeamId}/{userId}")
     public ResponseEntity<String> removeUserFromSportTeam(@PathVariable Long sportTeamId, @PathVariable Long userId) {
         sportTeamService.removeUserFromSportTeam(sportTeamId, userId);
         return ResponseEntity.ok("User removed from sport team successfully.");
     }
-
 
 
     @PostMapping("/participateSportTeam/{sportTeamId}")
@@ -109,33 +161,6 @@ public class SportTeamRestController {
         }
     }
 
-//    @PostMapping("/{sportTeamId}/reservations")
-//    public ResponseEntity<String> makeTeamReservation(
-//            @PathVariable Long sportTeamId,
-//            @RequestParam Long captainId,
-//            @RequestBody Reservation reservation) {
-//        try {
-//            sportTeamService.makeTeamReservation(sportTeamId, captainId, reservation);
-//            return ResponseEntity.ok("Team reservation created successfully.");
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while making the team reservation.");
-//        }
-//    }
-//@PostMapping("/{sportTeamId}/reservations")
-//public ResponseEntity<String> makeTeamReservation(
-//        @PathVariable Long sportTeamId,
-//        @RequestBody Reservation reservation) {
-//    try {
-//        sportTeamService.makeTeamReservation(sportTeamId, reservation);
-//        return ResponseEntity.ok("Team reservation created successfully.");
-//    } catch (IllegalArgumentException e) {
-//        return ResponseEntity.badRequest().body(e.getMessage());
-//    } catch (Exception e) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while making the team reservation.");
-//    }
-//}
 
     @PostMapping("/{sportTeamId}/reservations")
     public ResponseEntity<String> makeTeamReservation(
@@ -153,6 +178,35 @@ public class SportTeamRestController {
         }
     }
 
+
+    @GetMapping("/{sportTeamId}/user-count")
+    public ResponseEntity<Integer> countUsersJoinedInSportTeam(@PathVariable Long sportTeamId) {
+        int userCount = sportTeamService.countUsersJoinedInSportTeam(sportTeamId);
+        return ResponseEntity.ok(userCount);
+    }
+
+    @GetMapping("/user/{userId}/is-captain")
+    public ResponseEntity<Boolean> isUserCaptain(@PathVariable Long userId) {
+        boolean isCaptain = sportTeamService.isUserCaptain(userId);
+        return ResponseEntity.ok(isCaptain);
+    }
+
+    @GetMapping("/captain/{captainId}")
+    public ResponseEntity<Long> getSportTeamIdByCaptainId(@PathVariable Long captainId) {
+        Long sportTeamId = sportTeamService.getSportTeamIdByCaptainId(captainId);
+        if (sportTeamId != null) {
+            return ResponseEntity.ok(sportTeamId);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @GetMapping("/teams/{teamId}/captain/{userId}")
+    public ResponseEntity<Boolean> isUserCaptainTeam(@PathVariable Long teamId, @PathVariable Long userId) {
+        boolean isCaptain = sportTeamService.isUserCaptainTeam(teamId, userId);
+        return new ResponseEntity<>(isCaptain, HttpStatus.OK);
+    }
 }
 
 

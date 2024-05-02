@@ -29,6 +29,8 @@ public class User implements Serializable {
     Roles role;
     String imgUser;
     String lastLogin;
+    @Enumerated(EnumType.STRING)
+    Badge badge = Badge.NOBADGE;
 
     @OneToMany(mappedBy = "users")
     Set<Article> articles;

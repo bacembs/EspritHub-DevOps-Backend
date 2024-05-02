@@ -23,7 +23,7 @@ public class Reservation implements Serializable {
     Long reservationId;
     LocalDateTime startDate;
     LocalDateTime endDate;
-    Long nbPlayers;
+    Long nbPlayers =1L;
     @Enumerated(EnumType.STRING)
     Rstatus resStatus = Rstatus.pending;
     @Enumerated(EnumType.STRING)

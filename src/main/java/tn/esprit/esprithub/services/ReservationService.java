@@ -3,7 +3,6 @@ package tn.esprit.esprithub.services;
 
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.TypedQuery;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -19,6 +18,7 @@ import tn.esprit.esprithub.repository.IUserRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -29,6 +29,9 @@ public class ReservationService implements IReservationService{
     private IFieldRepository fieldRepository;
     private ISportTeamRepository sportTeamRepository;
 
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private WeatherService weatherService;
@@ -52,6 +55,33 @@ public class ReservationService implements IReservationService{
     }
 
 
+    @Override
+   // @Scheduled(fixedDelay = 60000
+    @Scheduled(cron = "0 0 1 * * *") // EveryDay at 01AM
+    public void updateFinishedReservationsStatusAndAssignBadges() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Reservation> reservations = reservationRepository.findByEndDateBeforeAndResStatus(now, Rstatus.finished);
+        for (Reservation reservation : reservations) {
+            reservation.setResStatus(Rstatus.finished);
+            reservationRepository.save(reservation);
+        }
+
+
+        List<User> usersWithUpdatedBadges = userRepository.findUsersWithUpdatedBadges();
+        for (User user : usersWithUpdatedBadges) {
+            int numReservations = user.getReservations().size();
+            if (numReservations >= 5) {
+                user.setBadge(Badge.DIAMOND);
+            } else if (numReservations >= 3) {
+                user.setBadge(Badge.GOLD);
+            } else if (numReservations >= 1) {
+                user.setBadge(Badge.SILVER);
+            }
+            userRepository.save(user);
+        }
+    }
+
+
 
 
     @Override
@@ -60,8 +90,20 @@ public class ReservationService implements IReservationService{
     }
 
     @Override
-    public Reservation updateReservation(Reservation reservation) {
-        return reservationRepository.save(reservation);
+    public Reservation updateReservation( Long reservationId,Reservation updatedReservation) {
+        Reservation reservation = reservationRepository.findById(reservationId).orElse(null);
+
+        if (reservation != null) {
+            reservation.setStartDate(updatedReservation.getStartDate());
+            reservation.setEndDate(updatedReservation.getEndDate());
+            reservation.setNbPlayers(updatedReservation.getNbPlayers());
+            reservation.setResStatus(updatedReservation.getResStatus());
+            reservation.setResType(updatedReservation.getResType());
+
+            return reservationRepository.save(reservation);
+        }
+
+        return null;
     }
 
     @Override
@@ -79,9 +121,13 @@ public class ReservationService implements IReservationService{
         return (List<Reservation>) reservationRepository.findAll();
     }
 
+@Override
+public List<Reservation> getAllReservationsWithField() {
+    return reservationRepository.findAllWithField();
+}
     @Override
-    public List<Reservation> getAllReservationsWithField() {
-        return reservationRepository.findAllWithField();
+    public List<Object[]> getAllReservationsWithFieldId() {
+        return reservationRepository.findAllReservationsWithFieldId();
     }
 
     @Override
@@ -90,34 +136,31 @@ public class ReservationService implements IReservationService{
     }
 
     @Override
-    public Reservation addReservationForUser(Long userId, Long fieldId, Reservation reservation) {
-
-        if (!userRepository.existsById(userId) || !fieldRepository.existsById(fieldId)) {
-            return null;
-        }
-
-        User user = userRepository.findById(userId).orElse(null);
-        Field field = fieldRepository.findById(fieldId).orElse(null);
-
-        if (user == null || field == null) {
-            return null;
-        }
-
-        reservation.setUsers(new HashSet<>(Collections.singletonList(user)));
-        reservation.setFields(field);
-
-
-
-        reservation.updateStatus();
-
-
-        user.getReservations().add(reservation);
-        userRepository.save(user);
-        long nbPlayers = reservation.getUsers().size();
-        reservation.setNbPlayers(nbPlayers);
-
+    public Reservation cancelReservation(Long reservationId){
+       Reservation reservation= reservationRepository.findById(reservationId).orElse(null);
+        reservation.setResStatus(Rstatus.cancelled);
         return reservationRepository.save(reservation);
     }
+
+@Override
+public Reservation addReservationForUser(Long userId, Long fieldId, Reservation reservation) {
+    if (!userRepository.existsById(userId) || !fieldRepository.existsById(fieldId)) {
+        return null;
+    }
+    User user = userRepository.findById(userId).orElse(null);
+    Field field = fieldRepository.findById(fieldId).orElse(null);
+    if (user == null || field == null) {
+        return null;
+    }
+    reservation.setUsers(new HashSet<>(Collections.singletonList(user)));
+    reservation.setFields(field);
+    reservation.updateStatus();
+    reservation.setNbPlayers((long) reservation.getUsers().size()); // Calculate nbPlayers dynamically
+    user.getReservations().add(reservation);
+    userRepository.save(user);
+    return reservationRepository.save(reservation);
+}
+
 
     @Override
     public void deleteReservationForUser(Long userId, Long reservationId) {
@@ -174,16 +217,7 @@ public class ReservationService implements IReservationService{
         return reservationRepository.countByUsersUserId(userId);
     }
 
-//    @Override
-//    public Reservation addReservationSportTeam(Long sportTeamId, Reservation reservation) {
-//        SportTeam sportTeam = sportTeamRepository.findById(sportTeamId)
-//                .orElseThrow(() -> new EntityNotFoundException("SportTeam not found with ID " + sportTeamId));
-//
-//        Set<User> users = new HashSet<>(sportTeam.getUsers());
-//        reservation.setUsers(users);
-//
-//        return reservationRepository.save(reservation);
-//    }
+
 
     public Reservation addReservationSportTeam(Long sportTeamId, Reservation reservation) {
         User captain = getCaptainOfSportTeam(sportTeamId);
@@ -246,4 +280,102 @@ public class ReservationService implements IReservationService{
         reservationRepository.delete(reservation);
     }
 
+@Override
+public void joinReservation(Long userId, Long reservationId) {
+    Reservation reservation = reservationRepository.findById(reservationId)
+            .orElseThrow(() -> new IllegalArgumentException("Reservation not found with ID " + reservationId));
+
+    if (reservation.getNbPlayers() >= reservation.getFields().getCapacityField()) {
+        throw new IllegalStateException("No space available in the reservation.");
+    }
+
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found with ID " + userId));
+    reservation.getUsers().add(user);
+    user.getReservations().add(reservation);
+    reservation.setNbPlayers(reservation.getNbPlayers() + 1);
+    reservationRepository.save(reservation);
+    userRepository.save(user);
+}
+
+    @Override
+    public void cancelUserReservation(Long userId, Long reservationId) {
+        // Retrieve the reservation
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("Reservation not found with ID " + reservationId));
+
+        // Retrieve the user
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID " + userId));
+
+        // Remove the user from the reservation
+        reservation.getUsers().remove(user);
+        user.getReservations().remove(reservation);
+
+        // Update the number of players in the reservation
+        reservation.setNbPlayers(reservation.getNbPlayers() - 1);
+
+        // Save the updated reservation and user
+        reservationRepository.save(reservation);
+        userRepository.save(user);
+    }
+
+    @Override
+    public List<Reservation> getReservationsWithAvailableSpace() {
+        // Get all reservations
+        List<Reservation> reservations = reservationRepository.findAll();
+
+        // Filter reservations where nbPlayers is less than field capacity
+        return reservations.stream()
+                .filter(reservation -> {
+                    if (reservation.getNbPlayers() != null) {
+                        return reservation.getNbPlayers() < reservation.getFields().getCapacityField();
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void sendReservationReminders() {
+        // Get all reservations
+        List<Reservation> allReservations = reservationRepository.findAll();
+
+        // Filter reservations for tomorrow
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        List<Reservation> reservationsForTomorrow = allReservations.stream()
+                .filter(reservation -> reservation.getStartDate().toLocalDate().equals(tomorrow))
+                .collect(Collectors.toList());
+
+        // Iterate through filtered reservations and send reminder emails
+        for (Reservation reservation : reservationsForTomorrow) {
+            String userEmail = getUserEmailFromReservation(reservation); // Method to get user email
+            if (userEmail != null) {
+                String reservationDate = reservation.getStartDate().toString(); // Adjust according to your data model
+                sendReminderEmail(userEmail, reservationDate);
+            }
+        }
+    }
+
+
+
+    // Method to get user email from reservation using repository
+    public String getUserEmailFromReservation(Reservation reservation) {
+        return reservationRepository.getUserEmailByReservationId(reservation.getReservationId());
+    }
+
+    // Method to send reminder email
+    public void sendReminderEmail(String to, String reservationDate) {
+        // Construct the email message
+        String subject = "Reservation Reminder";
+        String text = "This is a reminder for your reservation scheduled for " + reservationDate;
+
+        // Send the email using the EmailService
+        emailService.sendEmail(to, subject, text);
+    }
+    @Override
+    public boolean hasUserJoinedReservation(Long reservationId, Long userId) {
+        Reservation reservation = reservationRepository.findByIdWithUsers(reservationId);
+        return reservation != null && reservation.getUsers().stream().anyMatch(user -> user.getUserId().equals(userId));
+    }
 }

@@ -16,6 +16,7 @@ import java.util.Set;
 
 @AllArgsConstructor
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/Reservation")
 public class ReservationRestController {
     private IReservationService reservationService;
@@ -25,9 +26,9 @@ public class ReservationRestController {
         return reservationService.addReservation(reservation);
     }
 
-    @PutMapping("/update")
-    public Reservation updateReservation(@RequestBody Reservation reservation) {
-        return reservationService.updateReservation(reservation);
+    @PutMapping("/update/{reservationId}")
+    public Reservation updateReservation(@PathVariable Long reservationId,@RequestBody Reservation reservation) {
+        return reservationService.updateReservation(reservationId,reservation);
     }
 
     @GetMapping("/get/{numReservation}")
@@ -39,16 +40,26 @@ public class ReservationRestController {
     public void removeReservation(@PathVariable Long numReservation) {
         reservationService.deleteReservation(numReservation);
     }
-
-    @GetMapping("/all")
-    public List<Reservation> getAll() {
-        return reservationService.getAll();
-    }
-
-
-    @GetMapping("/allWithField")
-    public List<Reservation> getAllReservationsWithField() {
-        return reservationService.getAllReservationsWithField();
+    //angular c bon
+//    @GetMapping("/all")
+//    public List<Reservation> getAll() {
+//        return reservationService.getAll();
+//    }
+//
+//
+//    @GetMapping("/allWithField")
+//    public List<Reservation> getAllReservationsWithField() {
+//        return reservationService.getAllReservationsWithField();
+//    }
+    //angular c bon
+    @GetMapping("/withFieldId")
+    public ResponseEntity<List<Object[]>> getAllReservationsWithFieldId() {
+        List<Object[]> reservationsWithFieldId = reservationService.getAllReservationsWithFieldId();
+        if (reservationsWithFieldId != null && !reservationsWithFieldId.isEmpty()) {
+            return ResponseEntity.ok(reservationsWithFieldId);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/getWithField/{reservationId}")
@@ -61,12 +72,12 @@ public class ReservationRestController {
         }
     }
 
-
+    //c bon angular
     @PostMapping("/users/{userId}/{fieldId}/reserve")
     public ResponseEntity<Reservation> makeReservationForUser(@PathVariable Long userId,
                                                               @PathVariable Long fieldId,
                                                               @RequestBody Reservation reservation) {
-        if (reservation == null || reservation.getStartDate() == null || reservation.getEndDate() == null || reservation.getNbPlayers() <= 0 ||
+        if (reservation == null || reservation.getStartDate() == null || reservation.getEndDate() == null ||
                 reservation.getResStatus() == null || reservation.getResType() == null) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -87,6 +98,15 @@ public class ReservationRestController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/cancel/{reservationId}")
+    public ResponseEntity<Void> cancelReservation(@PathVariable Long reservationId) {
+        Reservation canceledReservation = reservationService.cancelReservation(reservationId);
+        if (canceledReservation != null) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
     @PutMapping("/users/{userId}/{reservationId}")
     public ResponseEntity<Reservation> updateReservationForUser(@PathVariable Long userId,
                                                                 @PathVariable Long reservationId,
@@ -227,5 +247,56 @@ public class ReservationRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to cancel reservations for today.");
         }
     }
+
+    @PostMapping("/join/{reservationId}/{userId}")
+    public ResponseEntity<String> joinReservation(@PathVariable Long reservationId, @PathVariable Long userId) {
+        try {
+            reservationService.joinReservation(userId, reservationId);
+            return ResponseEntity.ok("User successfully joined the reservation.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid user or reservation ID provided.");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body("No space available in the reservation.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while joining the reservation.");
+        }
+    }
+
+
+    @PutMapping("/cancel/{reservationId}/{userId}")
+    public ResponseEntity<Void> cancelUserReservation(@PathVariable Long userId, @PathVariable Long reservationId) {
+        try {
+            reservationService.cancelUserReservation(userId, reservationId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<Reservation>> getReservationsWithAvailableSpaces() {
+        List<Reservation> reservations = reservationService.getReservationsWithAvailableSpace();
+        return ResponseEntity.ok(reservations);
+    }
+
+    @PostMapping("/sendReminderEmails")
+    public ResponseEntity<String> sendReminderEmails() {
+        try {
+            reservationService.sendReservationReminders();
+            return ResponseEntity.ok("Reminder emails sent successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to send reminder emails: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/joined/{reservationId}/{userId}")
+    public ResponseEntity<Boolean> hasUserJoinedReservation(@PathVariable Long reservationId, @PathVariable Long userId) {
+        boolean hasJoined = reservationService.hasUserJoinedReservation(reservationId, userId);
+        return ResponseEntity.ok(hasJoined);
+    }
+
+
+
 
 }
