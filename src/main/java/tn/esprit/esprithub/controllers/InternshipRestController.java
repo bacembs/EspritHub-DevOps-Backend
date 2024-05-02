@@ -1,8 +1,11 @@
 package tn.esprit.esprithub.controllers;
 
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.esprithub.entities.Filee;
@@ -22,12 +25,15 @@ public class InternshipRestController {
     private final InternshipService internshipService;
     @Autowired
     private final FileRepository fileRepo;
-
+    @Autowired
+    private final JavaMailSender mailSender;
 
     @Autowired
-    public InternshipRestController(InternshipService internshipService, FileRepository fileRepo) {
+    public InternshipRestController(InternshipService internshipService, FileRepository fileRepo, JavaMailSender mailSender) {
         this.internshipService = internshipService;
         this.fileRepo = fileRepo;
+        this.mailSender = mailSender;
+
     }
 
     @PostMapping("/createInternship")
@@ -75,7 +81,7 @@ public class InternshipRestController {
 
     /////////////////////////////////* file controller *///////////////////////////
 
-    @PostMapping("/addfile")
+   /* @PostMapping("/addfile")
     public ResponseEntity<?> addFile(@RequestParam("file") MultipartFile file) {
         try {
             Filee fileEntity = new Filee();
@@ -90,23 +96,45 @@ public class InternshipRestController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
+    }*/
 
-  /*  @PostMapping("/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/addFile/{internshipId}")
+    public ResponseEntity<?> addFile(@PathVariable("internshipId") Long internshipId, @RequestParam("file") MultipartFile file) {
         try {
-            Filee fileEntity = new  Filee();
+            // Ajouter le fichier et associer l'internship
+            // Assurez-vous d'enregistrer le fichier avec l'internship dans le référentiel approprié
+
+            Internship internship = internshipService.getInternshipById(internshipId);
+            if (internship == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Filee fileEntity = new Filee();
             fileEntity.setFilename(file.getOriginalFilename());
             fileEntity.setContentType(file.getContentType());
             fileEntity.setData(file.getBytes());
+            fileEntity.setInternship(internship); // Associer le stage au fichier
             fileRepo.save(fileEntity);
-            String message = "File uploaded successfully!";
+
+            // Envoyer l'e-mail
+            String toEmail = "destinataire@example.com";
+            String subject = "Nouveau fichier téléchargé";
+            String body = "Un nouveau fichier a été téléchargé.";
+
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("arij.khedhira@esprit.tn");
+            message.setTo(toEmail);
+            message.setText(body);
+            message.setSubject(subject);
+            mailSender.send(message);
+
+            String response = "Fichier téléchargé avec succès ! E-mail envoyé.";
             HttpStatus httpStatus = HttpStatus.CREATED;
-            return new ResponseEntity<>(message, httpStatus);
+            return new ResponseEntity<>(response, httpStatus);
         } catch (IOException e) {
-            return ResponseEntity.status(500).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }*/
+    }
 
     @GetMapping("/files")
     public ResponseEntity<List<Filee>> getFile() {
@@ -114,8 +142,34 @@ public class InternshipRestController {
         return ResponseEntity.ok(files);
     }
 
-    /*@DeleteMapping("/deleteFile/{id}")
+    @DeleteMapping("/deleteFile/{id}")
     public void deleteFilee(@PathVariable("id") long fileID) {
-        courseService.deleteFilee(fileID);
-    }*/
+        internshipService.deleteFile(fileID);
+    }
+
+    ////////////////////////mail///////////////////////
+
+    @PostMapping("/sendEmail")
+    public ResponseEntity<?> sendSimpleEmail(@RequestParam("toEmail") String toEmail, @RequestParam("subject") String subject, @RequestParam("body") String body) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("arij.khedhira@esprit.tn");
+            message.setTo(toEmail);
+            message.setText(body);
+            message.setSubject(subject);
+            mailSender.send(message);
+
+            String response = "Email sent successfully!";
+            HttpStatus httpStatus = HttpStatus.OK;
+            return new ResponseEntity<>(response, httpStatus);
+        } catch (Exception e) {
+            String error = "Failed to send email.";
+            HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+            return new ResponseEntity<>(error, httpStatus);
+        }
+    }
+
+
+
+
 }

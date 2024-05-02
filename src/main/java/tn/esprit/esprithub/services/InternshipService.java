@@ -1,25 +1,37 @@
 package tn.esprit.esprithub.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tn.esprit.esprithub.entities.Filee;
 import tn.esprit.esprithub.entities.Internship;
 import tn.esprit.esprithub.repository.FileRepository;
 import tn.esprit.esprithub.repository.InternshipRepository;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class InternshipService implements IInternshipService {
 
     private final InternshipRepository internshipRepository;
+
+
     @Autowired
     FileRepository fileRepository;
 
     @Autowired
     public InternshipService(InternshipRepository internshipRepository) {
         this.internshipRepository = internshipRepository;
+
+
     }
+    @Autowired
+    private JavaMailSender mailSender;
+
+
 
     @Override
     public Internship createInternship(Internship internship) {
@@ -71,4 +83,18 @@ public class InternshipService implements IInternshipService {
     public List<Filee> getAllFiles() {
         return null;
     }
+
+    @Override
+    public void sendSimpleEmail(String toEmail, String subject, String body) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("arij.khedhira@esprit.tn");
+        message.setTo(toEmail);
+        message.setText(body);
+        message.setSubject(subject);
+        mailSender.send(message);
+        System.out.println("Mail Send...");
+
+    }
+
+
 }

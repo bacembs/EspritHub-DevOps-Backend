@@ -28,6 +28,9 @@ public class Internship implements Serializable {
     String skillsRequiredInternship;
     String responsibilitiesInternship;
     LocalDateTime deadlineInternship;
+    String toEmail;
+    String subject;
+    String body;
 
 
 

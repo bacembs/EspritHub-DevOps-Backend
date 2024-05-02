@@ -20,8 +20,6 @@ public class FreelanceJobRestController {
         return freelanceJobService.createFreelanceJob(freelanceJob);
     }
 
-
-
     @PutMapping("/updatefreelance")
     public FreelanceJob updateFreelanceJob(@RequestBody FreelanceJob freelanceJob) {
         return freelanceJobService.updateFreelanceJob(freelanceJob);
@@ -47,4 +45,6 @@ public class FreelanceJobRestController {
     public List<FreelanceJob> getAllFreelanceJobs() {
         return freelanceJobService.getAllFreelanceJobs();
     }
+
+
 }

@@ -32,4 +32,6 @@ public class Filee  {
     @JoinColumn(name = "internshipId")
     @JsonIgnore
     private Internship internship;
+
+
 }
