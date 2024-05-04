@@ -83,7 +83,7 @@ private UserServices userServices;
     public List<String> getConditions() {
         return Arrays.asList("Good", "Fair", "Damaged");
     }
-    private final String uploadPath = "C:\\Users\\Nouhe\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
+    private final String uploadPath = "C:\\Users\\feres\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
 
     @GetMapping("/ar")
     public ResponseEntity<List<Article>> getAllArticles() {

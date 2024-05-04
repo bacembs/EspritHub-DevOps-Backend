@@ -30,7 +30,8 @@ public class ArticleServices implements IArticleServices {
 
     @Override
     public void addArticleWithPhoto(Long userId, Article article, MultipartFile photoFile) {
-        String uploadPath = "C:\\Users\\Nouhe\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
+
+        String uploadPath = " C:\\Users\\feres\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
 
         User user = new User();
         user.setUserId(1L);
@@ -75,7 +76,7 @@ public class ArticleServices implements IArticleServices {
     public void updateArticleWithPhoto(Article article, MultipartFile photoFile) {
         if (photoFile != null && !photoFile.isEmpty()) {
             String fileName = photoFile.getOriginalFilename();
-            String filePath = "C:\\Users\\Nouhe\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\" + fileName;
+            String filePath = "C:\\Users\\feres\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\" + fileName;
             try {
                 File file = new File(filePath);
                 photoFile.transferTo(file);

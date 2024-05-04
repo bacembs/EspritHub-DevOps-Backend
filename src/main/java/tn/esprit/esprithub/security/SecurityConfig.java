@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)  //security measure, not needed khater nesta3mlou fel jwt
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(
+                                        "/**",
                                         "/auth/**",
                                         "/v2/api-docs",
                                         "/v3/api-docs",
