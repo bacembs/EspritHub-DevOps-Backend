@@ -27,7 +27,7 @@ public class transactionServices  implements ItransactionServices{
 
 
     private final UserServices userService;
-    private final ArticleServices articleservice;
+   // private final ArticleServices articleservice;
 
     @Override
     public Transaction addTransaction(Transaction transaction) {
