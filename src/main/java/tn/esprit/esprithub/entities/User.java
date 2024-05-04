@@ -29,6 +29,7 @@ public class User implements Serializable {
     String imgUser;
     String lastLogin;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "users")
     Set<Article> articles;
 
@@ -50,5 +51,9 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "users")
     Set<FreelanceJob> jobs;
+
+    /*@OneToMany(mappedBy = "user")
+    private Set<FavoriteList> favoriteArticles;*/
+
 
 }

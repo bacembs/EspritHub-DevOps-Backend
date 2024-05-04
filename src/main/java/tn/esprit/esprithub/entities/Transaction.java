@@ -26,4 +26,8 @@ public class Transaction implements Serializable {
 
     @OneToMany(mappedBy = "transactions")
     Set<Article> articles;
+
+    /*@OneToOne
+    @JoinColumn(name = "basket_id")
+    Basket basket;*/
 }
