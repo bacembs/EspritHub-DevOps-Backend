@@ -388,7 +388,7 @@ public void makeTeamReservation(Long sportTeamId, Long captainId, Long fieldId, 
     }
     @Override
     public boolean isUserCaptain(Long userId) {
-        // Query the database to check if the user is a captain in any sport team
+
         List<SportTeam> sportTeams = sportTeamRepository.findByCaptainUserId(userId);
         return !sportTeams.isEmpty();
     }

@@ -155,7 +155,7 @@ public Reservation addReservationForUser(Long userId, Long fieldId, Reservation 
     reservation.setUsers(new HashSet<>(Collections.singletonList(user)));
     reservation.setFields(field);
     reservation.updateStatus();
-    reservation.setNbPlayers((long) reservation.getUsers().size()); // Calculate nbPlayers dynamically
+    reservation.setNbPlayers((long) reservation.getUsers().size());
     user.getReservations().add(reservation);
     userRepository.save(user);
     return reservationRepository.save(reservation);
@@ -300,32 +300,28 @@ public void joinReservation(Long userId, Long reservationId) {
 
     @Override
     public void cancelUserReservation(Long userId, Long reservationId) {
-        // Retrieve the reservation
+
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found with ID " + reservationId));
 
-        // Retrieve the user
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID " + userId));
 
-        // Remove the user from the reservation
         reservation.getUsers().remove(user);
         user.getReservations().remove(reservation);
 
-        // Update the number of players in the reservation
         reservation.setNbPlayers(reservation.getNbPlayers() - 1);
 
-        // Save the updated reservation and user
         reservationRepository.save(reservation);
         userRepository.save(user);
     }
 
     @Override
     public List<Reservation> getReservationsWithAvailableSpace() {
-        // Get all reservations
+
         List<Reservation> reservations = reservationRepository.findAll();
 
-        // Filter reservations where nbPlayers is less than field capacity
+
         return reservations.stream()
                 .filter(reservation -> {
                     if (reservation.getNbPlayers() != null) {
@@ -338,20 +334,20 @@ public void joinReservation(Long userId, Long reservationId) {
 
     @Override
     public void sendReservationReminders() {
-        // Get all reservations
+
         List<Reservation> allReservations = reservationRepository.findAll();
 
-        // Filter reservations for tomorrow
+
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         List<Reservation> reservationsForTomorrow = allReservations.stream()
                 .filter(reservation -> reservation.getStartDate().toLocalDate().equals(tomorrow))
                 .collect(Collectors.toList());
 
-        // Iterate through filtered reservations and send reminder emails
+
         for (Reservation reservation : reservationsForTomorrow) {
-            String userEmail = getUserEmailFromReservation(reservation); // Method to get user email
+            String userEmail = getUserEmailFromReservation(reservation);
             if (userEmail != null) {
-                String reservationDate = reservation.getStartDate().toString(); // Adjust according to your data model
+                String reservationDate = reservation.getStartDate().toString();
                 sendReminderEmail(userEmail, reservationDate);
             }
         }
@@ -359,18 +355,18 @@ public void joinReservation(Long userId, Long reservationId) {
 
 
 
-    // Method to get user email from reservation using repository
+
     public String getUserEmailFromReservation(Reservation reservation) {
         return reservationRepository.getUserEmailByReservationId(reservation.getReservationId());
     }
 
-    // Method to send reminder email
+
     public void sendReminderEmail(String to, String reservationDate) {
         // Construct the email message
         String subject = "Reservation Reminder";
         String text = "This is a reminder for your reservation scheduled for " + reservationDate;
 
-        // Send the email using the EmailService
+
         emailService.sendEmail(to, subject, text);
     }
     @Override

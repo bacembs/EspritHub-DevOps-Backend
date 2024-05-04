@@ -69,13 +69,13 @@ public class SportTeamRestController {
             @PathVariable Long sportTeamId,
             @RequestParam("nameTeam") String teamName,
             @RequestParam(value = "logo", required = false) MultipartFile photoFile) {
-        // Call the method to update the SportTeam with the photo
+
         System.out.println("Received photo file: " + photoFile);
         SportTeam updatedTeam = sportTeamService.updateSportTeamCapWithPhoto(teamName,sportTeamId , photoFile);
         if (updatedTeam != null) {
             return ResponseEntity.ok(updatedTeam);
         } else {
-            return ResponseEntity.notFound().build(); // Return 404 if the team with the specified ID is not found
+            return ResponseEntity.notFound().build();
         }
     }
 
