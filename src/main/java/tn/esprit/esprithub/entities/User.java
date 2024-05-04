@@ -54,6 +54,7 @@ public class User implements UserDetails, Principal {
     @Column(insertable = false)
     private LocalDateTime lastModifiedDate;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "users")
     Set<Article> articles;
 
