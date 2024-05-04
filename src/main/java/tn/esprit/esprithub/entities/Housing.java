@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -24,5 +25,7 @@ public class Housing implements Serializable {
     Float priceHousing;
 
     @OneToOne(cascade= CascadeType.PERSIST)
+    @JsonIgnore
+
     Transaction transaction;
 }

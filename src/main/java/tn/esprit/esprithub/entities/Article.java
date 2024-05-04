@@ -31,7 +31,9 @@ public class Article implements Serializable {
     @ManyToOne
     User users;
 
-   @ManyToOne
+    @ManyToOne
+    @JsonIgnore
+
     Transaction transactions;
 
 }

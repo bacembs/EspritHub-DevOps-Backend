@@ -56,7 +56,15 @@ public class User implements UserDetails, Principal {
 
     @JsonIgnore
     @OneToMany(mappedBy = "users")
+    @JsonIgnore
+
     Set<Article> articles;
+
+
+    @OneToMany(mappedBy = "users")
+    @JsonIgnore
+
+    Set<Transaction> transactions;
 
     @OneToMany(mappedBy = "users")
     Set<Complaint> complaints;
