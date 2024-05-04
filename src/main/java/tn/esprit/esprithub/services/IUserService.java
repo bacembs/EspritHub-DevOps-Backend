@@ -10,4 +10,7 @@ public interface IUserService {
     void deleteUser(Long userId);
     User getUserById(Long userId);
     List<User> getAll();
+    User getByNom(String nomuser);
+    public Long getUserIdByName(String username);
+
 }

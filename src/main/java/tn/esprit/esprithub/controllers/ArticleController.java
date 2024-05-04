@@ -22,7 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import tn.esprit.esprithub.services.UserServices;
+import tn.esprit.esprithub.services.UserService;
 
 
 @RestController
@@ -31,7 +31,7 @@ public class
 ArticleController {
     private ArticleServices articleServices;
     private ArticleRepository articlerepos;
-private UserServices userServices;
+    private UserService userService;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -83,7 +83,7 @@ private UserServices userServices;
     public List<String> getConditions() {
         return Arrays.asList("Good", "Fair", "Damaged");
     }
-    private final String uploadPath = " C:\\Users\\HP\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
+    private final String uploadPath = "C:\\Users\\Nouhe\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
 
     @GetMapping("/ar")
     public ResponseEntity<List<Article>> getAllArticles() {
@@ -141,7 +141,7 @@ private UserServices userServices;
         for (Object[] objects : articlesWithUserIdsAndUsernames) {
             Long userId = (Long) objects[6];
             String username = (String) objects[7];
-            String fullName = userServices.getUserFullName(userId);
+            String fullName = userService.getUserFullName(userId);
             Object[] articleWithUsername = Arrays.copyOf(objects, objects.length + 1);
             articleWithUsername[objects.length] = fullName;
             response.add(articleWithUsername);
@@ -175,7 +175,7 @@ private UserServices userServices;
 
     @GetMapping("/getUserIdByName")
     public Long getUserIdByName(@RequestParam String username) {
-        return userServices.getUserIdByName(username);
+        return userService.getUserIdByName(username);
     }
 
 
@@ -196,10 +196,10 @@ private UserServices userServices;
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/all")
+    public List<Article> getAll(){
+        return articleServices.getAll();
+    }
+
+
 }
-
-
-
-
-
-

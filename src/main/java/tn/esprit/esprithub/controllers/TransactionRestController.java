@@ -8,10 +8,6 @@ import tn.esprit.esprithub.DTO.transactionFeedback;
 import tn.esprit.esprithub.entities.Feedback;
 import tn.esprit.esprithub.entities.Transaction;
 import tn.esprit.esprithub.services.ItransactionServices;
-import tn.esprit.esprithub.services.UserServices;
-
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @RestController
@@ -21,8 +17,6 @@ import java.util.List;
 @RequestMapping("/Transaction")
 public class TransactionRestController {
     private ItransactionServices serviceTransaction ;
-    private UserServices serviceuser ;
-
     @PostMapping("/add")
     public Transaction addTransaction(@RequestBody Transaction transaction){
         return serviceTransaction.addTransaction(transaction);
