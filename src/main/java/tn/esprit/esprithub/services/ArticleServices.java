@@ -31,7 +31,7 @@ public class ArticleServices implements IArticleServices {
     @Override
     public void addArticleWithPhoto(Long userId, Article article, MultipartFile photoFile) {
 
-        String uploadPath = " C:\\Users\\feres\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
+        String uploadPath = "C:\\Users\\feres\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
 
         User user = new User();
         user.setUserId(1L);
