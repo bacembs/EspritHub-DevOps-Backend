@@ -27,6 +27,7 @@ import tn.esprit.esprithub.services.UserService;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/Articles")
 public class
 ArticleController {
     private ArticleServices articleServices;
