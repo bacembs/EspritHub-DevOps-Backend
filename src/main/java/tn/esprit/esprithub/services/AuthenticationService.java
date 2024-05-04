@@ -118,4 +118,6 @@ public class AuthenticationService {
         savedToken.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(savedToken);
     }
+
+
 }
