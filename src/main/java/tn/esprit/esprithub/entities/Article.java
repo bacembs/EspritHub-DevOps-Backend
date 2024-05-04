@@ -16,6 +16,7 @@ public class Article implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long articleId;
+    String nameArticle;
     @Enumerated(EnumType.STRING)
     Mycategory categoryArticle;
     @Enumerated(EnumType.STRING)
