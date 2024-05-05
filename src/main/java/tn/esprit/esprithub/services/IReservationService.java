@@ -56,7 +56,7 @@ public interface IReservationService {
 
     void cancelUserReservation(Long userId, Long reservationId);
 
-
+    boolean isFieldAvailableForReservation(Long fieldId, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
 
 

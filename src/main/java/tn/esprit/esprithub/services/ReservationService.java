@@ -162,6 +162,48 @@ public Reservation addReservationForUser(Long userId, Long fieldId, Reservation 
     userRepository.save(user);
     return reservationRepository.save(reservation);
 }
+//
+//    @Override
+//    public Reservation addReservationForUser(Long userId, Long fieldId, Reservation reservation) {
+//        // Check if the user and field exist
+//        if (!userRepository.existsById(userId) || !fieldRepository.existsById(fieldId)) {
+//            return null;
+//        }
+//
+//        User user = userRepository.findById(userId).orElse(null);
+//        Field field = fieldRepository.findById(fieldId).orElse(null);
+//
+//        // Check if the user and field exist
+//        if (user == null || field == null) {
+//            return null;
+//        }
+//
+//        // Check if the field is available for the given time slot
+//        if (!isFieldAvailableForReservation(fieldId, reservation.getStartDate(), reservation.getEndDate())) {
+//            return null; // Field is not available for the given time slot
+//        }
+//
+//        // Set the user, field, and update the reservation
+//        reservation.setUsers(new HashSet<>(Collections.singletonList(user)));
+//        reservation.setFields(field);
+//        reservation.updateStatus();
+//        reservation.setNbPlayers((long) reservation.getUsers().size());
+//        user.getReservations().add(reservation);
+//
+//        // Save the user and reservation
+//        userRepository.save(user);
+//        return reservationRepository.save(reservation);
+//    }
+
+    @Override
+    public boolean isFieldAvailableForReservation(Long fieldId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+
+        List<Reservation> existingReservations = reservationRepository.findByFieldsFieldIdAndStartDateBetween(fieldId, startDateTime, endDateTime);
+
+
+        return existingReservations.isEmpty();
+    }
+
 
 
     @Override

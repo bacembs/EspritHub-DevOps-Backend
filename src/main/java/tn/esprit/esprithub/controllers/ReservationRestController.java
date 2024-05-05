@@ -1,6 +1,7 @@
 package tn.esprit.esprithub.controllers;
 
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -89,6 +90,22 @@ public class ReservationRestController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/checkFieldAvailability/{fieldId}")
+    public ResponseEntity<String> checkFieldAvailability(
+            @PathVariable Long fieldId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDateTime,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDateTime) {
+
+        boolean isAvailable = reservationService.isFieldAvailableForReservation(fieldId, startDateTime, endDateTime);
+
+        if (isAvailable) {
+            return ResponseEntity.ok("The field is available for the given time slot.");
+        } else {
+            return ResponseEntity.ok("The field is not available for the given time slot.");
+        }
+    }
+
 
 
     @DeleteMapping("/users/{userId}/{reservationId}")

@@ -47,6 +47,8 @@ public interface IReservationRepository extends JpaRepository<Reservation,Long> 
 
     List<Reservation>findReservationByStartDate(LocalDateTime date);
 
+    List<Reservation> findByFieldsFieldIdAndStartDateBetween(Long fieldId,LocalDateTime startDateTime,LocalDateTime endDateTime);
+
 
 
     // List<Reservation> findByStatus(Rstatus rstatus);
