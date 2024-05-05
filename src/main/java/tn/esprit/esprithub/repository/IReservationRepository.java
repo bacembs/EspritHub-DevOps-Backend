@@ -45,6 +45,10 @@ public interface IReservationRepository extends JpaRepository<Reservation,Long> 
     @Query("SELECT r FROM Reservation r JOIN FETCH r.users WHERE r.reservationId = :reservationId")
     Reservation findByIdWithUsers(@Param("reservationId") Long reservationId);
 
+    List<Reservation>findReservationByStartDate(LocalDateTime date);
+
+
+
     // List<Reservation> findByStatus(Rstatus rstatus);
 
    // @Query("select s from Reservation s  where s.resStatus = :type")

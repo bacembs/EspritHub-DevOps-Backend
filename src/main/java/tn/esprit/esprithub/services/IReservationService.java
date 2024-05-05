@@ -49,6 +49,9 @@ public interface IReservationService {
 
     void sendReservationReminders();
 
+
+    void sendReminderEmail(String to, String reservationDate);
+
     boolean hasUserJoinedReservation(Long reservationId, Long userId);
 
     void cancelUserReservation(Long userId, Long reservationId);

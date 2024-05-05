@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tn.esprit.esprithub.entities.*;
+import tn.esprit.esprithub.mailRequest.MailRequest;
 import tn.esprit.esprithub.repository.IFieldRepository;
 import tn.esprit.esprithub.repository.IReservationRepository;
 import tn.esprit.esprithub.repository.ISportTeamRepository;
@@ -30,14 +31,15 @@ public class ReservationService implements IReservationService{
     private ISportTeamRepository sportTeamRepository;
 
 
-    @Autowired
+
+
     private EmailService emailService;
 
     @Autowired
     private WeatherService weatherService;
 
     @Override
-    @Scheduled(cron = "0 0 1 * * *") // EveryDay at 01AM
+    @Scheduled(cron = "0 0 1 * * *")
     public void cancelReservationsForToday() {
         if (weatherService.isRainyToday()) {
             LocalDate currentDate = LocalDate.now();
@@ -332,43 +334,74 @@ public void joinReservation(Long userId, Long reservationId) {
                 .collect(Collectors.toList());
     }
 
+
+
+//    @Scheduled(cron = "0 0 10 * * *")
+//    public void sendReservationReminders() {
+//        List<Reservation> allReservations = reservationRepository.findAll();
+//
+//        LocalDate tomorrow = LocalDate.now().plusDays(1);
+//
+//        List<Reservation> reservationsForTomorrow = allReservations.stream()
+//                .filter(reservation -> reservation.getStartDate().toLocalDate().equals(tomorrow))
+//                .collect(Collectors.toList());
+//
+//        for (Reservation reservation : reservationsForTomorrow) {
+//            String userEmail = getUserEmailFromReservation(reservation);
+//            if (userEmail != null) {
+//                sendReminderEmail(userEmail, reservation.getStartDate().toString());
+//            }
+//        }
+//    }
     @Override
+    @Scheduled(cron = "0 0 10 * * *")
     public void sendReservationReminders() {
-
         List<Reservation> allReservations = reservationRepository.findAll();
-
-
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        List<Reservation> reservationsForTomorrow = allReservations.stream()
-                .filter(reservation -> reservation.getStartDate().toLocalDate().equals(tomorrow))
-                .collect(Collectors.toList());
 
+//        List<Reservation> reservationsForTomorrow = allReservations.stream()
+//                .filter(reservation -> reservation.getStartDate().toLocalDate().equals(tomorrow))
+//                .collect(Collectors.toList());
+        List<Reservation> reservationsForTomorrow = allReservations.stream()
+                .filter(reservation ->
+                        reservation.getStartDate().toLocalDate().equals(tomorrow) &&
+                                reservation.getResStatus() == Rstatus.confirmed)
+                .collect(Collectors.toList());
 
         for (Reservation reservation : reservationsForTomorrow) {
             String userEmail = getUserEmailFromReservation(reservation);
             if (userEmail != null) {
-                String reservationDate = reservation.getStartDate().toString();
-                sendReminderEmail(userEmail, reservationDate);
+                String subject = "Reservation Reminder";
+                String text = "This is a reminder for your reservation scheduled for " + reservation.getStartDate().toString();
+                emailService.sendEmail(userEmail, subject, text);
             }
         }
     }
-
-
-
-
     public String getUserEmailFromReservation(Reservation reservation) {
         return reservationRepository.getUserEmailByReservationId(reservation.getReservationId());
     }
 
-
+    @Override
     public void sendReminderEmail(String to, String reservationDate) {
-        // Construct the email message
         String subject = "Reservation Reminder";
         String text = "This is a reminder for your reservation scheduled for " + reservationDate;
 
+        MailRequest mailRequest = new MailRequest();
+        mailRequest.setTo(to);
+        mailRequest.setSubject(subject);
+        mailRequest.setText(text);
 
-        emailService.sendEmail(to, subject, text);
+        emailService.sendReservationReminder(mailRequest);
     }
+
+    //    public void sendReminderEmail(String to, String reservationDate) {
+//        // Construct the email message
+//        String subject = "Reservation Reminder";
+//        String text = "This is a reminder for your reservation scheduled for " + reservationDate;
+//
+//
+//        emailService.sendEmail(to, subject, text);
+//    }
     @Override
     public boolean hasUserJoinedReservation(Long reservationId, Long userId) {
         Reservation reservation = reservationRepository.findByIdWithUsers(reservationId);

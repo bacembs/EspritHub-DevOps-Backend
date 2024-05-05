@@ -279,8 +279,29 @@ public class ReservationRestController {
         return ResponseEntity.ok(reservations);
     }
 
-    @PostMapping("/sendReminderEmails")
-    public ResponseEntity<String> sendReminderEmails() {
+//    @PostMapping("/sendReminderEmails")
+//    public ResponseEntity<String> sendReminderEmails() {
+//        try {
+//            reservationService.sendReservationReminders();
+//            return ResponseEntity.ok("Reminder emails sent successfully");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("Failed to send reminder emails: " + e.getMessage());
+//        }
+//    }
+@PostMapping("/sendReminderEmails")
+public ResponseEntity<String> sendReminderEmails(@RequestParam String to, @RequestParam String reservationDate) {
+    try {
+        reservationService.sendReminderEmail(to, reservationDate);
+        return ResponseEntity.ok("Reminder email sent successfully");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to send reminder email: " + e.getMessage());
+    }
+}
+
+    @PostMapping("/send-reminders")
+    public ResponseEntity<String> sendReservationReminders() {
         try {
             reservationService.sendReservationReminders();
             return ResponseEntity.ok("Reminder emails sent successfully");
@@ -289,6 +310,9 @@ public class ReservationRestController {
                     .body("Failed to send reminder emails: " + e.getMessage());
         }
     }
+
+
+
 
     @GetMapping("/joined/{reservationId}/{userId}")
     public ResponseEntity<Boolean> hasUserJoinedReservation(@PathVariable Long reservationId, @PathVariable Long userId) {
