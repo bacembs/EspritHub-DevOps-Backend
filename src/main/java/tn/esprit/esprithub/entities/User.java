@@ -65,6 +65,7 @@ public class User implements UserDetails, Principal {
     Badge badge = Badge.NOBADGE;
     boolean participationTeam =false;
 
+
     @OneToMany(mappedBy = "users")
     @JsonIgnore
 
@@ -75,6 +76,7 @@ public class User implements UserDetails, Principal {
 
     @ManyToOne
     Internship internships;
+
 
     @OneToMany(mappedBy = "users")
     Set<Participants> participants;

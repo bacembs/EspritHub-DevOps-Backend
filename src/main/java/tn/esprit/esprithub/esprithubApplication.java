@@ -1,5 +1,7 @@
 package tn.esprit.esprithub;
 
+import jakarta.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -11,13 +13,17 @@ import org.springframework.web.filter.CorsFilter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.Arrays;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import tn.esprit.esprithub.services.InternshipService;
 
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableAsync
 @EnableScheduling
 public class esprithubApplication {
-
+    @Autowired
+    private InternshipService internshipService;
     public static void main(String[] args) {
         SpringApplication.run(esprithubApplication.class, args);
     }
@@ -37,4 +43,11 @@ public class esprithubApplication {
         urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
         return new CorsFilter(urlBasedCorsConfigurationSource);
     }*/
+    @EventListener(ApplicationReadyEvent.class)
+    public void triggerMail() throws MessagingException {
+        internshipService.sendSimpleEmail("arij.khedhira@esprit.tn",
+                "This is email body",
+                "This is email subject");
+    }
+
 }
