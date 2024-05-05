@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +26,7 @@ public class Field implements Serializable {
     TypeF typeField;
 
     @OneToMany(mappedBy = "fields")
+ //   @JsonIgnore
     Set<Reservation> reservations;
 
 }

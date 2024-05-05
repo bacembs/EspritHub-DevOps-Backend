@@ -1,5 +1,5 @@
 package tn.esprit.esprithub.entities;
 
 public enum Rstatus {
-    confirmed,pending,cancelled
+    confirmed,pending,cancelled,finished
 }

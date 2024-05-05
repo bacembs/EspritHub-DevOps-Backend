@@ -17,6 +17,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -60,6 +61,9 @@ public class User implements UserDetails, Principal {
 
     Set<Article> articles;
 
+    @Enumerated(EnumType.STRING)
+    Badge badge = Badge.NOBADGE;
+    boolean participationTeam =false;
 
     @OneToMany(mappedBy = "users")
     @JsonIgnore
@@ -75,12 +79,25 @@ public class User implements UserDetails, Principal {
     @OneToMany(mappedBy = "users")
     Set<Participants> participants;
 
+ //    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+//    @JoinColumn(name = "team_id")
     @ManyToOne
+    @JsonIgnore
     SportTeam sportTeams;
 
-    @ManyToMany
+    @OneToOne(mappedBy="captain")
     @JsonIgnore
-    Set<Reservation>reservations;
+    SportTeam sportTeamCaptain;
+
+    @JsonIgnore
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "user_reservation",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "reservation_id"))
+    private Set<Reservation> reservations = new HashSet<>();
+//    @ManyToMany
+//    @JsonIgnore
+//    Set<Reservation>reservations= new HashSet<>();
 
     @OneToMany(mappedBy = "users")
     Set<FreelanceJob> jobs;

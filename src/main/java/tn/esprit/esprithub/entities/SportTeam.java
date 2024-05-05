@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -18,9 +19,18 @@ public class SportTeam implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long teamId;
     String nameTeam;
-    int captainId;
     String logoTeam;
 
-    @OneToMany(mappedBy = "sportTeams")
+    @OneToMany(mappedBy = "sportTeams", cascade = CascadeType.ALL)
+ //   @OneToMany(mappedBy = "sportTeams")
+    @JsonIgnore
     Set<User> users;
+
+    @OneToOne(cascade = CascadeType.ALL)
+  //  @OneToOne
+    @JsonIgnore
+    User captain;
+
+
+
 }
