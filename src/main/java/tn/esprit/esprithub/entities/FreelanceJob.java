@@ -30,6 +30,5 @@ public class FreelanceJob implements Serializable {
     @ManyToOne
     User users;
 
-    @OneToOne(cascade= CascadeType.PERSIST)
-    Transaction transaction;
+    
 }

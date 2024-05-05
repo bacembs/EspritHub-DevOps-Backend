@@ -101,8 +101,6 @@ public class InternshipRestController {
     @PostMapping("/addFile/{internshipId}")
     public ResponseEntity<?> addFile(@PathVariable("internshipId") Long internshipId, @RequestParam("file") MultipartFile file) {
         try {
-            // Ajouter le fichier et associer l'internship
-            // Assurez-vous d'enregistrer le fichier avec l'internship dans le référentiel approprié
 
             Internship internship = internshipService.getInternshipById(internshipId);
             if (internship == null) {
@@ -168,8 +166,8 @@ public class InternshipRestController {
             return new ResponseEntity<>(error, httpStatus);
         }
     }
-
-
-
-
 }
+
+
+
+
