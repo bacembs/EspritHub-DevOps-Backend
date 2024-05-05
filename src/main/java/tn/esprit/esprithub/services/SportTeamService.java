@@ -15,7 +15,7 @@ import tn.esprit.esprithub.entities.User;
 import tn.esprit.esprithub.repository.IFieldRepository;
 import tn.esprit.esprithub.repository.IReservationRepository;
 import tn.esprit.esprithub.repository.ISportTeamRepository;
-import tn.esprit.esprithub.repository.IUserRepository;
+import tn.esprit.esprithub.repository.IUserRepositoryy;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,7 +29,7 @@ import java.util.*;
 @Primary
 public class SportTeamService implements ISportTeamService{
     private ISportTeamRepository sportTeamRepository;
-    private IUserRepository userRepository;
+    private IUserRepositoryy userRepository;
     private IFieldRepository fieldRepository;
     private IReservationRepository reservationRepository;
     private EntityManager entityManager;

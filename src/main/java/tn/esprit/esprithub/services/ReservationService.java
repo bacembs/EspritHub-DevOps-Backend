@@ -9,11 +9,10 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tn.esprit.esprithub.entities.*;
-import tn.esprit.esprithub.mailRequest.MailRequest;
 import tn.esprit.esprithub.repository.IFieldRepository;
 import tn.esprit.esprithub.repository.IReservationRepository;
 import tn.esprit.esprithub.repository.ISportTeamRepository;
-import tn.esprit.esprithub.repository.IUserRepository;
+import tn.esprit.esprithub.repository.IUserRepositoryy;
 
 
 import java.time.LocalDate;
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 @Primary
 public class ReservationService implements IReservationService{
     private IReservationRepository reservationRepository;
-    private IUserRepository userRepository;
+    private IUserRepositoryy userRepository;
     private IFieldRepository fieldRepository;
     private ISportTeamRepository sportTeamRepository;
 
@@ -415,26 +414,32 @@ public void joinReservation(Long userId, Long reservationId) {
             if (userEmail != null) {
                 String subject = "Reservation Reminder";
                 String text = "This is a reminder for your reservation scheduled for " + reservation.getStartDate().toString();
-                emailService.sendEmail(userEmail, subject, text);
+                emailService.sendEmailSport(userEmail, subject, text);
             }
         }
-    }
-    public String getUserEmailFromReservation(Reservation reservation) {
-        return reservationRepository.getUserEmailByReservationId(reservation.getReservationId());
     }
 
     @Override
     public void sendReminderEmail(String to, String reservationDate) {
-        String subject = "Reservation Reminder";
-        String text = "This is a reminder for your reservation scheduled for " + reservationDate;
 
-        MailRequest mailRequest = new MailRequest();
-        mailRequest.setTo(to);
-        mailRequest.setSubject(subject);
-        mailRequest.setText(text);
-
-        emailService.sendReservationReminder(mailRequest);
     }
+
+    public String getUserEmailFromReservation(Reservation reservation) {
+        return reservationRepository.getUserEmailByReservationId(reservation.getReservationId());
+    }
+
+//    @Override
+//    public void sendReminderEmail(String to, String reservationDate) {
+//        String subject = "Reservation Reminder";
+//        String text = "This is a reminder for your reservation scheduled for " + reservationDate;
+//
+//        MailRequest mailRequest = new MailRequest();
+//        mailRequest.setTo(to);
+//        mailRequest.setSubject(subject);
+//        mailRequest.setText(text);
+//
+//        emailService.sendReservationReminder(mailRequest);
+//    }
 
     //    public void sendReminderEmail(String to, String reservationDate) {
 //        // Construct the email message
@@ -442,7 +447,7 @@ public void joinReservation(Long userId, Long reservationId) {
 //        String text = "This is a reminder for your reservation scheduled for " + reservationDate;
 //
 //
-//        emailService.sendEmail(to, subject, text);
+//        emailService.sendEmailSport(to, subject, text);
 //    }
     @Override
     public boolean hasUserJoinedReservation(Long reservationId, Long userId) {
