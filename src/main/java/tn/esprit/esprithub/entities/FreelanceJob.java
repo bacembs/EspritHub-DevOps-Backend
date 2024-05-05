@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +26,7 @@ public class FreelanceJob implements Serializable {
     String skillsRequiredJob;
     String descriptionJob;
     Float budgetJob;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime deadlineJob;
 
     @ManyToOne
