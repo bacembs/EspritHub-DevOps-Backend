@@ -52,6 +52,7 @@ public class SportTeamService implements ISportTeamService{
         if (sportTeam != null) {
             for (User user : sportTeam.getUsers()) {
                 user.setSportTeams(null);
+                user.setParticipationTeam(false);
             }
             sportTeam.setCaptain(null);
             sportTeam.getUsers().clear();
@@ -86,6 +87,7 @@ public class SportTeamService implements ISportTeamService{
             sportTeam.setCaptain(user);
 
             user.setSportTeams(sportTeam);
+            user.setParticipationTeam(true);
             sportTeamRepository.save(sportTeam);
 
         } catch (IOException e) {
@@ -95,30 +97,6 @@ public class SportTeamService implements ISportTeamService{
 
         return sportTeamRepository.save(sportTeam);
     }
-//@Override
-//public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile photoFile) {
-//    SportTeam sportTeam = new SportTeam();
-//
-//    User user = userRepository.findById(captainId).orElse(null);
-//
-//    String uploadPath = "C:\\Users\\Bacem\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
-//    try {
-//        byte[] bytes = photoFile.getBytes();
-//        String fileName = photoFile.getOriginalFilename();
-//        Path path = Paths.get(uploadPath + fileName);
-//        Files.write(path, bytes);
-//
-//        sportTeam.setNameTeam(teamName);
-//        sportTeam.setLogoTeam(fileName);
-//        sportTeam.setCaptain(user);
-//
-//        user.setSportTeams(sportTeam);
-//        sportTeamRepository.save(sportTeam);
-//    } catch (IOException e) {
-//        e.printStackTrace();
-//    }
-//    return sportTeam;
-//}
 @Override
 @Transactional
 public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile photoFile) {
@@ -141,6 +119,7 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
         sportTeam.setLogoTeam(fileName);
         sportTeam.setCaptain(user);
         user.setSportTeams(sportTeam);
+        user.setParticipationTeam(true);
         userRepository.save(user);
         sportTeamRepository.save(sportTeam);
 
@@ -178,35 +157,6 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
 
 
 
-//    @Override
-//    public SportTeam updateSportTeamCapWithPhoto(String teamName, Long sportTeamId, MultipartFile photoFile) {
-//        SportTeam existingSportTeam = sportTeamRepository.findById(sportTeamId).orElse(null);
-//        if (existingSportTeam != null) {
-//            existingSportTeam.setNameTeam(teamName);
-//
-//            if (photoFile != null && !photoFile.isEmpty()) {
-//                try {
-//                    String uploadPath = "C:\\Users\\Bacem\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
-//
-//                    byte[] bytes = photoFile.getBytes();
-//
-//                    String fileName = photoFile.getOriginalFilename();
-//
-//                    Path path = Paths.get(uploadPath + fileName);
-//
-//                    Files.write(path, bytes);
-//                    existingSportTeam.setLogoTeam(fileName);
-//
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            return sportTeamRepository.save(existingSportTeam);
-//        }
-//        return null;
-//    }
-
 
     @Override
     public SportTeam addSportTeamCap(SportTeam sportTeam,Long captainId) {
@@ -215,6 +165,7 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
         sportTeam.setCaptain(user);
 
         user.setSportTeams(sportTeam);
+        user.setParticipationTeam(true);
 
         return sportTeamRepository.save(sportTeam);
     }
@@ -239,6 +190,7 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
             if (sportTeam.getCaptain().getUserId().equals(captainId)) {
                 for (User user : sportTeam.getUsers()) {
                     user.setSportTeams(null);
+                    user.setParticipationTeam(false);
                 }
                 sportTeam.setCaptain(null);
                 sportTeam.getUsers().clear();
@@ -269,6 +221,7 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
         if (sportTeam != null && user != null) {
             sportTeam.getUsers().add(user);
             user.setSportTeams(sportTeam);
+            user.setParticipationTeam(true);
             sportTeamRepository.save(sportTeam);
 
         }
@@ -282,6 +235,7 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
         if (user != null && sportTeam != null) {
             sportTeam.getUsers().add(user);
             user.setSportTeams(sportTeam);
+            user.setParticipationTeam(true);
             sportTeamRepository.save(sportTeam);
         }
     }
@@ -293,7 +247,8 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
 
         if (user != null && sportTeam != null) {
             sportTeam.getUsers().remove(user);
-            user.setSportTeams(null); // Remove the reference to the sport team from the user
+            user.setSportTeams(null);
+            user.setParticipationTeam(false);
             userRepository.save(user);
             sportTeamRepository.save(sportTeam);
 
@@ -310,12 +265,31 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
         if (sportTeam != null && user != null) {
             sportTeam.getUsers().remove(user);
             user.setSportTeams(null);
+            user.setParticipationTeam(false);
             sportTeamRepository.save(sportTeam);
         }
     }
 
 
 
+
+    @Override
+    public void acceptUserToSportTeam(Long sportTeamId, Long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (user != null) {
+
+            if (user.getSportTeams() != null && user.getSportTeams().getTeamId().equals(sportTeamId)) {
+
+                user.setParticipationTeam(true);
+                userRepository.save(user);
+            } else {
+                throw new IllegalArgumentException("User is not associated with the specified sport team.");
+            }
+        } else {
+            throw new IllegalArgumentException("User not found.");
+        }
+    }
 
 
     @Override
@@ -324,12 +298,16 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
         User user = userRepository.findById(userId).orElse(null);
 
         if (sportTeam != null && user != null) {
+            if (user.isParticipationTeam()) {
+                throw new IllegalStateException("User is already participating in another sport team.");
+            }
             sportTeam.getUsers().add(user);
             user.setSportTeams(sportTeam);
             sportTeamRepository.save(sportTeam);
 
         }
     }
+
 
     @Override
     public void cancelParticipation(Long sportTeamId,Long userId) {
@@ -339,6 +317,7 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
         if (sportTeam != null && user != null) {
             sportTeam.getUsers().remove(user);
             user.setSportTeams(null);
+            user.setParticipationTeam(false);
             sportTeamRepository.save(sportTeam);
         }
     }
@@ -415,4 +394,11 @@ public void makeTeamReservation(Long sportTeamId, Long captainId, Long fieldId, 
             return null; // or throw an exception based on your error handling strategy
         }
     }
+
+
+
+
+
+
+
 }

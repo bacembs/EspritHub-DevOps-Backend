@@ -31,6 +31,7 @@ public class User implements Serializable {
     String lastLogin;
     @Enumerated(EnumType.STRING)
     Badge badge = Badge.NOBADGE;
+    boolean participationTeam =false;
 
     @OneToMany(mappedBy = "users")
     Set<Article> articles;

@@ -6,28 +6,29 @@ import tn.esprit.esprithub.services.WeatherService;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("/weather")
 public class WeatherController {
 
     @Autowired
     private WeatherService weatherService;
 
-    @GetMapping("/weather/{city}/{country}")
+    @GetMapping("/{city}/{country}")
     public String getWeatherForCity(@PathVariable String city, @PathVariable String country) {
         String apiKey = "d0f0a438761295bcde444344fac2472a";
         return weatherService.getWeatherForCity(city, country);
     }
 
-    @GetMapping("/weather/tomorrowAriana")
+    @GetMapping("/tomorrowAriana")
     public String getTomorrowWeatherForAriana() throws Exception {
         return weatherService.getTomorrowWeatherForecastForAriana();
     }
 
-    @GetMapping("/weather/forecast")
+    @GetMapping("/forecast")
     public String getWeatherForecasttt() throws Exception {
         return weatherService.getWeatherForecast();
     }
 
-    @GetMapping("/weather/critical")
+    @GetMapping("/critical")
     public String checkCriticalWeather(
             @RequestParam String city,
             @RequestParam String country

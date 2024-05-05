@@ -47,6 +47,8 @@ public interface ISportTeamService {
     boolean isUserCaptainTeam(Long teamId, Long userId);
     Long getSportTeamIdByCaptainId(Long captainId);
 
+    void acceptUserToSportTeam(Long sportTeamId, Long userId);
+
 
 
 

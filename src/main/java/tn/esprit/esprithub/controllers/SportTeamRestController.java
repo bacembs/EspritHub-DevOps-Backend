@@ -132,11 +132,25 @@ public class SportTeamRestController {
         return ResponseEntity.ok("User removed from sport team successfully.");
     }
 
+    @PostMapping("/{sportTeamId}/accept-user/{userId}")
+    public ResponseEntity<String> acceptUserToSportTeam(@PathVariable Long sportTeamId, @PathVariable Long userId) {
+        try {
+            sportTeamService.acceptUserToSportTeam(sportTeamId, userId);
+            return new ResponseEntity<>("User accepted to the sport team successfully.", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     @PostMapping("/participateSportTeam/{sportTeamId}")
     public ResponseEntity<String> participateSportTeam(@PathVariable Long sportTeamId, @RequestHeader("userId") Long userId) {
-        sportTeamService.participateSportTeam(sportTeamId, userId);
-        return ResponseEntity.ok("Participated in sport team successfully.");
+        try {
+            sportTeamService.participateSportTeam(sportTeamId, userId);
+            return ResponseEntity.ok("Participated in sport team successfully.");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 
@@ -207,6 +221,9 @@ public class SportTeamRestController {
         boolean isCaptain = sportTeamService.isUserCaptainTeam(teamId, userId);
         return new ResponseEntity<>(isCaptain, HttpStatus.OK);
     }
+
+
+
 }
 
 

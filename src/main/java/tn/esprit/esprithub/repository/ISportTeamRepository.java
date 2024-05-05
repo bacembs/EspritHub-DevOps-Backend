@@ -13,8 +13,10 @@ public interface ISportTeamRepository extends JpaRepository<SportTeam,Long> {
   //  List<Long> findUserIdsBySportTeamId(Long sportTeamId);
     List<User> findUserIdsBySportTeamId(@Param("sportTeamId") Long sportTeamId);
 
-    @Query("SELECT COUNT(u) FROM User u WHERE u.sportTeams.teamId = :sportTeamId")
-    int countUsersJoinedInSportTeam(@Param("sportTeamId") Long sportTeamId);
+//    @Query("SELECT COUNT(u) FROM User u WHERE u.sportTeams.teamId = :sportTeamId")
+//    int countUsersJoinedInSportTeam(@Param("sportTeamId") Long sportTeamId);
+@Query("SELECT COUNT(u) FROM User u WHERE u.sportTeams.teamId = :sportTeamId AND u.participationTeam = true")
+int countUsersJoinedInSportTeam(@Param("sportTeamId") Long sportTeamId);
 
     List<SportTeam> findByCaptainUserId(Long userId);
 
