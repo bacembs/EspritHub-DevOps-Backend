@@ -16,6 +16,8 @@ import java.util.Arrays;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import tn.esprit.esprithub.services.InternshipService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableJpaAuditing
@@ -50,4 +52,8 @@ public class esprithubApplication {
                 "This is email subject");
     }
 
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 }

@@ -5,5 +5,6 @@ public enum Roles {
     admin,
     club,
     organisation,
-    other
+    other,
+
 }

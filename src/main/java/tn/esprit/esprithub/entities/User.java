@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -40,6 +42,7 @@ public class User implements UserDetails, Principal {
     @Column(unique = true)
     String email;
     String password;
+    String adresse;
     int phone;
     String imgUser;
     @Enumerated(EnumType.STRING)
@@ -103,6 +106,12 @@ public class User implements UserDetails, Principal {
 
     @OneToMany(mappedBy = "users")
     Set<FreelanceJob> jobs;
+    @JsonBackReference
+    @OneToMany(mappedBy = "owner")
+    private List<Housing> ownedHousing;
+
+    @ManyToMany(mappedBy = "renters")
+    private List<Housing> rentedHousing;
 
 
     @Override
