@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,7 @@ public class Reservation implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long reservationId;
     LocalDateTime startDate;
+
     LocalDateTime endDate;
     Long nbPlayers =1L;
     @Enumerated(EnumType.STRING)
