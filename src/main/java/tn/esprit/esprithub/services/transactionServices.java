@@ -24,6 +24,7 @@ public class transactionServices  implements ItransactionServices{
     private final IfeedBackRepository feedBackRepository;
     private final IHousingRepository housingRepository;
     private final IarticleRepository articleRepository;
+    private final IArticleServices articleServices;
 
 
     private final UserService userService;
@@ -42,10 +43,11 @@ if(savedTransaction.getFeedbacks() !=null) {
 
        if(!savedTransaction.getArticles().isEmpty()) {
             for (Article article : savedTransaction.getArticles()) {
+                Article a =articleServices.getArticleById(article.getArticleId());
+                System.out.println(article.toString());
+                a.setTransactions(savedTransaction);
 
-                article.setTransactions(savedTransaction);
-
-                articleRepository.save(article);
+                articleRepository.save(a);
 
             }
         }
