@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,6 +21,8 @@ public class Transaction implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long transactionId;
     Float amountTransaction;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+
     LocalDateTime payementDateTransaction;
 
     @OneToMany(mappedBy = "transactions")
