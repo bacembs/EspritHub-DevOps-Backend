@@ -143,22 +143,24 @@ public class SportTeamRestController {
     }
 
 
-    @PostMapping("/participateSportTeam/{sportTeamId}")
-    public ResponseEntity<String> participateSportTeam(@PathVariable Long sportTeamId, @RequestHeader("userId") Long userId) {
-        try {
-            sportTeamService.participateSportTeam(sportTeamId, userId);
-            return ResponseEntity.ok("Participated in sport team successfully.");
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+
+@PostMapping("/participateSportTeam/{sportTeamId}/{userId}")
+public ResponseEntity<String> participateSportTeam(@PathVariable Long sportTeamId, @PathVariable Long userId) {
+    try {
+        sportTeamService.participateSportTeam(sportTeamId, userId);
+        return ResponseEntity.ok("Participated in sport team successfully.");
+    } catch (IllegalStateException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
+}
 
 
-    @PostMapping("/cancelParticipateSportTeam/{sportTeamId}")
-    public ResponseEntity<String> cancelParticipationSportTeam(@PathVariable Long sportTeamId, @RequestHeader("userId") Long userId) {
+    @PostMapping("/cancelParticipateSportTeam/{sportTeamId}/{userId}")
+    public ResponseEntity<String> cancelParticipationSportTeam(@PathVariable Long sportTeamId, @PathVariable Long userId) {
         sportTeamService.cancelParticipation(sportTeamId, userId);
         return ResponseEntity.ok("Cancelled participation from sport team successfully.");
     }
+
 
 
 

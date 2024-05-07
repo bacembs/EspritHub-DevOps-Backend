@@ -33,6 +33,7 @@ public class SportTeamService implements ISportTeamService{
     private IFieldRepository fieldRepository;
     private IReservationRepository reservationRepository;
     private EntityManager entityManager;
+    private IReservationService reservationService;
 
     @Override
     public SportTeam addSportTeam(SportTeam sportTeam) {
@@ -104,7 +105,9 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
 
     User user = userRepository.findById(captainId).orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-    String uploadPath = "C:\\Users\\Bacem\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
+//    String uploadPath = "C:\\Users\\Bacem\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
+    String uploadPath = "./src/main/resources/static/photos/";
+
     try {
         byte[] bytes = photoFile.getBytes();
         String fileName = StringUtils.cleanPath(photoFile.getOriginalFilename());
@@ -129,6 +132,53 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
     }
     return sportTeam;
 }
+//@Override
+//@Transactional
+//public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile photoFile) {
+//    SportTeam sportTeam = new SportTeam();
+//
+//    User user = userRepository.findById(captainId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+//
+//    // Directory to store uploaded files
+//    String uploadDir = "./src/main/resources/static/photos/";
+//
+//    try {
+//        // Get the file bytes from the MultipartFile
+//        byte[] fileBytes = photoFile.getBytes();
+//
+//        // Generate a unique file name for the uploaded photo
+//        String fileName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(photoFile.getOriginalFilename());
+//
+//        // Path to save the file
+//        Path filePath = Paths.get(uploadDir, fileName);
+//
+//        // Create directories if they don't exist
+//        Files.createDirectories(filePath.getParent());
+//
+//        // Write the file bytes to the specified path
+//        Files.write(filePath, fileBytes);
+//
+//        // Set the sport team details
+//        sportTeam.setNameTeam(teamName);
+//        sportTeam.setLogoTeam(fileName);
+//        sportTeam.setCaptain(user);
+//
+//        // Update user details
+//        user.setSportTeams(sportTeam);
+//        user.setParticipationTeam(true);
+//
+//        // Save the user and sport team entities
+//        userRepository.save(user);
+//        sportTeamRepository.save(sportTeam);
+//
+//    } catch (IOException e) {
+//        // Handle file processing exception
+//        e.printStackTrace(); // You should handle this more gracefully in your application
+//    }
+//
+//    return sportTeam;
+//}
+
 
     @Override
     public SportTeam updateSportTeamCapWithPhoto(String teamName, Long sportTeamId, MultipartFile photoFile) {
@@ -137,7 +187,8 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
             existingSportTeam.setNameTeam(teamName);
             if (photoFile != null && !photoFile.isEmpty()) {
                 try {
-                    String uploadPath = "C:\\Users\\Bacem\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
+//                    String uploadPath = "C:\\Users\\Bacem\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
+                    String uploadPath = "./src/main/resources/static/photos/";
                     byte[] bytes = photoFile.getBytes();
                     String fileName = StringUtils.cleanPath(photoFile.getOriginalFilename());
                     Path path = Paths.get(uploadPath, fileName);
@@ -331,35 +382,73 @@ public SportTeam addSportTeamCap3(String teamName, Long captainId, MultipartFile
         return sportTeamRepository.findUserIdsBySportTeamId(sportTeamId);
     }
 
-@Override
-public void makeTeamReservation(Long sportTeamId, Long captainId, Long fieldId, Reservation reservation) {
-    SportTeam sportTeam = sportTeamRepository.findById(sportTeamId).orElse(null);
-    Field field = fieldRepository.findById(fieldId).orElse(null);
+//@Override
+//public void makeTeamReservation(Long sportTeamId, Long captainId, Long fieldId, Reservation reservation) {
+//    SportTeam sportTeam = sportTeamRepository.findById(sportTeamId).orElse(null);
+//    Field field = fieldRepository.findById(fieldId).orElse(null);
+//
+//    if (sportTeam != null && sportTeam.getCaptain().getUserId().equals(captainId) && field != null) {
+//        Reservation teamReservation = new Reservation();
+//        teamReservation.setStartDate(reservation.getStartDate());
+//        teamReservation.setEndDate(reservation.getEndDate());
+//        teamReservation.setNbPlayers(reservation.getNbPlayers());
+//        teamReservation.setResStatus(reservation.getResStatus());
+//        teamReservation.setResType(reservation.getResType());
+//        teamReservation.setFields(field);
+//
+//        Set<User> teamMembers = sportTeam.getUsers();
+//
+//        for (User member : teamMembers) {
+//            member.getReservations().add(teamReservation);
+//        }
+//
+//        long nbPlayers = teamMembers.size();
+//        teamReservation.setNbPlayers(nbPlayers);
+//
+//        reservationRepository.save(teamReservation);
+//        userRepository.saveAll(teamMembers);
+//    } else {
+//        throw new IllegalArgumentException("Only the captain can make a team reservation and the provided field must exist.");
+//    }
+//}
 
-    if (sportTeam != null && sportTeam.getCaptain().getUserId().equals(captainId) && field != null) {
-        Reservation teamReservation = new Reservation();
-        teamReservation.setStartDate(reservation.getStartDate());
-        teamReservation.setEndDate(reservation.getEndDate());
-        teamReservation.setNbPlayers(reservation.getNbPlayers());
-        teamReservation.setResStatus(reservation.getResStatus());
-        teamReservation.setResType(reservation.getResType());
-        teamReservation.setFields(field);
+    //changed after merge
+    @Override
+    public void makeTeamReservation(Long sportTeamId, Long captainId, Long fieldId, Reservation reservation) {
+        SportTeam sportTeam = sportTeamRepository.findById(sportTeamId).orElse(null);
+        Field field = fieldRepository.findById(fieldId).orElse(null);
 
-        Set<User> teamMembers = sportTeam.getUsers();
+        if (sportTeam != null && sportTeam.getCaptain().getUserId().equals(captainId) && field != null) {
+            // Check if the field is available for reservation
+            if (!reservationService.isFieldAvailableForReservation(fieldId, reservation.getStartDate(), reservation.getEndDate())) {
+                throw new IllegalArgumentException("Field is not available for the given time slot");
+            }
 
-        for (User member : teamMembers) {
-            member.getReservations().add(teamReservation);
+            Reservation teamReservation = new Reservation();
+            teamReservation.setStartDate(reservation.getStartDate());
+            teamReservation.setEndDate(reservation.getEndDate());
+            teamReservation.setNbPlayers(reservation.getNbPlayers());
+            teamReservation.setResStatus(reservation.getResStatus());
+            teamReservation.setResType(reservation.getResType());
+            teamReservation.setFields(field);
+
+            Set<User> teamMembers = sportTeam.getUsers();
+
+            for (User member : teamMembers) {
+                if(member.isParticipationTeam()) {
+                    member.getReservations().add(teamReservation);
+                }
+            }
+
+            long nbPlayers = teamMembers.size();
+            teamReservation.setNbPlayers(nbPlayers);
+
+            reservationRepository.save(teamReservation);
+            userRepository.saveAll(teamMembers);
+        } else {
+            throw new IllegalArgumentException("Only the captain can make a team reservation and the provided field must exist.");
         }
-
-        long nbPlayers = teamMembers.size();
-        teamReservation.setNbPlayers(nbPlayers);
-
-        reservationRepository.save(teamReservation);
-        userRepository.saveAll(teamMembers);
-    } else {
-        throw new IllegalArgumentException("Only the captain can make a team reservation and the provided field must exist.");
     }
-}
 
     @Override
     public int countUsersJoinedInSportTeam(Long teamId) {
