@@ -28,7 +28,6 @@ public class Transaction implements Serializable {
     @OneToMany(mappedBy = "transactions")
     Set<Article> articles;
     @OneToOne(mappedBy = "transaction")
-
     Housing housing;
 
     @ManyToOne

@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ public class transactionServices  implements ItransactionServices{
     private final UserService userService;
    // private final ArticleServices articleservice;
 
+    @Transactional
     @Override
     public Transaction addTransaction(Transaction transaction) {
         transaction.setPayementDateTransaction(LocalDateTime.now());
@@ -56,12 +58,9 @@ if(savedTransaction.getFeedbacks() !=null) {
 
 
         if(savedTransaction.getHousing()!=null) {
-            System.out.println("debut");
-            savedTransaction.getHousing().setTransaction(savedTransaction);
-            housingRepository.save(savedTransaction.getHousing());
-            System.out.println(savedTransaction.getHousing());
-            System.out.println("fin");
-
+            Housing housing = housingRepository.findById(savedTransaction.getHousing().getHousingID()).get();
+            housing.setTransaction(savedTransaction);
+            housingRepository.save((housing));
         }
 
         return transaction;

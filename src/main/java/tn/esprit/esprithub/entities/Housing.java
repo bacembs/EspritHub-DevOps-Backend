@@ -45,7 +45,7 @@ public class Housing implements Serializable {
     @OneToMany(mappedBy = "housing" ,cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Visit> visitsHousing;
 
-    @OneToOne(cascade= CascadeType.PERSIST)
+    @OneToOne
 @JsonIgnore
     Transaction transaction;
     @JsonIgnore
