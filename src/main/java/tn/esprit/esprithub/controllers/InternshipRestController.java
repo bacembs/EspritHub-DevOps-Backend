@@ -11,10 +11,14 @@ import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.esprithub.entities.Filee;
 import tn.esprit.esprithub.entities.Internship;
 import tn.esprit.esprithub.repository.FileRepository;
+import tn.esprit.esprithub.services.IUserService;
 import tn.esprit.esprithub.services.InternshipService;
+import tn.esprit.esprithub.services.UserService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
+
 @RestController
 @RequestMapping("/internships")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -27,18 +31,21 @@ public class InternshipRestController {
     private final FileRepository fileRepo;
     @Autowired
     private final JavaMailSender mailSender;
+    @Autowired
+    private final UserService userservice;
 
     @Autowired
-    public InternshipRestController(InternshipService internshipService, FileRepository fileRepo, JavaMailSender mailSender) {
+    public InternshipRestController(InternshipService internshipService, FileRepository fileRepo, JavaMailSender mailSender, UserService userservice) {
         this.internshipService = internshipService;
         this.fileRepo = fileRepo;
         this.mailSender = mailSender;
 
 
+        this.userservice = userservice;
     }
 
-    @PostMapping("/createInternship")
-    public ResponseEntity<Internship> createInternship(@RequestBody Internship internship, @RequestParam("userId") Long userId) {
+    @PostMapping("/createInternship/{userId}")
+    public ResponseEntity<Internship> createInternship(@PathVariable Long userId,@RequestBody Internship internship) {
         Internship createdInternship = internshipService.createInternship(userId,internship);
         return ResponseEntity.ok(createdInternship);
     }
@@ -56,6 +63,12 @@ public class InternshipRestController {
     @GetMapping("/getAllInternship")
     public List<Internship> getAllInternships() {
         return internshipService.getAllInternships();
+    }
+
+
+    @GetMapping("/test/{Id}")
+    public Set<Internship> recommandation(@PathVariable Long Id) {
+        return internshipService.recommendation(Id);
     }
 
     @PutMapping("/updateInternship/{internshipId}")
@@ -99,10 +112,11 @@ public class InternshipRestController {
         }
     }*/
 
-    @PostMapping("/addFile/{internshipId}")
-    public ResponseEntity<?> addFile(@PathVariable("internshipId") Long internshipId, @RequestParam("file") MultipartFile file) {
+    @PostMapping("/addFile/{internshipId}/{userId}")
+    public ResponseEntity<?> addFile(@PathVariable("internshipId") Long internshipId,@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
         try {
 
+            System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
             Internship internship = internshipService.getInternshipById(internshipId);
             if (internship == null) {
                 return ResponseEntity.notFound().build();
@@ -113,6 +127,9 @@ public class InternshipRestController {
             fileEntity.setContentType(file.getContentType());
             fileEntity.setData(file.getBytes());
             fileEntity.setInternship(internship); // Associer le stage au fichier
+            fileEntity.setUser(userservice.getUserById(userId));
+            System.out.println("aaaaaa"+fileEntity.toString());
+
             fileRepo.save(fileEntity);
 
             // Envoyer l'e-mail

@@ -43,6 +43,7 @@ public class Internship implements Serializable {
     private List<Filee> files = new ArrayList<>();
 
     @ManyToOne // Relation Many-to-One avec User
+    @JsonIgnore
     User user;
 
 

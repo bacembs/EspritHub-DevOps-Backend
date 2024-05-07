@@ -27,7 +27,7 @@ public class FreelanceJob implements Serializable {
     String skillsRequiredJob;
     String descriptionJob;
     Float budgetJob;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime deadlineJob;
     @JsonIgnore
     @ManyToOne

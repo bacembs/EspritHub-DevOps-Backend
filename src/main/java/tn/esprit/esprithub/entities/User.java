@@ -15,10 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serializable;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -101,10 +98,12 @@ public class User implements UserDetails, Principal {
     Set<FreelanceJob> jobs;
 
     @OneToMany(mappedBy = "user") // Relation One-to-Many avec Internship
+    @JsonIgnore
+
     Set<Internship> internships;
 
-    @OneToOne
-    Filee filee;
+    @OneToMany(mappedBy = "user")
+    List <Filee> filee;
 
     @Override
     //5tarna email houa identifier mta3 user

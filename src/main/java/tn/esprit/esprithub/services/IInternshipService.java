@@ -5,6 +5,7 @@ import tn.esprit.esprithub.entities.Internship;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface IInternshipService {
     Internship createInternship(Long userId,Internship internship);
@@ -27,6 +28,7 @@ public interface IInternshipService {
     void deleteFile(long fileId);
 
     List<Filee> getAllFiles();
+    public Set<Internship> recommendation (Long id);
 
     public void sendSimpleEmail(String toEmail,String subject,String body);
 }
