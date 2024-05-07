@@ -22,9 +22,13 @@ public class Reservation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long reservationId;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     LocalDateTime startDate;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     LocalDateTime endDate;
+
     Long nbPlayers =1L;
     @Enumerated(EnumType.STRING)
     Rstatus resStatus = Rstatus.pending;
