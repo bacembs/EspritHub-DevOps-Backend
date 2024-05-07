@@ -74,10 +74,6 @@ public class User implements UserDetails, Principal {
     @OneToMany(mappedBy = "users")
     Set<Complaint> complaints;
 
-    @ManyToOne
-    Internship internships;
-
-
     @OneToMany(mappedBy = "users")
     Set<Participants> participants;
 
@@ -104,6 +100,11 @@ public class User implements UserDetails, Principal {
     @OneToMany(mappedBy = "users")
     Set<FreelanceJob> jobs;
 
+    @OneToMany(mappedBy = "user") // Relation One-to-Many avec Internship
+    Set<Internship> internships;
+
+    @OneToOne
+    Filee filee;
 
     @Override
     //5tarna email houa identifier mta3 user

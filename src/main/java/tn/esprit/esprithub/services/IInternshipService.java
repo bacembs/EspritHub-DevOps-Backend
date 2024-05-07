@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface IInternshipService {
-    Internship createInternship(Internship internship);
+    Internship createInternship(Long userId,Internship internship);
 
     Internship getInternshipById(Long internshipId);
 

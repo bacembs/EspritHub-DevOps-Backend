@@ -34,7 +34,7 @@ public class InternshipService implements IInternshipService {
 
 
     @Override
-    public Internship createInternship(Internship internship) {
+    public Internship createInternship(Long userId,Internship internship) {
         return internshipRepository.save(internship);
     }
 

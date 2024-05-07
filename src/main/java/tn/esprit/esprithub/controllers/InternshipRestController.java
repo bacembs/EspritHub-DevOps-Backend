@@ -34,11 +34,12 @@ public class InternshipRestController {
         this.fileRepo = fileRepo;
         this.mailSender = mailSender;
 
+
     }
 
     @PostMapping("/createInternship")
-    public ResponseEntity<Internship> createInternship(@RequestBody Internship internship) {
-        Internship createdInternship = internshipService.createInternship(internship);
+    public ResponseEntity<Internship> createInternship(@RequestBody Internship internship, @RequestParam("userId") Long userId) {
+        Internship createdInternship = internshipService.createInternship(userId,internship);
         return ResponseEntity.ok(createdInternship);
     }
 

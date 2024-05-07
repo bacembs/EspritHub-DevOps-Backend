@@ -15,11 +15,10 @@ import java.util.List;
 public class FreelanceJobRestController {
     private IFreelanceJobService freelanceJobService;
 
-    @PostMapping("/addfreelance")
-    public FreelanceJob addFreelanceJob(@RequestBody FreelanceJob freelanceJob) {
-        return freelanceJobService.createFreelanceJob(freelanceJob);
+    @PostMapping("/addfreelance/{userId}")
+    public FreelanceJob addFreelanceJob(@PathVariable Long userId, @RequestBody FreelanceJob freelanceJob) {
+        return freelanceJobService.createFreelanceJob(userId, freelanceJob);
     }
-
     @PutMapping("/updatefreelance")
     public FreelanceJob updateFreelanceJob(@RequestBody FreelanceJob freelanceJob) {
         return freelanceJobService.updateFreelanceJob(freelanceJob);
