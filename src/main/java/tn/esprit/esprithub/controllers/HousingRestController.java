@@ -46,7 +46,7 @@ public class HousingRestController {
         return recommendHousing.recommendHousesNearUser(userAddress);
     }
 
-    public static String uploadDirectory = "C:\\Users\\HP\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\images";
+    public static String uploadDirectory = "C:\\Users\\Ines\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\images";
     @Autowired
     private IVisitRepository iVisitRepository;
     //System.getProperty("user.dir")+"/src/main/resources/static/images";
@@ -73,13 +73,17 @@ public class HousingRestController {
                               @RequestParam("locationHousing") String locationHousing,
                               @RequestParam("availabilityHousing") boolean availabilityHousing,
                               @RequestParam("priceHousing") float priceHousing,
-                              @RequestParam("images") List<MultipartFile> files) throws IOException {
+                              @RequestParam("images") List<MultipartFile> files,
+                              @RequestParam("userId") Long userId) throws IOException {
         Housing housing = new Housing();
         housing.setTypeHousing(typeHousing);
         housing.setDescriptionHousing(descriptionHousing);
         housing.setLocationHousing(locationHousing);
         housing.setAvailabilityHousing(availabilityHousing);
         housing.setPriceHousing(priceHousing);
+        User user=new User();
+        user.setUserId(userId);
+        housing.setOwner(user); // Set the user ID
 
         List<String> imageNames = new ArrayList<>();
         for (MultipartFile file : files) {
@@ -93,6 +97,7 @@ public class HousingRestController {
 
         return housingServices.addHousing(housing);
     }
+
 
 
 //    @PostMapping("/add")
@@ -176,7 +181,7 @@ public class HousingRestController {
     }
     @GetMapping("/availableTimeSlots/{housingId}")
     @ResponseBody
-    public List<String> getAvailableTimeSlotsForHousing(@PathVariable Long housingId){
+    public List<AvailabilityTimeSlot> getAvailableTimeSlotsForHousing(@PathVariable Long housingId){
         return housingServices.getAvailableTimeSlotsForHousing(housingId);
     }
     @GetMapping("/visits/{housingId}")

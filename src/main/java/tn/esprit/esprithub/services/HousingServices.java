@@ -109,22 +109,22 @@ public Housing updateHousing(Long id, Housing housing) {
 
 
 
-        public List<String> getAvailableTimeSlotsForHousing(Long housingId) {
-            Housing housing = housingRepository.findById(housingId)
-                    .orElse(null);
+    public List<AvailabilityTimeSlot> getAvailableTimeSlotsForHousing(Long housingId) {
+        Housing housing = housingRepository.findById(housingId)
+                .orElse(null);
 
+        List<AvailabilityTimeSlot> availabilityTimeSlots = housing.getAvailabilityTimeSlots();
 
-            List<AvailabilityTimeSlot> availabilityTimeSlots = housing.getAvailabilityTimeSlots();
-
-            // Convertir les objets AvailabilityTimeSlot en format de chaîne approprié
-            List<String> availableTimeSlots = new ArrayList<>();
-            for (AvailabilityTimeSlot timeSlot : availabilityTimeSlots) {
-                String slot = timeSlot.getStartTime() + " - " + timeSlot.getEndTime();
-                availableTimeSlots.add(slot);
-            }
-
-            return availableTimeSlots;
+        // Créer une nouvelle liste pour stocker les objets AvailabilityTimeSlot
+        List<AvailabilityTimeSlot> availableTimeSlots = new ArrayList<>();
+        for (AvailabilityTimeSlot timeSlot : availabilityTimeSlots) {
+            // Ajouter directement l'objet AvailabilityTimeSlot à la nouvelle liste
+            availableTimeSlots.add(timeSlot);
         }
+
+        return availableTimeSlots;
+    }
+
 
     @Override
     public void addAvailabilityTimeSlotsToHousing(Long housingId, AvailabilityTimeSlot timeSlot) {

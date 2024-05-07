@@ -1,9 +1,11 @@
 package tn.esprit.esprithub.controllers;
 
+import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.esprithub.entities.AvailabilityTimeSlot;
 import tn.esprit.esprithub.entities.Housing;
@@ -18,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/Visit")
 @RestController
-@CrossOrigin("*")
+
 public class VisitRestController {
 
     @Autowired
@@ -26,9 +28,9 @@ public class VisitRestController {
 
 
 
-    @PostMapping("/add")
-    public Visit addHousing(@RequestBody Visit visit){
-        return visitServices.addVisit(visit);
+    @PostMapping("/add/{id}")
+    public Visit addHousing(@PathVariable Long id,@RequestBody Visit visit){
+        return visitServices.addVisit(id,visit);
     }
     @GetMapping("/getById/{id}")
     public Visit getById(@PathVariable Long id) {
@@ -62,5 +64,9 @@ public class VisitRestController {
     public List<AvailabilityTimeSlot> getAvailableTimeSlotsWithoutVisitOverlap(@PathVariable Long idhousing){
         return  visitServices.getAvailableTimeSlotsForHousing(idhousing);
     }
-
+    @PostMapping("/create/{timeSlotId}/{housingId}")
+    public Visit createVisitFromTimeSlotAndHousing(@PathVariable Long timeSlotId, @PathVariable Long housingId) {
+        Visit visit = visitServices.createVisitFromTimeSlotAndHousing(timeSlotId, housingId);
+        return  visit;
+    }
 }

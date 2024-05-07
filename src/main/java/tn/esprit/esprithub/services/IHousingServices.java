@@ -14,7 +14,7 @@ public interface IHousingServices {
      Housing upHousing(Housing housing);
      int getHousingWithOwnerPhoneNumber(Long id);
      void addAvailabilityTimeSlotsToHousing(Long housingId, List<AvailabilityTimeSlot> timeSlots);
-     List<String> getAvailableTimeSlotsForHousing(Long housingId);
+    List<AvailabilityTimeSlot> getAvailableTimeSlotsForHousing(Long housingId);
     void addAvailabilityTimeSlotsToHousing(Long housingId,AvailabilityTimeSlot timeSlot);
     List<Housing> getHousingsByOwnerId(Long ownerId);
 }

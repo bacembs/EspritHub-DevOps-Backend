@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import tn.esprit.esprithub.entities.AvailabilityTimeSlot;
 import tn.esprit.esprithub.entities.Housing;
 import tn.esprit.esprithub.entities.Visit;
+import tn.esprit.esprithub.repositories.IAvailabilityTimeSlotRepository;
 import tn.esprit.esprithub.repository.IHousingRepository;
 import tn.esprit.esprithub.repositories.IVisitRepository;
 
@@ -21,24 +22,25 @@ public class VisitServices {
     private IVisitRepository iVisitRepository;
     private IHousingServices iHousingServices;
     private IHousingRepository iHousingRepository;
+    private IAvailabilityTimeSlotRepository iAvailabilityTimeSlotRepository;
 
-
-    public Visit addVisit(Visit visit){
-
+    public Visit addVisit(Long housingId, Visit visit) {
         // Récupérer le logement correspondant à partir de son ID
-        Optional<Housing> housingOptional = iHousingRepository.findById(visit.getHousing().getHousingID());
+        Optional<Housing> housingOptional = iHousingRepository.findById(housingId);
         if (housingOptional.isPresent()) {
             Housing housing = housingOptional.get();
             // Associer la visite au logement
             visit.setHousing(housing);
-            {if (visit.getEndDateTime() == null) {
+            if (visit.getEndDateTime() == null) {
                 // Si l'heure de fin n'est pas spécifiée, définir une valeur par défaut de startTime + 59 minutes
                 LocalDateTime endDateTime = visit.getStartDateTime().plusMinutes(59);
-                visit.setEndDateTime(endDateTime);}
+                visit.setEndDateTime(endDateTime);
             }
             return iVisitRepository.save(visit);
-    }return null;
+        }
+        return null;
     }
+
     public void deleteVisit(Long id){
          iVisitRepository.deleteById(id);
     }
@@ -183,6 +185,18 @@ public class VisitServices {
     }
     public List<Visit> getVisitsByHousingId(Long housingId) {
         return iVisitRepository.findVisitByHousing_HousingID(housingId);
+    }
+    public Visit createVisitFromTimeSlotAndHousing(Long timeSlotId, Long housingId) {
+        AvailabilityTimeSlot timeSlot = iAvailabilityTimeSlotRepository.findById(timeSlotId).orElse(null);
+        Housing housing = iHousingRepository.findById(housingId).orElse(null);
+
+        Visit visit = new Visit();
+        visit.setStartDateTime(timeSlot.getStartTime());
+        visit.setEndDateTime(timeSlot.getEndTime());
+        visit.setHousing(housing);
+        visit.setDescription("");
+
+        return iVisitRepository.save(visit);
     }
 
 

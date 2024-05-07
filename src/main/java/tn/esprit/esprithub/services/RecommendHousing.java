@@ -39,7 +39,7 @@ public class RecommendHousing {
         List<Housing> allHouses = ihousingRepository.findAll();
         List<Housing> recommendedHouses = new ArrayList<>();
         DistanceCalculator distanceCalculator = new DistanceCalculator();
-        double maxDistance = 5.0; // Distance maximale en kilomètres
+        double maxDistance = 20.0; // Distance maximale en kilomètres
 log.info("max dis");
         for (int i=0;i<allHouses.size();i++){//(Housing housing : allHouses) {
             log.info("if");

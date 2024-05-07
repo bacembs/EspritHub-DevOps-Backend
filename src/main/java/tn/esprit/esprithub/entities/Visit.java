@@ -1,5 +1,6 @@
 package tn.esprit.esprithub.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,7 +23,9 @@ public class Visit implements Serializable {
 
 
      String description;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
      LocalDateTime startDateTime; // Date et heure de début de la visite
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
      LocalDateTime endDateTime;
 
     @ManyToOne

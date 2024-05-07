@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IVisitServices {
-    Visit addVisit(Visit housing);
+    Visit addVisit(Long idHousing,Visit housing);
     void deleteVisit(Long id);
     Visit updateVisit(Long id, Visit visit);
     Visit getById(Long id);
@@ -18,6 +18,7 @@ public interface IVisitServices {
     //List<AvailabilityTimeSlot> findAvailableTimeSlotsForVisit(Long idvisit, Long idhousing);
      List<AvailabilityTimeSlot> getAvailableTimeSlotsWithoutVisitOverlap(Long housingId);
     List<Visit> getVisitsByHousingId(Long housingId);
+    Visit createVisitFromTimeSlotAndHousing(Long timeSlotId, Long housingId);
 
 
 }

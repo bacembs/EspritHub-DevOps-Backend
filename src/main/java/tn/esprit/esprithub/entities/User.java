@@ -107,7 +107,7 @@ public class User implements UserDetails, Principal {
     @OneToMany(mappedBy = "users")
     Set<FreelanceJob> jobs;
     @JsonBackReference
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Housing> ownedHousing;
 
     @ManyToMany(mappedBy = "renters")
