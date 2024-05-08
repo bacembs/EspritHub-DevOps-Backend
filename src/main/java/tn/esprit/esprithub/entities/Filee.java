@@ -33,5 +33,8 @@ public class Filee  {
     @JsonIgnore
     private Internship internship;
 
+    @JsonIgnore
+    @ManyToOne
+    User user;
 
 }

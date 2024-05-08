@@ -5,7 +5,8 @@ import tn.esprit.esprithub.entities.FreelanceJob;
 import java.util.List;
 
 public interface IFreelanceJobService {
-    FreelanceJob createFreelanceJob(FreelanceJob freelanceJob);
+    FreelanceJob createFreelanceJob(Long userId,FreelanceJob freelanceJob);
+
 
     FreelanceJob getFreelanceJobById(Long jobId);
 

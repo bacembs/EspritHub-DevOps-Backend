@@ -45,12 +45,12 @@ public class esprithubApplication {
         urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
         return new CorsFilter(urlBasedCorsConfigurationSource);
     }*/
-    @EventListener(ApplicationReadyEvent.class)
+  /*  @EventListener(ApplicationReadyEvent.class)
     public void triggerMail() throws MessagingException {
         internshipService.sendSimpleEmail("arij.khedhira@esprit.tn",
                 "This is email body",
                 "This is email subject");
-    }
+    }*/
 
     @Bean
     public RestTemplate restTemplate() {

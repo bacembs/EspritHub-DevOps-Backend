@@ -1,6 +1,7 @@
 package tn.esprit.esprithub.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +29,7 @@ public class Internship implements Serializable {
     String locationInternship;
     String skillsRequiredInternship;
     String responsibilitiesInternship;
-
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime deadlineInternship;
     String toEmail;
     String subject;
@@ -36,11 +37,15 @@ public class Internship implements Serializable {
 
 
 
-    @OneToMany(mappedBy = "internships")
-    Set<User> users;
+
 
     @OneToMany(mappedBy = "internship", cascade = CascadeType.ALL)
     private List<Filee> files = new ArrayList<>();
+
+    @ManyToOne // Relation Many-to-One avec User
+    @JsonIgnore
+    User user;
+
 
     public void setFiles() {
         this.files = files;

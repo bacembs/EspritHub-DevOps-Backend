@@ -7,11 +7,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tn.esprit.esprithub.entities.Filee;
 import tn.esprit.esprithub.entities.Internship;
+import tn.esprit.esprithub.entities.User;
 import tn.esprit.esprithub.repository.FileRepository;
 import tn.esprit.esprithub.repository.InternshipRepository;
+import tn.esprit.esprithub.repository.UserRepository;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class InternshipService implements IInternshipService {
@@ -21,6 +22,8 @@ public class InternshipService implements IInternshipService {
 
     @Autowired
     FileRepository fileRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     public InternshipService(InternshipRepository internshipRepository) {
@@ -34,7 +37,12 @@ public class InternshipService implements IInternshipService {
 
 
     @Override
-    public Internship createInternship(Internship internship) {
+    public Internship createInternship(Long userId, Internship internship) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return null;
+        }
+        internship.setUser(user);
         return internshipRepository.save(internship);
     }
 
@@ -95,6 +103,39 @@ public class InternshipService implements IInternshipService {
         System.out.println("Mail Send...");
 
     }
+    @Override
+
+    public Set<Internship> recommendation(Long id) {
+        List<Filee> listFilee = fileRepository.findByUserUserId(id);
+        List<Internship> listInternship = internshipRepository.findAll();
+        Set<Internship> apt = new HashSet<>(); // Utiliser HashSet pour le set
+
+        for (Filee file : listFilee) {
+            String[] skillsFile = file.getInternship().getSkillsRequiredInternship().split(", "); // Supposons que les compétences requises pour un fichier soient stockées dans un champ différent
+            for (Internship internship : listInternship) {
+                String[] skillsInternship = internship.getSkillsRequiredInternship().split(", ");
+                for (String skillFile : skillsFile) {
+                    for (String skillInternship : skillsInternship) {
+                        if (skillInternship.equals(skillFile)) {
+                            apt.add(internship);
+                            break; // Sortez de la boucle interne car nous avons trouvé une correspondance
+                        }
+                    }
+                }
+            }
+        }
+        for (Filee file : listFilee) {
+            Internship internship = file.getInternship();
+            if (apt.contains(internship)) {
+                apt.remove(internship);
+            }
+        }
+
+        return apt;
+    }
+
+
+
 
 
 }
