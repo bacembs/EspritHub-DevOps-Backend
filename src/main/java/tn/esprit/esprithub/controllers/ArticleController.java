@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.esprithub.entities.Article;
 import tn.esprit.esprithub.entities.Mycategory;
 import tn.esprit.esprithub.entities.Mycondition;
+import tn.esprit.esprithub.entities.User;
 import tn.esprit.esprithub.repository.ArticleRepository;
 import tn.esprit.esprithub.services.ArticleServices;
 import java.io.IOException;
@@ -43,15 +44,15 @@ ArticleController {
     }*/
 
 
+    // controller
     @PostMapping("/addArticle")
     public ResponseEntity<String> addArticle(@RequestParam("descriptionArticle") String description,
                                              @RequestParam("category") Mycategory categories,
                                              @RequestParam("nameArticle") String name,
                                              @RequestParam("priceArticle") float prix,
                                              @RequestParam("conditionArticle") Mycondition etat,
-                                             @RequestParam("imgArticle") MultipartFile photoFile) {
-
-        Long userId = 2L;
+                                             @RequestParam("imgArticle") MultipartFile photoFile,
+                                             @RequestParam("userId") Long userId) {
 
         Article article = new Article();
         article.setDescriptionArticle(description);
@@ -60,10 +61,16 @@ ArticleController {
         article.setConditionArticle(etat);
         article.setNameArticle(name);
 
+
+        User user = new User();
+        user.setUserId(userId);
+        article.setUsers(user);
+
         articleServices.addArticleWithPhoto(userId, article, photoFile);
 
         return ResponseEntity.ok("Article ajouté avec succès");
     }
+
 
 
 
@@ -86,9 +93,24 @@ ArticleController {
     }
     private final String uploadPath = "C:\\Users\\HP\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
 
+    @GetMapping("/a/{userId}")
+    public ResponseEntity<List<Article>> getAllArticles(@PathVariable Long userId) {
+        List<Article> articles = articleServices.getArticless(userId);
+        for (Article article : articles) {
+            String imagePath = uploadPath + article.getImgArticle();
+            try {
+                byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
+                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                article.setImgArticle(base64Image);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return ResponseEntity.ok(articles);
+    }
     @GetMapping("/ar")
     public ResponseEntity<List<Article>> getAllArticles() {
-        List<Article> articles = articleServices.getAllArticles();
+        List<Article> articles = articleServices.getAll();
         for (Article article : articles) {
             String imagePath = uploadPath + article.getImgArticle();
             try {
@@ -110,7 +132,7 @@ ArticleController {
                                                 @RequestParam("category") Mycategory categories,
                                                 @RequestParam("priceArticle") float prix,
                                                 @RequestParam("conditionArticle") Mycondition etat,
-                                                @RequestParam("imgArticle") MultipartFile photoFile) {
+                                                @RequestParam(value = "imgArticle", required = false) MultipartFile photoFile) {
         Article article = articleServices.getArticleById(id);
         if (article == null) {
             return ResponseEntity.notFound().build();
@@ -197,10 +219,13 @@ ArticleController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/all")
+   /* @GetMapping("/all")
     public List<Article> getAll(){
         return articleServices.getAll();
-    }
+    }*/
 
-
+@GetMapping("articlesByuser/{userId}")
+public List<Article> findByUserId(@PathVariable Long userId){
+        return articleServices.getByUserId(userId);
+}
 }

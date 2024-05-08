@@ -22,14 +22,15 @@ public interface IArticleServices {
     public Float findMaxPrice();
     public Float findMinPrice();
 
-    public List<Article> getAll();
+    public List<Article> getArticless(long user);
 
     public Article getById(Long idArticle);
 
     public List<Object[]> getCategoriesCount();
-
+    public List<Article> getAll();
     public List<Object[]> countByCondition();
     public List<Object[]> countByCategoryAndCondition();
 
+    List<Article> getByUserId(Long userId);
 }
 

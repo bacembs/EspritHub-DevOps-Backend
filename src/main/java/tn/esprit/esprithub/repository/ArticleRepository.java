@@ -27,9 +27,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Float findMinPrice();
     @Query("SELECT a FROM Article a WHERE a.priceArticle = :price")
     List<Article> findByPriceArticle(@Param("price") Float price);
-   /*@Query("SELECT a FROM Article a WHERE a.priceArticle >= :minPrice AND a.priceArticle <= :maxPrice")
-   List<Article> findByPriceArticle(@Param("minPrice") Float minPrice, @Param("maxPrice") Float maxPrice);*/
-
 
 
 
@@ -57,10 +54,15 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
 
 
+    @Query("select a from Article a where a.users.userId=:id")
+    public List<Article> getByUserId(@Param("id") long user);
 
 
 
 
+
+    @Query("select a from Article a where a.users.userId !=:id")
+    public List<Article> getArticless(@Param("id") long user);
 
 
 }
