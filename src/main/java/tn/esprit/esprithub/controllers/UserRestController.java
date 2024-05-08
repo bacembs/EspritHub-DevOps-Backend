@@ -36,4 +36,13 @@ public class UserRestController {
     public User getbyuser(@RequestBody User user){
         return userService.getByNom(user.getUsername());
     }
+    @GetMapping("/users/{userId}")
+    public String getUserAddress(@PathVariable Long userId) {
+        // Récupérer l'adresse du user à partir de son ID
+        String address = userService.getUserAddressById(userId);
+
+
+            return address;
+
+    }
 }

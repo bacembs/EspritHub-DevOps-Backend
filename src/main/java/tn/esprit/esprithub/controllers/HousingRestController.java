@@ -171,14 +171,14 @@ public class HousingRestController {
         // Save the updated existing housing
         return housingServices.upHousing(existingHousing);
     }
-    @PostMapping("/housing/{housingId}/addTimeSlots")
+    @PostMapping("/housing/addTimeSlot/{housingId}")
     public void addAvailabilityTimeSlotsToHousing(@PathVariable Long housingId, @RequestBody List<AvailabilityTimeSlot> timeSlots) {
         housingServices.addAvailabilityTimeSlotsToHousing(housingId, timeSlots);
     }
-    @PostMapping("/housing/addTimeSlot/{housingId}")
-    public void addAvailabilityTimeSlotToHousing(@PathVariable Long housingId, @RequestBody AvailabilityTimeSlot timeSlot) {
-        housingServices.addAvailabilityTimeSlotToHousing(housingId, timeSlot);
-    }
+//    @PostMapping("/housing/addTimeSlot/{housingId}")
+//    public void addAvailabilityTimeSlotToHousing(@PathVariable Long housingId, @RequestBody AvailabilityTimeSlot timeSlot) {
+//        housingServices.addAvailabilityTimeSlotToHousing(housingId, timeSlot);
+//    }
     @GetMapping("/availableTimeSlots/{housingId}")
     @ResponseBody
     public List<AvailabilityTimeSlot> getAvailableTimeSlotsForHousing(@PathVariable Long housingId){
