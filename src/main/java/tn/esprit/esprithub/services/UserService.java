@@ -62,5 +62,13 @@ public class UserService implements IUserService {
     public User getByNom(String nomuser) {
         return userRepository.findByUsername(nomuser);
     }
+    public String getUserAddressById(Long userId) {
+        // Utilisez le repository pour récupérer les informations du user à partir de son ID
+        User user = userRepository.findById(userId).orElse(null);
+
+
+            return user.getAdresse(); // Supposons que l'adresse du user est stockée dans un champ appelé "address"
+
+    }
     
 }
