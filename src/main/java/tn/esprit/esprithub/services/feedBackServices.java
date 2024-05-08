@@ -77,7 +77,7 @@ public class feedBackServices implements IfeedBackServices {
                 diffDays = (int) period;
                 if(f.getCommentFeedback().contains("***") ){
                     if( diffDays >= 0 && diffDays <= 30){
-                        bannedUser banned = new bannedUser(t.getUsers().getUsername(),t.getTransactionId(),f);
+                        bannedUser banned = new bannedUser(t.getUsers().getEmail(),t.getTransactionId(),f);
                         bannedlist.add(banned);
 
                     }
