@@ -3,6 +3,7 @@ package tn.esprit.esprithub.services;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import tn.esprit.esprithub.entities.Mycategory;
 import tn.esprit.esprithub.entities.Mycondition;
 import tn.esprit.esprithub.entities.User;
 import tn.esprit.esprithub.repository.ArticleRepository;
+import tn.esprit.esprithub.repository.UserRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,14 +29,12 @@ import java.util.stream.Collectors;
 @Service
 public class ArticleServices implements IArticleServices {
     private ArticleRepository articlerepos;
+    private UserRepository userrepos;
+
 
     @Override
     public void addArticleWithPhoto(Long userId, Article article, MultipartFile photoFile) {
         String uploadPath = "C:\\Users\\Nouhe\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
-
-        User user = new User();
-        user.setUserId(1L);
-
 
         try {
             byte[] bytes = photoFile.getBytes();
@@ -42,13 +42,13 @@ public class ArticleServices implements IArticleServices {
             Path path = Paths.get(uploadPath + fileName);
             Files.write(path, bytes);
             article.setImgArticle(fileName);
-            article.setUsers(user);
 
             articlerepos.save(article);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
 
     @Override
@@ -137,9 +137,14 @@ public class ArticleServices implements IArticleServices {
     }
 
     @Override
-    public List<Article> getAll() {
+    public List<Article> getArticless(long user){
+        return (List< Article >) articlerepos.getArticless(user);
+    }
+    @Override
+    public List<Article> getAll(){
         return (List< Article >) articlerepos.findAll();
     }
+
 
     @Override
     public Article getById(Long idArticle) {
@@ -147,5 +152,8 @@ public class ArticleServices implements IArticleServices {
 
     }
 
-
+@Override
+ public List<Article> getByUserId(Long userId){
+        return articlerepos.getByUserId(userId);
+}
 }

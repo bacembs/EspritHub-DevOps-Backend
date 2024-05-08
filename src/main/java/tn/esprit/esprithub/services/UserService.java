@@ -43,7 +43,7 @@ public class UserService implements IUserService {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            return user.getFirstName() + " " + user.getLastName() +" "+ user.getUserId();
+            return user.getFirstName() + " " + user.getLastName() ;
         }
         return "";
     }
