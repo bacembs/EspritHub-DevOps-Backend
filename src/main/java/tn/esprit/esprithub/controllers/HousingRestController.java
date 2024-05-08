@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @RequestMapping("/Housing")
@@ -46,7 +47,7 @@ public class HousingRestController {
         return recommendHousing.recommendHousesNearUser(userAddress);
     }
 
-    public static String uploadDirectory = "C:\\Users\\Ines\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\images";
+    public static String uploadDirectory = "C:\\Users\\HP\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
     @Autowired
     private IVisitRepository iVisitRepository;
     //System.getProperty("user.dir")+"/src/main/resources/static/images";
@@ -133,6 +134,22 @@ public class HousingRestController {
 
     @GetMapping("/all")
     public List<Housing> getAll() {
+
+        for (Housing housing : housingServices.getAll()) {
+            String imagePath = uploadDirectory + housing.getImages().get(0);
+            List<String> list = new ArrayList<>();
+            try {
+                byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
+                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                list.add(base64Image);
+                System.out.println(base64Image);
+                housing.setImages(list);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
         return housingServices.getAll();
     }
     @GetMapping("/phone/{id}")
