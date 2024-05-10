@@ -44,6 +44,20 @@ public class HousingRestController {
 
     @GetMapping("/recommend-houses")
     public List<Housing> recommendHousesForUser(@RequestParam String userAddress) {
+
+        for (Housing housing : recommendHousing.recommendHousesNearUser(userAddress)) {
+            String imagePath = uploadDirectory + housing.getImages().get(0);
+            List<String> list = new ArrayList<>();
+            try {
+                byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
+                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                list.add(base64Image);
+                System.out.println(base64Image);
+                housing.setImages(list);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return recommendHousing.recommendHousesNearUser(userAddress);
     }
 
@@ -124,7 +138,21 @@ public class HousingRestController {
 
     @GetMapping("/get/{idHousing}")
     public Housing getHousing(@PathVariable Long idHousing) {
-        return housingServices.getById(idHousing);
+        Housing housing =housingServices.getById(idHousing);
+            String imagePath = uploadDirectory + housing.getImages().get(0);
+            List<String> list = new ArrayList<>();
+            try {
+                byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
+                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                list.add(base64Image);
+                System.out.println(base64Image);
+                housing.setImages(list);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        return housing;
     }
 
     @DeleteMapping("/delete/{idHousing}")
@@ -203,11 +231,27 @@ public class HousingRestController {
     }
     @GetMapping("/visits/{housingId}")
     public ResponseEntity<List<Visit>> getVisitsByHousingId(@PathVariable Long housingId) {
+
         List<Visit> visits = visitServices.getVisitsByHousingId(housingId);
         return ResponseEntity.ok(visits);
     }
     @GetMapping("/housingsByOwner/{ownerId}")
     public List<Housing> getHousingsByOwner(@PathVariable Long ownerId) {
+
+        for (Housing housing : housingServices.getHousingsByOwnerId(ownerId)) {
+            String imagePath = uploadDirectory + housing.getImages().get(0);
+            List<String> list = new ArrayList<>();
+            try {
+                byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
+                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                list.add(base64Image);
+                System.out.println(base64Image);
+                housing.setImages(list);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         return housingServices.getHousingsByOwnerId(ownerId);
     }
 
