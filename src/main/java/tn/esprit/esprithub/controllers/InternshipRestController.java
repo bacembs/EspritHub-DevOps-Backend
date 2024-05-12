@@ -134,8 +134,8 @@ public class InternshipRestController {
 
             // Envoyer l'e-mail
             String toEmail = "destinataire@example.com";
-            String subject = "Nouveau fichier téléchargé";
-            String body = "Un nouveau fichier a été téléchargé.";
+            String subject = "Nouveau fichier téléchargé     ";
+            String body = "Un nouveau fichier a été téléchargé. voici le lien rejoudre le pour faire un entretien  http://localhost:4200/internshipRoom/1";
 
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom("arij.khedhira@esprit.tn");
