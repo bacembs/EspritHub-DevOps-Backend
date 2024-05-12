@@ -138,7 +138,9 @@ public class ArticleServices implements IArticleServices {
 
     @Override
     public List<Article> getArticless(long user){
-        return (List< Article >) articlerepos.getArticless(user);
+        return (List< Article >) articlerepos.getArticless(user).stream()
+                .filter(article -> article.getTransactions() == null || article.getTransactions().getTransactionId() == null)
+                .collect(Collectors.toList());
     }
     @Override
     public List<Article> getAll(){

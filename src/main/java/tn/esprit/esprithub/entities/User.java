@@ -1,6 +1,7 @@
 package tn.esprit.esprithub.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -54,9 +55,13 @@ public class User implements UserDetails, Principal {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+
     private LocalDateTime createdDate;
     @LastModifiedDate
     @Column(insertable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+
     private LocalDateTime lastModifiedDate;
 
     @JsonIgnore
