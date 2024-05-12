@@ -91,7 +91,7 @@ ArticleController {
     public List<String> getConditions() {
         return Arrays.asList("Good", "Fair", "Damaged");
     }
-    private final String uploadPath = "C:\\Users\\HP\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
+    private final String uploadPath = "./src/main/resources/static/photos/";
 
     @GetMapping("/a/{userId}")
     public ResponseEntity<List<Article>> getAllArticles(@PathVariable Long userId) {

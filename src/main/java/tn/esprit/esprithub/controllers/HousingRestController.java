@@ -61,7 +61,7 @@ public class HousingRestController {
         return recommendHousing.recommendHousesNearUser(userAddress);
     }
 
-    public static String uploadDirectory = "C:\\Users\\HP\\IdeaProjects\\EspritHub\\src\\main\\resources\\static\\photos\\";
+    public static String uploadDirectory = "./src/main/resources/static/photos/";
     @Autowired
     private IVisitRepository iVisitRepository;
     //System.getProperty("user.dir")+"/src/main/resources/static/images";
