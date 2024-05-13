@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 import java.util.List;
 @AllArgsConstructor
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "*")
 @RequestMapping("/SportTeam")
 public class SportTeamRestController {
     private ISportTeamService sportTeamService;

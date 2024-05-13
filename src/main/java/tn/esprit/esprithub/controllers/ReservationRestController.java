@@ -17,7 +17,7 @@ import java.util.Set;
 
 @AllArgsConstructor
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "*")
 @RequestMapping("/Reservation")
 public class ReservationRestController {
     private IReservationService reservationService;

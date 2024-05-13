@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/freelance")
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "*")
 public class FreelanceJobRestController {
     private IFreelanceJobService freelanceJobService;
 

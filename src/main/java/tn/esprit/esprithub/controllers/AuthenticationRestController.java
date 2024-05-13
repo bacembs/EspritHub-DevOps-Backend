@@ -16,7 +16,7 @@ import tn.esprit.esprithub.services.AuthenticationService;
 @RequestMapping("auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication")
-@CrossOrigin(origins = "**")
+//@CrossOrigin(origins = "**")
 public class AuthenticationRestController {
 
     private final AuthenticationService service;

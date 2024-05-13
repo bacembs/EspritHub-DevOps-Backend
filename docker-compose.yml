@@ -39,7 +39,7 @@ services:
 
   bee-ui:
     container_name: frontpi
-    build: C:\ESPRIT\Arctic\PI\frontPi
+    build: G:\Esprit\PiFront\frontPi
     ports:
       - "4200:80"  # Mapping port 80 of the container to port 4200 of the host
 

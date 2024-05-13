@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import tn.esprit.esprithub.services.WeatherService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "*")
 @RequestMapping("/weather")
 public class WeatherController {
 

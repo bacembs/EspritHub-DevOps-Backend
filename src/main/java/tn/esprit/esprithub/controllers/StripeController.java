@@ -14,7 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api")
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "*")
 public class StripeController {
 
     // create a Gson object
