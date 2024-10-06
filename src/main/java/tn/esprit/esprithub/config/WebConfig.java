@@ -7,12 +7,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-//   @Override
-//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry.addResourceHandler("/photos/**")
-//             //   .addResourceLocations("file:C:/Users/HP/IdeaProjects/EspritHub/src/main/resources/static/photos/");
-//                .addResourceLocations("file:C:/Users/Nouhe/IdeaProjects/EspritHub/src/main/resources/static/photos/");
-//   }
+
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -24,6 +19,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .maxAge(3600);
     }
 
+    //   @Override
+//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        registry.addResourceHandler("/photos/**")
+//             //   .addResourceLocations("file:C:/Users/HP/IdeaProjects/EspritHub/src/main/resources/static/photos/");
+//                .addResourceLocations("file:C:/Users/Nouhe/IdeaProjects/EspritHub/src/main/resources/static/photos/");
+//   }
 }
 
 
