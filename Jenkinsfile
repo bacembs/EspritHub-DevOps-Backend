@@ -10,13 +10,18 @@ pipeline {
 
         stage('Checkout') {
             steps {
-
-                git branch: 'bacem', url: 'https://github.com/Devops-5Arctic/backend'
+                script {
+                    // Checkout the Backend-Pi repository with credentials
+                    git branch: 'bacem',
+                        url: 'https://github.com/Devops-5Arctic/Backend-Pi',
+                        credentialsId: 'github-credentials'
+                }
             }
         }
 
         stage('Build') {
             steps {
+                // Clean and install the application
                 sh 'mvn clean install'
             }
         }
@@ -39,6 +44,7 @@ pipeline {
             steps {
                 // Placeholder for deployment steps
                 echo 'Deploying the project...'
+                // You can add actual deployment commands here
             }
         }
     }
