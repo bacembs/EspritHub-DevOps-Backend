@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
 
-                git branch: 'bacem', url: 'https://github.com/Devops-5Arctic/backend'
+                git branch: 'bacem', url: 'https://github.com/Devops-5Arctic/Backend-Pi'
             }
         }
 
