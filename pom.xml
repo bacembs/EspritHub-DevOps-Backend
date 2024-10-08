@@ -146,7 +146,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>EspritHub</finalName>
+        <finalName>5ARCTIC3-G1-EspritHub</finalName>
     </build>
 
 </project>
