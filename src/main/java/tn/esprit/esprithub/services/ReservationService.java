@@ -37,6 +37,7 @@ public class ReservationService implements IReservationService{
     @Autowired
     private WeatherService weatherService;
 
+
     @Override
     @Scheduled(cron = "0 0 1 * * *")
     public void cancelReservationsForToday() {

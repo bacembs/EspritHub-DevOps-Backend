@@ -1,2 +1,4 @@
-/home/bacembensoltana/backend-pi/Backend-Pi/src/test/java/tn/esprit/esprithub/services/SportTeamServiceTest.java
-/home/bacembensoltana/backend-pi/Backend-Pi/src/test/java/tn/esprit/esprithub/services/ReservationServiceTest.java
+/home/bacembensoltana/DevOpsGroup1/5ARCTIC3-G1-EspritHub/src/test/java/tn/esprit/esprithub/services/ReservationServiceMockitoTest.java
+/home/bacembensoltana/DevOpsGroup1/5ARCTIC3-G1-EspritHub/src/test/java/tn/esprit/esprithub/services/ReservationServiceTest.java
+/home/bacembensoltana/DevOpsGroup1/5ARCTIC3-G1-EspritHub/src/test/java/tn/esprit/esprithub/services/SportTeamServiceTest.java
+/home/bacembensoltana/DevOpsGroup1/5ARCTIC3-G1-EspritHub/src/test/java/tn/esprit/esprithub/services/ReservationServiceJUnitTest.java
