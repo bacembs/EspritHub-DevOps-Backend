@@ -157,11 +157,11 @@
     <distributionManagement>
         <repository>
             <id>nexus-releases</id>
-            <url>http://nexus:8081/repository/maven-releases/</url>
+            <url>http://nexus:8081/repository/maven-releases-esprithub/</url>
         </repository>
         <snapshotRepository>
             <id>nexus-snapshots</id>
-            <url>http://nexus:8081/repository/maven-snapshots/</url>
+            <url>http://nexus:8081/repository/maven-snapshots-esprithub/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
