@@ -1,50 +1,51 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  mysql_db:
-    image: mysql
+  sonarqube:
+    image: sonarqube
+    container_name: sonarqube
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ""
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_DATABASE: "esprithub"
+      - SONAR_JDBC_URL=jdbc:postgresql://postgres:5432/sonar
+      - SONAR_JDBC_USERNAME=sonar
+      - SONAR_JDBC_PASSWORD=sonar
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
     ports:
-      - "3306:3306"
+      - "9000:9000"
     volumes:
-      - db:/var/lib/mysql
+      - sonarqube-extensions:/opt/sonarqube/extensions
+      - sonarqube-logs:/opt/sonarqube/logs
 
-  app:
-    build: .
-    depends_on:
-      - mysql_db
-    restart: on-failure
-    ports:
-      - "8080:8089"
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: unless-stopped
     environment:
-      SPRING_APPLICATION_JSON: '{
-        "spring.datasource.url"  : "jdbc:mysql://mysql_db:3306/esprithub?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC",
-        "spring.datasource.username" : "root",
-        "spring.datasource.password" : "",
-        "spring.jpa.show-sql": "true",
-        "spring.jpa.hibernate.ddl-auto" : "update",
-        "server.servlet.context-path": "/projectARCTIC3",
-        "server.port": "8089"
-      }'
+      - POSTGRES_DB=sonar
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
     volumes:
-      - .m2:/root/.m2
-      - .:/workdir/server/src
-      - ./src/main/resources/application.yml:/workdir/server/src/main/resources/application.yml
-    stdin_open: true
-    tty: true
+      - postgres-data:/var/lib/postgresql/data
 
-  bee-ui:
-    container_name: frontpi
-    build: G:\Esprit\PiFront\frontPi
+  nexus:
+    image: sonatype/nexus3
+    container_name: nexus
+    restart: unless-stopped
     ports:
-      - "4200:80"  # Mapping port 80 of the container to port 4200 of the host
-
-    depends_on:
-      - app
+      - "8081:8081"
+    volumes:
+      - nexus-data:/nexus-data
+    environment:
+      - NEXUS_SECURITY_RANDOMPASSWORD=false # Disable random password for admin
+      - NEXUS_ADMIN_PASSWORD=admin123 # Set admin password
+      - NEXUS_CONTEXT_PATH=/nexus
 
 volumes:
-  db:
+  sonarqube-extensions:
+    driver: local
+  sonarqube-logs:
+    driver: local
+  postgres-data:
+    driver: local
+  nexus-data:
+    driver: local
