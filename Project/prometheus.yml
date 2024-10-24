@@ -1,0 +1,14 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']  # Prometheus itself
+
+
+  - job_name: 'project_app'
+    metrics_path: '/projectARCTIC3/actuator/metrics'  # Specify the metrics path
+    static_configs:
+      - targets: ['project_app_1:8089']  # Change this if your app runs on a different port or in a different network

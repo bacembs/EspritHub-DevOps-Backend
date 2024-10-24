@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  sonarqube:
+    image: sonarqube
+    container_name: sonarqube
+    restart: unless-stopped
+    environment:
+      - SONAR_JDBC_URL=jdbc:postgresql://postgres:5432/sonar
+      - SONAR_JDBC_USERNAME=sonar
+      - SONAR_JDBC_PASSWORD=sonar
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube-extensions:/opt/sonarqube/extensions
+      - sonarqube-logs:/opt/sonarqube/logs
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=sonar
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  nexus:
+    image: sonatype/nexus3
+    container_name: nexus
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    volumes:
+      - nexus-data:/nexus-data
+    environment:
+      - NEXUS_SECURITY_RANDOMPASSWORD=false # Disable random password for admin
+      - NEXUS_ADMIN_PASSWORD=admin123 # Set admin password
+      - NEXUS_CONTEXT_PATH=/nexus
+
+volumes:
+  sonarqube-extensions:
+    driver: local
+  sonarqube-logs:
+    driver: local
+  postgres-data:
+    driver: local
+  nexus-data:
+    driver: local
