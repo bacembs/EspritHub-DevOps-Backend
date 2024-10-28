@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InternshipRestController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.controllers</a> &gt; <span class="el_source">InternshipRestController.java</span></div><h1>InternshipRestController.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.controllers;
+
+import jakarta.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.esprithub.entities.Filee;
+import tn.esprit.esprithub.entities.Internship;
+import tn.esprit.esprithub.repository.FileRepository;
+import tn.esprit.esprithub.services.IUserService;
+import tn.esprit.esprithub.services.InternshipService;
+import tn.esprit.esprithub.services.UserService;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
+@RestController
+@RequestMapping(&quot;/internships&quot;)
+//@CrossOrigin(origins = &quot;*&quot;)
+
+public class InternshipRestController {
+
+    @Autowired
+    private final InternshipService internshipService;
+    @Autowired
+    private final FileRepository fileRepo;
+    @Autowired
+    private final JavaMailSender mailSender;
+    @Autowired
+    private final UserService userservice;
+
+    @Autowired
+<span class="nc" id="L38">    public InternshipRestController(InternshipService internshipService, FileRepository fileRepo, JavaMailSender mailSender, UserService userservice) {</span>
+<span class="nc" id="L39">        this.internshipService = internshipService;</span>
+<span class="nc" id="L40">        this.fileRepo = fileRepo;</span>
+<span class="nc" id="L41">        this.mailSender = mailSender;</span>
+
+
+<span class="nc" id="L44">        this.userservice = userservice;</span>
+<span class="nc" id="L45">    }</span>
+
+    @PostMapping(&quot;/createInternship/{userId}&quot;)
+    public ResponseEntity&lt;Internship&gt; createInternship(@PathVariable Long userId,@RequestBody Internship internship) {
+<span class="nc" id="L49">        Internship createdInternship = internshipService.createInternship(userId,internship);</span>
+<span class="nc" id="L50">        return ResponseEntity.ok(createdInternship);</span>
+    }
+
+    @GetMapping(&quot;/getInternshipById/{internshipId}&quot;)
+    public ResponseEntity&lt;Internship&gt; getInternshipById(@PathVariable Long internshipId) {
+<span class="nc" id="L55">        Internship internship = internshipService.getInternshipById(internshipId);</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (internship != null) {</span>
+<span class="nc" id="L57">            return ResponseEntity.ok(internship);</span>
+        } else {
+<span class="nc" id="L59">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    @GetMapping(&quot;/getAllInternship&quot;)
+    public List&lt;Internship&gt; getAllInternships() {
+<span class="nc" id="L65">        return internshipService.getAllInternships();</span>
+    }
+
+
+    @GetMapping(&quot;/test/{Id}&quot;)
+    public Set&lt;Internship&gt; recommandation(@PathVariable Long Id) {
+<span class="nc" id="L71">        return internshipService.recommendation(Id);</span>
+    }
+
+    @PutMapping(&quot;/updateInternship/{internshipId}&quot;)
+    public ResponseEntity&lt;Internship&gt; updateInternship(@PathVariable Long internshipId, @RequestBody Internship internship) {
+<span class="nc" id="L76">        Internship existingInternship = internshipService.getInternshipById(internshipId);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (existingInternship != null) {</span>
+<span class="nc" id="L78">            internship.setInternshipId(internshipId);</span>
+<span class="nc" id="L79">            Internship updatedInternship = internshipService.updateInternship(internship);</span>
+<span class="nc" id="L80">            return ResponseEntity.ok(updatedInternship);</span>
+        } else {
+<span class="nc" id="L82">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    @DeleteMapping(&quot;/deleteInternship/{internshipId}&quot;)
+    public ResponseEntity&lt;?&gt; deleteInternship(@PathVariable Long internshipId) {
+<span class="nc" id="L88">        boolean deleted = internshipService.deleteInternship(internshipId);</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (deleted) {</span>
+<span class="nc" id="L90">            return ResponseEntity.ok().build();</span>
+        } else {
+<span class="nc" id="L92">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    /////////////////////////////////* file controller *///////////////////////////
+
+   /* @PostMapping(&quot;/addfile&quot;)
+    public ResponseEntity&lt;?&gt; addFile(@RequestParam(&quot;file&quot;) MultipartFile file) {
+        try {
+            Filee fileEntity = new Filee();
+            fileEntity.setFilename(file.getOriginalFilename());
+            fileEntity.setContentType(file.getContentType());
+            fileEntity.setData(file.getBytes());
+            fileRepo.save(fileEntity);
+
+            String message = &quot;File added and uploaded successfully!&quot;;
+            HttpStatus httpStatus = HttpStatus.CREATED;
+            return new ResponseEntity&lt;&gt;(message, httpStatus);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }*/
+
+    @PostMapping(&quot;/addFile/{internshipId}/{userId}&quot;)
+    public ResponseEntity&lt;?&gt; addFile(@PathVariable(&quot;internshipId&quot;) Long internshipId,@PathVariable Long userId, @RequestParam(&quot;file&quot;) MultipartFile file) {
+        try {
+
+<span class="nc" id="L119">            System.out.println(&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;);</span>
+<span class="nc" id="L120">            Internship internship = internshipService.getInternshipById(internshipId);</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">            if (internship == null) {</span>
+<span class="nc" id="L122">                return ResponseEntity.notFound().build();</span>
+            }
+
+<span class="nc" id="L125">            Filee fileEntity = new Filee();</span>
+<span class="nc" id="L126">            fileEntity.setFilename(file.getOriginalFilename());</span>
+<span class="nc" id="L127">            fileEntity.setContentType(file.getContentType());</span>
+<span class="nc" id="L128">            fileEntity.setData(file.getBytes());</span>
+<span class="nc" id="L129">            fileEntity.setInternship(internship); // Associer le stage au fichier</span>
+<span class="nc" id="L130">            fileEntity.setUser(userservice.getUserById(userId));</span>
+<span class="nc" id="L131">            System.out.println(&quot;aaaaaa&quot;+fileEntity.toString());</span>
+
+<span class="nc" id="L133">            fileRepo.save(fileEntity);</span>
+
+            // Envoyer l'e-mail
+<span class="nc" id="L136">            String toEmail = &quot;destinataire@example.com&quot;;</span>
+<span class="nc" id="L137">            String subject = &quot;Nouveau fichier téléchargé     &quot;;</span>
+<span class="nc" id="L138">            String body = &quot;Un nouveau fichier a été téléchargé. voici le lien rejoudre le pour faire un entretien  http://localhost:4200/internshipRoom/1&quot;;</span>
+
+<span class="nc" id="L140">            SimpleMailMessage message = new SimpleMailMessage();</span>
+<span class="nc" id="L141">            message.setFrom(&quot;arij.khedhira@esprit.tn&quot;);</span>
+<span class="nc" id="L142">            message.setTo(toEmail);</span>
+<span class="nc" id="L143">            message.setText(body);</span>
+<span class="nc" id="L144">            message.setSubject(subject);</span>
+<span class="nc" id="L145">            mailSender.send(message);</span>
+
+<span class="nc" id="L147">            String response = &quot;Fichier téléchargé avec succès ! E-mail envoyé.&quot;;</span>
+<span class="nc" id="L148">            HttpStatus httpStatus = HttpStatus.CREATED;</span>
+<span class="nc" id="L149">            return new ResponseEntity&lt;&gt;(response, httpStatus);</span>
+<span class="nc" id="L150">        } catch (IOException e) {</span>
+<span class="nc" id="L151">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();</span>
+        }
+    }
+
+    @GetMapping(&quot;/files&quot;)
+    public ResponseEntity&lt;List&lt;Filee&gt;&gt; getFile() {
+<span class="nc" id="L157">        List&lt;Filee&gt; files = fileRepo.findAll();</span>
+<span class="nc" id="L158">        return ResponseEntity.ok(files);</span>
+    }
+
+    @DeleteMapping(&quot;/deleteFile/{id}&quot;)
+    public void deleteFilee(@PathVariable(&quot;id&quot;) long fileID) {
+<span class="nc" id="L163">        internshipService.deleteFile(fileID);</span>
+<span class="nc" id="L164">    }</span>
+
+    ////////////////////////mail///////////////////////
+
+    @PostMapping(&quot;/sendEmail&quot;)
+    public ResponseEntity&lt;?&gt; sendSimpleEmail(@RequestParam(&quot;toEmail&quot;) String toEmail, @RequestParam(&quot;subject&quot;) String subject, @RequestParam(&quot;body&quot;) String body) {
+        try {
+<span class="nc" id="L171">            SimpleMailMessage message = new SimpleMailMessage();</span>
+<span class="nc" id="L172">            message.setFrom(&quot;arij.khedhira@esprit.tn&quot;);</span>
+<span class="nc" id="L173">            message.setTo(toEmail);</span>
+<span class="nc" id="L174">            message.setText(body);</span>
+<span class="nc" id="L175">            message.setSubject(subject);</span>
+<span class="nc" id="L176">            mailSender.send(message);</span>
+
+<span class="nc" id="L178">            String response = &quot;Email sent successfully!&quot;;</span>
+<span class="nc" id="L179">            HttpStatus httpStatus = HttpStatus.OK;</span>
+<span class="nc" id="L180">            return new ResponseEntity&lt;&gt;(response, httpStatus);</span>
+<span class="nc" id="L181">        } catch (Exception e) {</span>
+<span class="nc" id="L182">            String error = &quot;Failed to send email.&quot;;</span>
+<span class="nc" id="L183">            HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;</span>
+<span class="nc" id="L184">            return new ResponseEntity&lt;&gt;(error, httpStatus);</span>
+        }
+    }
+}
+
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

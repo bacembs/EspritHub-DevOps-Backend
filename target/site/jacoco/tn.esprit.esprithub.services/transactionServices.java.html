@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>transactionServices.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.services</a> &gt; <span class="el_source">transactionServices.java</span></div><h1>transactionServices.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.services;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import tn.esprit.esprithub.DTO.statisticsTransaction;
+import tn.esprit.esprithub.DTO.statisticsfeedbacks;
+import tn.esprit.esprithub.DTO.transactionFeedback;
+import tn.esprit.esprithub.entities.*;
+import tn.esprit.esprithub.repository.IHousingRepository;
+import tn.esprit.esprithub.repository.IarticleRepository;
+import tn.esprit.esprithub.repository.IfeedBackRepository;
+import tn.esprit.esprithub.repository.ItransactionRepository;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
+@Service
+<span class="nc" id="L22">@RequiredArgsConstructor</span>
+public class transactionServices  implements ItransactionServices{
+    private final ItransactionRepository transactionRepository;
+    private final IfeedBackRepository feedBackRepository;
+    private final IHousingRepository housingRepository;
+    private final IarticleRepository articleRepository;
+    private final IArticleServices articleServices;
+
+
+    private final UserService userService;
+   // private final ArticleServices articleservice;
+
+    @Transactional
+    @Override
+    public Transaction addTransaction(Transaction transaction) {
+<span class="nc" id="L37">        transaction.setPayementDateTransaction(LocalDateTime.now());</span>
+<span class="nc" id="L38">        Transaction savedTransaction = transactionRepository.save(transaction);</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">if(savedTransaction.getFeedbacks() !=null) {</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    for (Feedback feedback : savedTransaction.getFeedbacks()) {</span>
+<span class="nc" id="L41">        feedback.setTransactions(savedTransaction);</span>
+<span class="nc" id="L42">        feedBackRepository.save(feedback);</span>
+<span class="nc" id="L43">    }</span>
+}
+
+<span class="nc bnc" id="L46" title="All 2 branches missed.">       if(!savedTransaction.getArticles().isEmpty()) {</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            for (Article article : savedTransaction.getArticles()) {</span>
+<span class="nc" id="L48">                Article a =articleServices.getArticleById(article.getArticleId());</span>
+<span class="nc" id="L49">                System.out.println(article.toString());</span>
+<span class="nc" id="L50">                a.setTransactions(savedTransaction);</span>
+
+<span class="nc" id="L52">                articleRepository.save(a);</span>
+
+<span class="nc" id="L54">            }</span>
+        }
+
+
+
+
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if(savedTransaction.getHousing()!=null) {</span>
+<span class="nc" id="L61">            Housing housing = housingRepository.findById(savedTransaction.getHousing().getHousingID()).get();</span>
+<span class="nc" id="L62">            housing.setTransaction(savedTransaction);</span>
+<span class="nc" id="L63">            housingRepository.save((housing));</span>
+        }
+
+<span class="nc" id="L66">        return transaction;</span>
+        }
+
+    @Override
+    public Transaction updateTransaction(Transaction transaction) {
+<span class="nc" id="L71">       return transactionRepository.save(transaction);</span>
+    }
+
+    @Override
+    public void deleteTransaction(Long Transaction) {
+
+<span class="nc" id="L77">    }</span>
+
+    @Override
+    public List&lt;Transaction&gt; getByIduser(Long iduser) {
+<span class="nc" id="L81">        return (List&lt;Transaction&gt;) transactionRepository.findByUsersUserId(iduser);</span>
+    }
+
+    @Override
+    public List&lt;Transaction&gt; getAll() {
+<span class="nc" id="L86">        return (List&lt;Transaction&gt;) transactionRepository.findAll();</span>
+    }
+
+    @Override
+
+    public boolean addFeedbackFromTransactionId(Long transactionId, Feedback feedback) {
+<span class="nc" id="L92">        Transaction transactionToUpdate = transactionRepository.findById(transactionId).orElse(null);</span>
+<span class="nc" id="L93">        feedback.setDateFeedback(LocalDateTime.now());</span>
+
+
+            // Associer le feedback à la transaction
+<span class="nc" id="L97">            feedback.setTransactions(transactionToUpdate);</span>
+<span class="nc" id="L98">        feedBackRepository.save(feedback);</span>
+
+<span class="nc" id="L100">            return true;</span>
+        }
+
+
+
+    @Override
+    public ResponseEntity&lt;Transaction&gt; affection(Transaction transaction) {
+<span class="nc" id="L107">        User user = userService.getByNom(transaction.getUsers().getUsername());</span>
+
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (user == null) {</span>
+<span class="nc" id="L110">            return ResponseEntity.status(HttpStatus.NOT_FOUND)</span>
+<span class="nc" id="L111">                    .body(null); // Ou un message d'erreur approprié dans le corps de la réponse</span>
+        }
+
+
+<span class="nc" id="L115">        transaction.setUsers(user);</span>
+
+<span class="nc" id="L117">        return ResponseEntity.ok(transaction);</span>
+    }
+
+    @Override
+    public statisticsfeedbacks statistics() {
+<span class="nc" id="L122">        statisticsfeedbacks stat = new statisticsfeedbacks(0,0,0,0,0);</span>
+<span class="nc" id="L123">        List &lt;Feedback&gt; a= (List&lt;Feedback&gt;) feedBackRepository.findAll();</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        for(int i = 0; i &lt;a.size(); i++){</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">            if(a.get(i).getGradeFeedback()==1){</span>
+<span class="nc" id="L126">                stat.setNote1(stat.getNote1()+1);</span>
+
+            }
+
+<span class="nc bnc" id="L130" title="All 2 branches missed.">            if(a.get(i).getGradeFeedback()==2){</span>
+<span class="nc" id="L131">                stat.setNote2(stat.getNote2()+1);</span>
+
+            }
+
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            if(a.get(i).getGradeFeedback()==3){</span>
+<span class="nc" id="L136">                stat.setNote3(stat.getNote3()+1);</span>
+
+            }
+<span class="nc bnc" id="L139" title="All 2 branches missed.">            if(a.get(i).getGradeFeedback()==4){</span>
+<span class="nc" id="L140">                stat.setNote4(stat.getNote4()+1);</span>
+
+            }
+
+<span class="nc bnc" id="L144" title="All 2 branches missed.">            if(a.get(i).getGradeFeedback()==5){</span>
+<span class="nc" id="L145">                stat.setNote5(stat.getNote5()+1);</span>
+
+            }
+        }
+<span class="nc" id="L149">        return stat;</span>
+    }
+
+    @Override
+    public statisticsTransaction statisticsTransaction() {
+<span class="nc" id="L154">        List&lt;Transaction&gt;list=(List&lt;Transaction&gt;) transactionRepository.findAll();</span>
+<span class="nc" id="L155">        statisticsTransaction stat = new statisticsTransaction(0,0,0,0,0,0,0,0,0,0,0,0);</span>
+
+
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        for(int i= 0 ; i&lt;list.size();i++){</span>
+
+<span class="nc bnc" id="L160" title="All 2 branches missed.">            if(list.get(i).getPayementDateTransaction().getMonthValue() == 1){</span>
+<span class="nc" id="L161">                stat.setJanvier(stat.getJanvier()+1);</span>
+            }
+<span class="nc bnc" id="L163" title="All 2 branches missed.">            if(list.get(i).getPayementDateTransaction().getMonthValue() == 2){</span>
+<span class="nc" id="L164">                stat.setFevrier(stat.getFevrier()+1);</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">                if(list.get(i).getPayementDateTransaction().getMonthValue() == 3){</span>
+<span class="nc" id="L166">                    stat.setMars(stat.getMars()+1);</span>
+                }
+<span class="nc bnc" id="L168" title="All 2 branches missed.">            } if(list.get(i).getPayementDateTransaction().getMonthValue() == 4){</span>
+<span class="nc" id="L169">                stat.setAvril(stat.getAvril()+1);</span>
+            }
+<span class="nc bnc" id="L171" title="All 2 branches missed.">            if(list.get(i).getPayementDateTransaction().getMonthValue() == 5){</span>
+<span class="nc" id="L172">                stat.setMai(stat.getMai()+1);</span>
+            }
+<span class="nc bnc" id="L174" title="All 2 branches missed.">            if(list.get(i).getPayementDateTransaction().getMonthValue() == 6){</span>
+<span class="nc" id="L175">                stat.setJuin(stat.getJuin()+1);</span>
+            }
+<span class="nc bnc" id="L177" title="All 2 branches missed.">            if(list.get(i).getPayementDateTransaction().getMonthValue() == 7){</span>
+<span class="nc" id="L178">                stat.setJuillet(stat.getJuillet()+1);</span>
+            }
+<span class="nc bnc" id="L180" title="All 2 branches missed.">            if(list.get(i).getPayementDateTransaction().getMonthValue() == 8){</span>
+<span class="nc" id="L181">                stat.setAout(stat.getAout()+1);</span>
+            }
+<span class="nc bnc" id="L183" title="All 2 branches missed.">            if(list.get(i).getPayementDateTransaction().getMonthValue() == 9){</span>
+<span class="nc" id="L184">                stat.setSeptembre(stat.getSeptembre()+1);</span>
+
+            }
+<span class="nc bnc" id="L187" title="All 2 branches missed.">            if(list.get(i).getPayementDateTransaction().getMonthValue() == 10){</span>
+<span class="nc" id="L188">                stat.setOctobre(stat.getOctobre()+1);</span>
+
+            }
+<span class="nc bnc" id="L191" title="All 2 branches missed.">            if(list.get(i).getPayementDateTransaction().getMonthValue() == 11){</span>
+<span class="nc" id="L192">                stat.setNovembre(stat.getNovembre()+1);</span>
+
+            }
+
+<span class="nc bnc" id="L196" title="All 2 branches missed.">            if(list.get(i).getPayementDateTransaction().getMonthValue() == 12){</span>
+<span class="nc" id="L197">                stat.setDecembre(stat.getDecembre()+1);</span>
+
+            }
+
+
+}
+<span class="nc" id="L203">        return stat;</span>
+    }
+    @Override
+    public transactionFeedback getByIdIfBanned(Long id) {
+<span class="nc" id="L207">        List&lt;Transaction&gt; transactions = getByIduser(id);</span>
+
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        if(transactions.size()==0){</span>
+<span class="nc" id="L210">             transactionFeedback transactionFeedback = new transactionFeedback(transactions, 0, 0);</span>
+<span class="nc" id="L211">            return transactionFeedback;</span>
+        }
+<span class="nc" id="L213">        int diffDays = 0;</span>
+
+
+
+<span class="nc" id="L217">        boolean containsXXX = false;</span>
+<span class="nc bnc" id="L218" title="All 2 branches missed.">        for (Transaction transaction : transactions) {</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">if(transaction.getFeedbacks().size()==0){</span>
+<span class="nc" id="L220">    transactionFeedback transactionFeedback = new transactionFeedback(transactions, 0, 0);</span>
+
+}
+<span class="nc bnc" id="L223" title="All 2 branches missed.">            for (Feedback feedback : transaction.getFeedbacks()) {</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">                if (feedback.getCommentFeedback().contains(&quot;***&quot;)) {</span>
+<span class="nc" id="L225">                    containsXXX = true;</span>
+<span class="nc" id="L226">                    long period = ChronoUnit.DAYS.between(feedback.getDateFeedback(), LocalDateTime.now());</span>
+<span class="nc" id="L227">                    System.out.println(period);</span>
+<span class="nc" id="L228">                    diffDays = (int) period;</span>
+<span class="nc" id="L229">                    break;</span>
+                }
+<span class="nc" id="L231">            }</span>
+<span class="nc" id="L232">}</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        if (!containsXXX) {</span>
+<span class="nc" id="L234">            transactionFeedback transactionFeedback = new transactionFeedback(transactions, 0, 0);</span>
+<span class="nc" id="L235">            return transactionFeedback;</span>
+        }
+
+<span class="nc bnc" id="L238" title="All 2 branches missed.">        if (containsXXX) {</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">            if (diffDays == 0) {</span>
+<span class="nc" id="L240">                transactionFeedback transactionFeedback = new transactionFeedback(transactions, 1, 30);</span>
+<span class="nc" id="L241">                return transactionFeedback;</span>
+
+<span class="nc bnc" id="L243" title="All 2 branches missed.">            } else if (diffDays &gt;= 30) {</span>
+<span class="nc" id="L244">                transactionFeedback transactionFeedback = new transactionFeedback(transactions, 0, 0);</span>
+<span class="nc" id="L245">                return transactionFeedback;</span>
+
+<span class="nc bnc" id="L247" title="All 4 branches missed.">            } else if (diffDays &gt; 0 &amp;&amp; diffDays &lt; 30) {</span>
+<span class="nc" id="L248">                transactionFeedback transactionFeedback = new transactionFeedback(transactions, 1, 30 - diffDays);</span>
+<span class="nc" id="L249">                return transactionFeedback;</span>
+
+            }
+        }
+
+<span class="nc" id="L254">        return null;</span>
+    }
+
+
+    }
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

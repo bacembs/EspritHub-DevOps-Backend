@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GeocodingController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.controllers</a> &gt; <span class="el_source">GeocodingController.java</span></div><h1>GeocodingController.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.controllers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import tn.esprit.esprithub.entities.GeocodeObject;
+import tn.esprit.esprithub.entities.GeocodeResult;
+import tn.esprit.esprithub.services.GeocodingService;
+import okhttp3.ResponseBody;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+<span class="nc" id="L22">public class GeocodingController {</span>
+    @Autowired
+    private GeocodingService geocodingService;
+
+
+    @RestController
+<span class="nc" id="L28">    public class GeocodeController {</span>
+
+        private static final String API_KEY = &quot;AIzaSyAgza--UtekhSDNA9ReNKZ36B8oqN24Xqk&quot;;
+        private static final String BASE_URL = &quot;https://maps.googleapis.com/maps/api/geocode/json&quot;;
+
+        @RequestMapping(path = &quot;/geocode&quot;, method = RequestMethod.GET)
+
+        public Map&lt;String, Object&gt; getGeocode(@RequestParam String address) throws IOException {
+<span class="nc" id="L36">            OkHttpClient client = new OkHttpClient();</span>
+<span class="nc" id="L37">            String encodedAddress = URLEncoder.encode(address, &quot;UTF-8&quot;);</span>
+<span class="nc" id="L38">            String url = BASE_URL + &quot;?language=en&amp;address=&quot; + encodedAddress + &quot;&amp;key=&quot; + API_KEY;</span>
+<span class="nc" id="L39">            Request request = new Request.Builder()</span>
+<span class="nc" id="L40">                    .url(url)</span>
+<span class="nc" id="L41">                    .get()</span>
+<span class="nc" id="L42">                    .build();</span>
+<span class="nc" id="L43">            ResponseBody responseBody = client.newCall(request).execute().body();</span>
+<span class="nc" id="L44">            ObjectMapper objectMapper = new ObjectMapper();</span>
+<span class="nc" id="L45">            GeocodeResult result = objectMapper.readValue(responseBody.string(), GeocodeResult.class);</span>
+
+            // Construire la réponse dans le bon format JSON
+<span class="nc" id="L48">            List&lt;Map&lt;String, Object&gt;&gt; locations = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">            for (GeocodeObject geocodeObject : result.getResults()) {</span>
+<span class="nc" id="L50">                Map&lt;String, Object&gt; location = new LinkedHashMap&lt;&gt;();</span>
+<span class="nc" id="L51">                location.put(&quot;lat&quot;, geocodeObject.getGeometry().getGeocodeLocation().getLatitude());</span>
+<span class="nc" id="L52">                location.put(&quot;lng&quot;, geocodeObject.getGeometry().getGeocodeLocation().getLongitude());</span>
+<span class="nc" id="L53">                location.put(&quot;formatted_address&quot;, geocodeObject.getFormattedAddress());</span>
+<span class="nc" id="L54">                locations.add(location);</span>
+
+<span class="nc" id="L56">            }</span>
+
+            // Créer un objet JSON pour la réponse
+<span class="nc" id="L59">            Map&lt;String, Object&gt; jsonResponse = new LinkedHashMap&lt;&gt;();</span>
+<span class="nc" id="L60">            jsonResponse.put(&quot;results&quot;, locations);</span>
+<span class="nc" id="L61">            jsonResponse.put(&quot;status&quot;, &quot;OK&quot;);</span>
+
+<span class="nc" id="L63">            return jsonResponse;</span>
+        }
+
+        @GetMapping(&quot;/map&quot;)
+        public String showMapPage() {
+<span class="nc" id="L68">            return &quot;map&quot;; // renvoie le nom de la page HTML (sans extension)</span>
+        }
+
+        @GetMapping(&quot;/showMap&quot;)
+        public ModelAndView index() {
+<span class="nc" id="L73">            return new ModelAndView(&quot;index&quot;);</span>
+        }
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

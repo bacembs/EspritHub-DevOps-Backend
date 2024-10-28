@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservationRestController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.controllers</a> &gt; <span class="el_source">ReservationRestController.java</span></div><h1>ReservationRestController.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.controllers;
+
+import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.esprithub.entities.Reservation;
+import tn.esprit.esprithub.entities.User;
+import tn.esprit.esprithub.services.IReservationService;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+<span class="nc" id="L18">@AllArgsConstructor</span>
+@RestController
+//@CrossOrigin(origins = &quot;*&quot;)
+@RequestMapping(&quot;/Reservation&quot;)
+public class ReservationRestController {
+    private IReservationService reservationService;
+
+    @PostMapping(&quot;/add&quot;)
+    public Reservation addReservation(@RequestBody Reservation reservation) {
+<span class="nc" id="L27">        return reservationService.addReservation(reservation);</span>
+    }
+
+    @PutMapping(&quot;/update/{reservationId}&quot;)
+    public Reservation updateReservation(@PathVariable Long reservationId,@RequestBody Reservation reservation) {
+<span class="nc" id="L32">        return reservationService.updateReservation(reservationId,reservation);</span>
+    }
+
+    @GetMapping(&quot;/get/{numReservation}&quot;)
+    public Reservation getReservation(@PathVariable Long numReservation) {
+<span class="nc" id="L37">        return reservationService.getReservationById(numReservation);</span>
+    }
+
+    @DeleteMapping(&quot;/delete/{numReservation}&quot;)
+    public void removeReservation(@PathVariable Long numReservation) {
+<span class="nc" id="L42">        reservationService.deleteReservation(numReservation);</span>
+<span class="nc" id="L43">    }</span>
+    //angular c bon
+//    @GetMapping(&quot;/all&quot;)
+//    public List&lt;Reservation&gt; getAll() {
+//        return reservationService.getAll();
+//    }
+//
+//
+//    @GetMapping(&quot;/allWithField&quot;)
+//    public List&lt;Reservation&gt; getAllReservationsWithField() {
+//        return reservationService.getAllReservationsWithField();
+//    }
+    //angular c bon
+    @GetMapping(&quot;/withFieldId&quot;)
+    public ResponseEntity&lt;List&lt;Object[]&gt;&gt; getAllReservationsWithFieldId() {
+<span class="nc" id="L58">        List&lt;Object[]&gt; reservationsWithFieldId = reservationService.getAllReservationsWithFieldId();</span>
+<span class="nc bnc" id="L59" title="All 4 branches missed.">        if (reservationsWithFieldId != null &amp;&amp; !reservationsWithFieldId.isEmpty()) {</span>
+<span class="nc" id="L60">            return ResponseEntity.ok(reservationsWithFieldId);</span>
+        } else {
+<span class="nc" id="L62">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    @GetMapping(&quot;/getWithField/{reservationId}&quot;)
+    public ResponseEntity&lt;Reservation&gt; getReservationWithField(@PathVariable Long reservationId) {
+<span class="nc" id="L68">        Reservation reservation = reservationService.getReservationWithField(reservationId);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (reservation != null) {</span>
+<span class="nc" id="L70">            return ResponseEntity.ok(reservation);</span>
+        } else {
+<span class="nc" id="L72">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    //c bon angular
+    @PostMapping(&quot;/users/{userId}/{fieldId}/reserve&quot;)
+    public ResponseEntity&lt;Reservation&gt; makeReservationForUser(@PathVariable Long userId,
+                                                              @PathVariable Long fieldId,
+                                                              @RequestBody Reservation reservation) {
+<span class="nc bnc" id="L81" title="All 6 branches missed.">        if (reservation == null || reservation.getStartDate() == null || reservation.getEndDate() == null ||</span>
+<span class="nc bnc" id="L82" title="All 4 branches missed.">                reservation.getResStatus() == null || reservation.getResType() == null) {</span>
+<span class="nc" id="L83">            return ResponseEntity.badRequest().body(null);</span>
+        }
+
+<span class="nc" id="L86">        Reservation savedReservation = reservationService.addReservationForUser(userId, fieldId, reservation);</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (savedReservation != null) {</span>
+<span class="nc" id="L88">            return ResponseEntity.ok(savedReservation);</span>
+        } else {
+<span class="nc" id="L90">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    @GetMapping(&quot;/checkFieldAvailability/{fieldId}&quot;)
+    public ResponseEntity&lt;String&gt; checkFieldAvailability(
+            @PathVariable Long fieldId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDateTime,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDateTime) {
+
+<span class="nc" id="L100">        boolean isAvailable = reservationService.isFieldAvailableForReservation(fieldId, startDateTime, endDateTime);</span>
+
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (isAvailable) {</span>
+<span class="nc" id="L103">            return ResponseEntity.ok(&quot;The field is available for the given time slot.&quot;);</span>
+        } else {
+<span class="nc" id="L105">            return ResponseEntity.ok(&quot;The field is not available for the given time slot.&quot;);</span>
+        }
+    }
+
+
+
+    @DeleteMapping(&quot;/users/{userId}/{reservationId}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteReservationForUser(@PathVariable Long userId,
+                                                         @PathVariable Long reservationId) {
+<span class="nc" id="L114">        reservationService.deleteReservationForUser(userId, reservationId);</span>
+<span class="nc" id="L115">        return ResponseEntity.noContent().build();</span>
+    }
+
+    @PutMapping(&quot;/cancel/{reservationId}&quot;)
+    public ResponseEntity&lt;Void&gt; cancelReservation(@PathVariable Long reservationId) {
+<span class="nc" id="L120">        Reservation canceledReservation = reservationService.cancelReservation(reservationId);</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (canceledReservation != null) {</span>
+<span class="nc" id="L122">            return ResponseEntity.ok().build();</span>
+        } else {
+<span class="nc" id="L124">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+    @PutMapping(&quot;/users/{userId}/{reservationId}&quot;)
+    public ResponseEntity&lt;Reservation&gt; updateReservationForUser(@PathVariable Long userId,
+                                                                @PathVariable Long reservationId,
+                                                                @RequestBody Reservation updatedReservation) {
+<span class="nc" id="L131">        Reservation updated = reservationService.updateReservationForUser(userId, reservationId, updatedReservation);</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        if (updated != null) {</span>
+<span class="nc" id="L133">            return ResponseEntity.ok(updated);</span>
+        } else {
+<span class="nc" id="L135">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+
+    @GetMapping(&quot;/users/{userId}/reservations&quot;)
+    public ResponseEntity&lt;List&lt;Reservation&gt;&gt; getReservationsForUser(@PathVariable Long userId) {
+<span class="nc" id="L142">        List&lt;Reservation&gt; reservations = reservationService.getReservationsForUser(userId);</span>
+<span class="nc bnc" id="L143" title="All 4 branches missed.">        if (reservations != null &amp;&amp; !reservations.isEmpty()) {</span>
+<span class="nc" id="L144">            return ResponseEntity.ok(reservations);</span>
+        } else {
+<span class="nc" id="L146">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);</span>
+        }
+    }
+
+
+    @GetMapping(&quot;/reservations/fields/{fieldId}&quot;)
+    public ResponseEntity&lt;List&lt;Reservation&gt;&gt; getReservationsByField(@PathVariable Long fieldId) {
+<span class="nc" id="L153">        List&lt;Reservation&gt; reservations = reservationService.getReservationsByField(fieldId);</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        if (!reservations.isEmpty()) {</span>
+<span class="nc" id="L155">            return ResponseEntity.ok(reservations);</span>
+        } else {
+<span class="nc" id="L157">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    @GetMapping(&quot;/reservations/users/{userId}/fields/{fieldId}&quot;)
+    public ResponseEntity&lt;List&lt;Reservation&gt;&gt; getReservationsByUserAndField(@PathVariable Long userId,
+                                                                           @PathVariable Long fieldId) {
+<span class="nc" id="L164">        List&lt;Reservation&gt; reservations = reservationService.getReservationsByUserAndField(userId, fieldId);</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">        if (!reservations.isEmpty()) {</span>
+<span class="nc" id="L166">            return ResponseEntity.ok(reservations);</span>
+        } else {
+<span class="nc" id="L168">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    @GetMapping(&quot;/reservations/startDateBetween&quot;)
+    public ResponseEntity&lt;List&lt;Reservation&gt;&gt; getReservationsByStartDateBetween(@RequestParam(&quot;start&quot;) LocalDateTime start,
+                                                                               @RequestParam(&quot;end&quot;) LocalDateTime end) {
+<span class="nc" id="L175">        List&lt;Reservation&gt; reservations = reservationService.getReservationsByDateRange(start, end);</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">        if (!reservations.isEmpty()) {</span>
+<span class="nc" id="L177">            return ResponseEntity.ok(reservations);</span>
+        } else {
+<span class="nc" id="L179">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    @GetMapping(&quot;/reservations/count/users/{userId}&quot;)
+    public ResponseEntity&lt;Long&gt; countReservationsByUser(@PathVariable Long userId) {
+<span class="nc" id="L185">        Long count = reservationService.countReservationsByUser(userId);</span>
+<span class="nc" id="L186">        return ResponseEntity.ok(count);</span>
+    }
+
+    @PostMapping(&quot;/sportteams/{sportTeamId}/reserve&quot;)
+    public ResponseEntity&lt;Reservation&gt; makeReservationForSportTeam(@PathVariable Long sportTeamId,
+                                                                   @RequestBody Reservation reservation) {
+<span class="nc bnc" id="L192" title="All 8 branches missed.">        if (reservation == null || reservation.getStartDate() == null || reservation.getEndDate() == null || reservation.getNbPlayers() &lt;= 0 ||</span>
+<span class="nc bnc" id="L193" title="All 4 branches missed.">                reservation.getResStatus() == null || reservation.getResType() == null) {</span>
+<span class="nc" id="L194">            return ResponseEntity.badRequest().body(null);</span>
+        }
+
+<span class="nc" id="L197">        User captain = getCaptainOfSportTeam(sportTeamId).getBody();</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">        if (captain == null) {</span>
+<span class="nc" id="L199">            return ResponseEntity.notFound().build();</span>
+        }
+
+<span class="nc" id="L202">        reservation.setUsers(new HashSet&lt;&gt;(Collections.singletonList(captain)));</span>
+<span class="nc" id="L203">        Reservation savedReservation = reservationService.addReservation(reservation);</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">        if (savedReservation != null) {</span>
+<span class="nc" id="L205">            return ResponseEntity.ok(savedReservation);</span>
+        } else {
+<span class="nc" id="L207">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+
+    @PostMapping(&quot;/sport-teams/{sportTeamId}/reservations&quot;)
+    public ResponseEntity&lt;Reservation&gt; addReservationForSportTeam(@PathVariable Long sportTeamId, @RequestBody Reservation reservation) {
+<span class="nc" id="L214">        Reservation createdReservation = reservationService.addReservationSportTeam(sportTeamId, reservation);</span>
+<span class="nc" id="L215">        return ResponseEntity.ok(createdReservation);</span>
+    }
+
+    @GetMapping(&quot;/sport-teams/{sportTeamId}/captain&quot;)
+    public ResponseEntity&lt;User&gt; getCaptainOfSportTeam(@PathVariable Long sportTeamId) {
+<span class="nc" id="L220">        User captain = reservationService.getCaptainOfSportTeam(sportTeamId);</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">        if (captain != null) {</span>
+<span class="nc" id="L222">            return ResponseEntity.ok(captain);</span>
+        } else {
+<span class="nc" id="L224">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+
+    @GetMapping(&quot;/{reservationId}/users&quot;)
+    public ResponseEntity&lt;Set&lt;User&gt;&gt; getUsersByReservation(@PathVariable Long reservationId) {
+<span class="nc" id="L231">        Set&lt;User&gt; users = reservationService.getUsersByReservation(reservationId);</span>
+<span class="nc bnc" id="L232" title="All 4 branches missed.">        if (users != null &amp;&amp; !users.isEmpty()) {</span>
+<span class="nc" id="L233">            return ResponseEntity.ok(users);</span>
+        } else {
+<span class="nc" id="L235">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    @DeleteMapping(&quot;/{reservationId}/cancel&quot;)
+    public ResponseEntity&lt;String&gt; cancelReservationForSportTeam(@PathVariable Long reservationId, @RequestParam Long captainId) {
+        try {
+<span class="nc" id="L242">            reservationService.cancelReservationForSportTeam(reservationId, captainId);</span>
+<span class="nc" id="L243">            return ResponseEntity.ok(&quot;Reservation canceled successfully&quot;);</span>
+<span class="nc" id="L244">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L245">            return ResponseEntity.badRequest().body(e.getMessage());</span>
+<span class="nc" id="L246">        } catch (IllegalStateException e) {</span>
+<span class="nc" id="L247">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());</span>
+        }
+    }
+
+
+
+    @PostMapping(&quot;/cancelReservationsForToday&quot;)
+    public ResponseEntity&lt;String&gt; cancelReservationsForToday() {
+        try {
+
+<span class="nc" id="L257">            reservationService.cancelReservationsForToday();</span>
+
+
+<span class="nc" id="L260">            return ResponseEntity.ok(&quot;Reservations for today have been cancelled if it's rainy.&quot;);</span>
+<span class="nc" id="L261">        } catch (Exception e) {</span>
+
+<span class="nc" id="L263">            e.printStackTrace();</span>
+<span class="nc" id="L264">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(&quot;Failed to cancel reservations for today.&quot;);</span>
+        }
+    }
+
+    @PostMapping(&quot;/join/{reservationId}/{userId}&quot;)
+    public ResponseEntity&lt;String&gt; joinReservation(@PathVariable Long reservationId, @PathVariable Long userId) {
+        try {
+<span class="nc" id="L271">            reservationService.joinReservation(userId, reservationId);</span>
+<span class="nc" id="L272">            return ResponseEntity.ok(&quot;User successfully joined the reservation.&quot;);</span>
+<span class="nc" id="L273">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L274">            return ResponseEntity.badRequest().body(&quot;Invalid user or reservation ID provided.&quot;);</span>
+<span class="nc" id="L275">        } catch (IllegalStateException e) {</span>
+<span class="nc" id="L276">            return ResponseEntity.badRequest().body(&quot;No space available in the reservation.&quot;);</span>
+<span class="nc" id="L277">        } catch (Exception e) {</span>
+<span class="nc" id="L278">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(&quot;An error occurred while joining the reservation.&quot;);</span>
+        }
+    }
+
+
+    @PutMapping(&quot;/cancel/{reservationId}/{userId}&quot;)
+    public ResponseEntity&lt;Void&gt; cancelUserReservation(@PathVariable Long userId, @PathVariable Long reservationId) {
+        try {
+<span class="nc" id="L286">            reservationService.cancelUserReservation(userId, reservationId);</span>
+<span class="nc" id="L287">            return ResponseEntity.ok().build();</span>
+<span class="nc" id="L288">        } catch (Exception e) {</span>
+<span class="nc" id="L289">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();</span>
+        }
+    }
+
+    @GetMapping(&quot;/available&quot;)
+    public ResponseEntity&lt;List&lt;Reservation&gt;&gt; getReservationsWithAvailableSpaces() {
+<span class="nc" id="L295">        List&lt;Reservation&gt; reservations = reservationService.getReservationsWithAvailableSpace();</span>
+<span class="nc" id="L296">        return ResponseEntity.ok(reservations);</span>
+    }
+
+//    @PostMapping(&quot;/sendReminderEmails&quot;)
+//    public ResponseEntity&lt;String&gt; sendReminderEmails() {
+//        try {
+//            reservationService.sendReservationReminders();
+//            return ResponseEntity.ok(&quot;Reminder emails sent successfully&quot;);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(&quot;Failed to send reminder emails: &quot; + e.getMessage());
+//        }
+//    }
+@PostMapping(&quot;/sendReminderEmails&quot;)
+public ResponseEntity&lt;String&gt; sendReminderEmails(@RequestParam String to, @RequestParam String reservationDate) {
+    try {
+<span class="nc" id="L312">        reservationService.sendReminderEmail(to, reservationDate);</span>
+<span class="nc" id="L313">        return ResponseEntity.ok(&quot;Reminder email sent successfully&quot;);</span>
+<span class="nc" id="L314">    } catch (Exception e) {</span>
+<span class="nc" id="L315">        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L316">                .body(&quot;Failed to send reminder email: &quot; + e.getMessage());</span>
+    }
+}
+
+    @PostMapping(&quot;/send-reminders&quot;)
+    public ResponseEntity&lt;String&gt; sendReservationReminders() {
+        try {
+<span class="nc" id="L323">            reservationService.sendReservationReminders();</span>
+<span class="nc" id="L324">            return ResponseEntity.ok(&quot;Reminder emails sent successfully&quot;);</span>
+<span class="nc" id="L325">        } catch (Exception e) {</span>
+<span class="nc" id="L326">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L327">                    .body(&quot;Failed to send reminder emails: &quot; + e.getMessage());</span>
+        }
+    }
+
+
+
+
+    @GetMapping(&quot;/joined/{reservationId}/{userId}&quot;)
+    public ResponseEntity&lt;Boolean&gt; hasUserJoinedReservation(@PathVariable Long reservationId, @PathVariable Long userId) {
+<span class="nc" id="L336">        boolean hasJoined = reservationService.hasUserJoinedReservation(reservationId, userId);</span>
+<span class="nc" id="L337">        return ResponseEntity.ok(hasJoined);</span>
+    }
+
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
