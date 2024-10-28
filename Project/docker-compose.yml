@@ -24,13 +24,18 @@ services:
       - "8082:8089"
     environment:
       SPRING_APPLICATION_JSON: '{
-        "spring.datasource.url"  : "jdbc:mysql://mysql_db:3306/esprithub?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC",
-        "spring.datasource.username" : "root",
-        "spring.datasource.password" : "",
+        "spring.datasource.url": "jdbc:mysql://mysql_db:3306/esprithub?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC",
+        "spring.datasource.username": "root",
+        "spring.datasource.password": "",
         "spring.jpa.show-sql": "true",
-        "spring.jpa.hibernate.ddl-auto" : "update",
+        "spring.jpa.hibernate.ddl-auto": "update",
         "server.servlet.context-path": "/projectARCTIC3",
-        "server.port": "8089"
+        "server.port": "8089",
+        "management.endpoints.web.exposure.include": "*",
+        "management.endpoint.prometheus.enabled": "true",
+        "management.endpoints.web.base-path": "/actuator",
+        "management.server.port": "8089",
+        "management.server.base-path": "/projectARCTIC3"
       }'
     volumes:
       - .m2:/root/.m2

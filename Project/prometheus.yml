@@ -2,14 +2,13 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-
+  # Scraping Prometheus itself
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']  # Prometheus itself
 
-
-  - job_name: 'project_app'
-    metrics_path: '/projectARCTIC3/actuator/prometheus'
-    scrape_interval: 10s
+  - job_name: "project_app"
+    metrics_path: "/projectARCTIC3/actuator/prometheus"
     static_configs:
-      - targets: ['project_app_1:8089']
+      - targets: ["app:8089"]  # Changed to match the service name in docker-compose
+    scrape_interval: 5s
