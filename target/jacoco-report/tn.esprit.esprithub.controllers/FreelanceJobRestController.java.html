@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FreelanceJobRestController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.controllers</a> &gt; <span class="el_source">FreelanceJobRestController.java</span></div><h1>FreelanceJobRestController.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.controllers;
+
+
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.esprithub.entities.FreelanceJob;
+import tn.esprit.esprithub.services.IFreelanceJobService;
+
+import java.util.List;
+@RestController
+@RequestMapping(&quot;/freelance&quot;)
+<span class="nc" id="L13">@AllArgsConstructor</span>
+//@CrossOrigin(origins = &quot;*&quot;)
+public class FreelanceJobRestController {
+    private IFreelanceJobService freelanceJobService;
+
+    @PostMapping(&quot;/addfreelance/{userId}&quot;)
+    public FreelanceJob addFreelanceJob(@PathVariable Long userId, @RequestBody FreelanceJob freelanceJob) {
+<span class="nc" id="L20">        return freelanceJobService.createFreelanceJob(userId, freelanceJob);</span>
+    }
+    @PutMapping(&quot;/updatefreelance&quot;)
+    public FreelanceJob updateFreelanceJob(@RequestBody FreelanceJob freelanceJob) {
+<span class="nc" id="L24">        return freelanceJobService.updateFreelanceJob(freelanceJob);</span>
+    }
+
+    @GetMapping(&quot;/getfreelance/{jobId}&quot;)
+    public ResponseEntity&lt;FreelanceJob&gt; getFreelanceJob(@PathVariable Long jobId) {
+<span class="nc" id="L29">        FreelanceJob freelanceJob = freelanceJobService.getFreelanceJobById(jobId);</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">        if (freelanceJob != null) {</span>
+<span class="nc" id="L31">            return ResponseEntity.ok(freelanceJob);</span>
+        } else {
+<span class="nc" id="L33">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    @DeleteMapping(&quot;/deletefreelance/{jobId}&quot;)
+    public ResponseEntity&lt;Void&gt; removeFreelanceJob(@PathVariable Long jobId) {
+<span class="nc" id="L39">        freelanceJobService.deleteFreelanceJob(jobId);</span>
+<span class="nc" id="L40">        return ResponseEntity.noContent().build();</span>
+    }
+
+    @GetMapping(&quot;/allfreelance&quot;)
+    public List&lt;FreelanceJob&gt; getAllFreelanceJobs() {
+<span class="nc" id="L45">        return freelanceJobService.getAllFreelanceJobs();</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

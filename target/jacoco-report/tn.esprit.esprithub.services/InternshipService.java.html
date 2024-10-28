@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InternshipService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.services</a> &gt; <span class="el_source">InternshipService.java</span></div><h1>InternshipService.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import tn.esprit.esprithub.entities.Filee;
+import tn.esprit.esprithub.entities.Internship;
+import tn.esprit.esprithub.entities.User;
+import tn.esprit.esprithub.repository.FileRepository;
+import tn.esprit.esprithub.repository.InternshipRepository;
+import tn.esprit.esprithub.repository.UserRepository;
+
+import java.util.*;
+
+@Service
+public class InternshipService implements IInternshipService {
+
+    private final InternshipRepository internshipRepository;
+
+
+    @Autowired
+    FileRepository fileRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+<span class="nc" id="L29">    public InternshipService(InternshipRepository internshipRepository) {</span>
+<span class="nc" id="L30">        this.internshipRepository = internshipRepository;</span>
+
+
+<span class="nc" id="L33">    }</span>
+    @Autowired
+    private JavaMailSender mailSender;
+
+
+
+    @Override
+    public Internship createInternship(Long userId, Internship internship) {
+<span class="nc" id="L41">        User user = userRepository.findById(userId).orElse(null);</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (user == null) {</span>
+<span class="nc" id="L43">            return null;</span>
+        }
+<span class="nc" id="L45">        internship.setUser(user);</span>
+<span class="nc" id="L46">        return internshipRepository.save(internship);</span>
+    }
+
+    @Override
+    public Internship getInternshipById(Long internshipId) {
+<span class="nc" id="L51">        return internshipRepository.findById(internshipId).orElse(null);</span>
+    }
+
+    @Override
+    public List&lt;Internship&gt; getAllInternships() {
+<span class="nc" id="L56">        return internshipRepository.findAll();</span>
+    }
+
+    @Override
+    public Internship updateInternship(Internship internship) {
+<span class="nc" id="L61">        return internshipRepository.save(internship);</span>
+    }
+
+    @Override
+    public boolean deleteInternship(Long internshipId) {
+<span class="nc" id="L66">        internshipRepository.deleteById(internshipId);</span>
+<span class="nc" id="L67">        return true;</span>
+    }
+
+    @Override
+    public void saveFile(Filee file) {
+<span class="nc" id="L72">        fileRepository.save(file);</span>
+<span class="nc" id="L73">    }</span>
+
+    @Override
+    public Filee getFileById(long fileId) {
+<span class="nc" id="L77">        return fileRepository.findById(fileId).orElse(null);</span>
+    }
+
+    @Override
+    public void updateFile(Filee file) {
+<span class="nc" id="L82">        fileRepository.save(file);</span>
+<span class="nc" id="L83">    }</span>
+
+    @Override
+    public void deleteFile(long fileId) {
+<span class="nc" id="L87">        fileRepository.deleteById(fileId);</span>
+<span class="nc" id="L88">    }</span>
+
+    @Override
+    public List&lt;Filee&gt; getAllFiles() {
+<span class="nc" id="L92">        return null;</span>
+    }
+
+    @Override
+    public void sendSimpleEmail(String toEmail, String subject, String body) {
+<span class="nc" id="L97">        SimpleMailMessage message = new SimpleMailMessage();</span>
+<span class="nc" id="L98">        message.setFrom(&quot;arij.khedhira@esprit.tn&quot;);</span>
+<span class="nc" id="L99">        message.setTo(toEmail);</span>
+<span class="nc" id="L100">        message.setText(body);</span>
+<span class="nc" id="L101">        message.setSubject(subject);</span>
+<span class="nc" id="L102">        mailSender.send(message);</span>
+<span class="nc" id="L103">        System.out.println(&quot;Mail Send...&quot;);</span>
+
+<span class="nc" id="L105">    }</span>
+    @Override
+
+    public Set&lt;Internship&gt; recommendation(Long id) {
+<span class="nc" id="L109">        List&lt;Filee&gt; listFilee = fileRepository.findByUserUserId(id);</span>
+<span class="nc" id="L110">        List&lt;Internship&gt; listInternship = internshipRepository.findAll();</span>
+<span class="nc" id="L111">        Set&lt;Internship&gt; apt = new HashSet&lt;&gt;(); // Utiliser HashSet pour le set</span>
+
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        for (Filee file : listFilee) {</span>
+<span class="nc" id="L114">            String[] skillsFile = file.getInternship().getSkillsRequiredInternship().split(&quot;, &quot;); // Supposons que les compétences requises pour un fichier soient stockées dans un champ différent</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">            for (Internship internship : listInternship) {</span>
+<span class="nc" id="L116">                String[] skillsInternship = internship.getSkillsRequiredInternship().split(&quot;, &quot;);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                for (String skillFile : skillsFile) {</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                    for (String skillInternship : skillsInternship) {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                        if (skillInternship.equals(skillFile)) {</span>
+<span class="nc" id="L120">                            apt.add(internship);</span>
+<span class="nc" id="L121">                            break; // Sortez de la boucle interne car nous avons trouvé une correspondance</span>
+                        }
+                    }
+                }
+<span class="nc" id="L125">            }</span>
+<span class="nc" id="L126">        }</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        for (Filee file : listFilee) {</span>
+<span class="nc" id="L128">            Internship internship = file.getInternship();</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">            if (apt.contains(internship)) {</span>
+<span class="nc" id="L130">                apt.remove(internship);</span>
+            }
+<span class="nc" id="L132">        }</span>
+
+<span class="nc" id="L134">        return apt;</span>
+    }
+
+
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

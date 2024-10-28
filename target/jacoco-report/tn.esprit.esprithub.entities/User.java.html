@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.entities</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.entities;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.io.Serializable;
+import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.*;
+
+@Getter
+<span class="pc" id="L28">@Setter</span>
+<span class="fc" id="L29">@NoArgsConstructor</span>
+<span class="fc" id="L30">@AllArgsConstructor</span>
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity
+<span class="pc" id="L33">@Builder</span>
+@EntityListeners(AuditingEntityListener.class)
+//UserDetails: standard interface used by spring security
+//Principal: indicates that this class is the &quot;ID&quot; for the current logged in user
+public class User implements UserDetails, Principal {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="nc" id="L40">    Long userId;</span>
+    String username;
+<span class="nc" id="L42">    String firstName;</span>
+<span class="nc" id="L43">    String lastName;</span>
+    @Column(unique = true)
+<span class="nc" id="L45">    String email;</span>
+    String password;
+<span class="nc" id="L47">    String adresse;</span>
+<span class="nc" id="L48">    int phone;</span>
+<span class="nc" id="L49">    String imgUser;</span>
+    @Enumerated(EnumType.STRING)
+<span class="nc" id="L51">    Roles role;</span>
+<span class="nc" id="L52">    String lastLogin;</span>
+<span class="nc" id="L53">    boolean accountLocked;</span>
+    boolean enabled;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    @JsonFormat(pattern = &quot;yyyy-MM-dd'T'HH:mm:ss&quot;)
+
+<span class="nc" id="L60">    private LocalDateTime createdDate;</span>
+    @LastModifiedDate
+    @Column(insertable = false)
+    @JsonFormat(pattern = &quot;yyyy-MM-dd'T'HH:mm:ss&quot;)
+
+<span class="nc" id="L65">    private LocalDateTime lastModifiedDate;</span>
+
+    @JsonIgnore
+    @OneToMany(mappedBy = &quot;users&quot;)
+
+
+<span class="nc" id="L71">    Set&lt;Article&gt; articles;</span>
+
+<span class="fc" id="L73">    @Enumerated(EnumType.STRING)</span>
+<span class="nc" id="L74">    Badge badge = Badge.NOBADGE;</span>
+<span class="pc" id="L75">    boolean participationTeam =false;</span>
+
+
+    @OneToMany(mappedBy = &quot;users&quot;)
+    @JsonIgnore
+
+<span class="nc" id="L81">    Set&lt;Transaction&gt; transactions;</span>
+
+    @OneToMany(mappedBy = &quot;users&quot;)
+<span class="nc" id="L84">    Set&lt;Complaint&gt; complaints;</span>
+
+    @OneToMany(mappedBy = &quot;users&quot;)
+<span class="nc" id="L87">    Set&lt;Participants&gt; participants;</span>
+
+ //    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+//    @JoinColumn(name = &quot;team_id&quot;)
+    @ManyToOne
+    @JsonIgnore
+<span class="fc" id="L93">    SportTeam sportTeams;</span>
+
+    @OneToOne(mappedBy=&quot;captain&quot;)
+    @JsonIgnore
+<span class="nc" id="L97">    SportTeam sportTeamCaptain;</span>
+
+<span class="fc" id="L99">    @JsonIgnore</span>
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = &quot;user_reservation&quot;,
+            joinColumns = @JoinColumn(name = &quot;user_id&quot;),
+            inverseJoinColumns = @JoinColumn(name = &quot;reservation_id&quot;))
+<span class="fc" id="L104">    private Set&lt;Reservation&gt; reservations = new HashSet&lt;&gt;();</span>
+//    @ManyToMany
+//    @JsonIgnore
+//    Set&lt;Reservation&gt;reservations= new HashSet&lt;&gt;();
+
+    @OneToMany(mappedBy = &quot;users&quot;)
+<span class="nc" id="L110">    Set&lt;FreelanceJob&gt; jobs;</span>
+    @JsonBackReference
+    @OneToMany(mappedBy = &quot;owner&quot;,cascade = CascadeType.ALL, orphanRemoval = true)
+<span class="nc" id="L113">    private List&lt;Housing&gt; ownedHousing;</span>
+
+    @ManyToMany(mappedBy = &quot;renters&quot;)
+<span class="nc" id="L116">    private List&lt;Housing&gt; rentedHousing;</span>
+
+    @OneToMany(mappedBy = &quot;user&quot;) // Relation One-to-Many avec Internship
+    @JsonIgnore
+
+<span class="nc" id="L121">    Set&lt;Internship&gt; internships;</span>
+
+    @OneToMany(mappedBy = &quot;user&quot;)
+<span class="nc" id="L124">    List &lt;Filee&gt; filee;</span>
+
+    @Override
+    //5tarna email houa identifier mta3 user
+    public String getName() {
+<span class="nc" id="L129">        return email;</span>
+    }
+
+    @Override
+    public Collection&lt;? extends GrantedAuthority&gt; getAuthorities() {
+        // Assuming your Roles enum is named Roles and has lowercase role names
+<span class="nc" id="L135">        return Collections.singletonList(new SimpleGrantedAuthority(&quot;ROLE_&quot; + role.name().toUpperCase()));</span>
+    }
+
+    @Override
+    public String getPassword() {
+<span class="nc" id="L140">        return password;</span>
+    }
+
+    @Override
+    public String getUsername() {
+<span class="nc" id="L145">        return null;</span>
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+<span class="nc" id="L150">        return true;</span>
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+<span class="nc bnc" id="L155" title="All 2 branches missed.">        return !accountLocked;</span>
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+<span class="nc" id="L160">        return true;</span>
+    }
+
+    @Override
+    public boolean isEnabled() {
+<span class="nc" id="L165">        return enabled;</span>
+    }
+
+    public String fullname() {
+<span class="nc" id="L169">        return firstName + &quot; &quot; + lastName;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

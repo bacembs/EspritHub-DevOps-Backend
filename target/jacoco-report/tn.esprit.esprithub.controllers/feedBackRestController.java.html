@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>feedBackRestController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.controllers</a> &gt; <span class="el_source">feedBackRestController.java</span></div><h1>feedBackRestController.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.controllers;
+
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.esprithub.DTO.bannedUser;
+import tn.esprit.esprithub.entities.Feedback;
+import tn.esprit.esprithub.entities.Transaction;
+import tn.esprit.esprithub.entities.User;
+import tn.esprit.esprithub.services.IfeedBackServices;
+import java.util.List;
+
+
+@RestController
+//@CrossOrigin(origins = &quot;*&quot;)
+
+<span class="nc" id="L18">@AllArgsConstructor</span>
+@RequestMapping(&quot;/feedBack&quot;)
+public class feedBackRestController {
+    private IfeedBackServices serviceFeedBack ;
+
+
+    @GetMapping(&quot;/badfeedback&quot;)
+    public ResponseEntity&lt;List&lt;bannedUser&gt;&gt; getAlluserWithbadFeedback() {
+
+<span class="nc" id="L27">        List&lt;bannedUser&gt; users = serviceFeedBack.getAllbanned();</span>
+
+
+
+<span class="nc" id="L31">        return ResponseEntity.ok(users);</span>
+    }
+    @PostMapping(&quot;/add&quot;)
+    public boolean addFeedback(@RequestBody Feedback Feedback){
+<span class="nc" id="L35">        return serviceFeedBack.addFeedback(Feedback);</span>
+    }
+    @PutMapping(&quot;/update&quot;)
+    public Feedback updateFeedback(@RequestBody Feedback Feedback){
+<span class="nc" id="L39">        return serviceFeedBack.updateFeedback(Feedback);</span>
+    }
+
+    @GetMapping(&quot;/get/{numFeedback}&quot;)
+    public Feedback getFeedback(@PathVariable Long numFeedback){
+<span class="nc" id="L44">        return serviceFeedBack.getById(numFeedback);</span>
+    }
+
+    @DeleteMapping(&quot;/delete/{numFeedback}&quot;)
+    public ResponseEntity&lt;Boolean&gt; deleteFeedback(@PathVariable Long numFeedback) {
+<span class="nc" id="L49">        boolean isDeleted = serviceFeedBack.deleteFeedback(numFeedback);</span>
+
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (isDeleted) {</span>
+<span class="nc" id="L52">            return ResponseEntity.ok(true);</span>
+        } else {
+<span class="nc" id="L54">            return ResponseEntity.ok(false);</span>
+        }
+    }
+
+
+    @GetMapping(&quot;/all&quot;)
+    public ResponseEntity&lt;List&lt;Feedback&gt;&gt; getAllFeedbacks() {
+<span class="nc" id="L61">        List&lt;Feedback&gt; feedbacks = serviceFeedBack.getAll();</span>
+
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if (feedbacks.isEmpty()) {</span>
+<span class="nc" id="L64">            return ResponseEntity.status(HttpStatus.NOT_FOUND)</span>
+<span class="nc" id="L65">                    .body(null); // Ou un message d'erreur approprié dans le corps de la réponse</span>
+        }
+
+<span class="nc" id="L68">        return ResponseEntity.ok(feedbacks);</span>
+    }
+
+}
+
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

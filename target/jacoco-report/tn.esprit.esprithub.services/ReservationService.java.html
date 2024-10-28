@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.services</a> &gt; <span class="el_source">ReservationService.java</span></div><h1>ReservationService.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.services;
+
+
+
+import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import tn.esprit.esprithub.entities.*;
+import tn.esprit.esprithub.repository.IFieldRepository;
+import tn.esprit.esprithub.repository.IReservationRepository;
+import tn.esprit.esprithub.repository.ISportTeamRepository;
+import tn.esprit.esprithub.repository.IUserRepositoryy;
+
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+<span class="fc" id="L24">@AllArgsConstructor</span>
+@Primary
+public class ReservationService implements IReservationService{
+    private IReservationRepository reservationRepository;
+    private IUserRepositoryy userRepository;
+    private IFieldRepository fieldRepository;
+    private ISportTeamRepository sportTeamRepository;
+
+
+
+
+    private EmailService emailService;
+
+    @Autowired
+    private WeatherService weatherService;
+
+
+    @Override
+    @Scheduled(cron = &quot;0 0 1 * * *&quot;)
+    public void cancelReservationsForToday() {
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (weatherService.isRainyToday()) {</span>
+<span class="nc" id="L45">            LocalDate currentDate = LocalDate.now();</span>
+<span class="nc" id="L46">            LocalDateTime startOfDay = currentDate.atStartOfDay();</span>
+<span class="nc" id="L47">            LocalDateTime endOfDay = currentDate.atTime(23, 59);</span>
+
+<span class="nc" id="L49">            List&lt;Reservation&gt; reservationsForToday = reservationRepository.findByStartDateBetween(startOfDay, endOfDay);</span>
+
+
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            for (Reservation reservation : reservationsForToday) {</span>
+<span class="nc" id="L53">                reservation.setResStatus(Rstatus.cancelled);</span>
+<span class="nc" id="L54">                reservationRepository.save(reservation);</span>
+<span class="nc" id="L55">            }</span>
+        }
+<span class="nc" id="L57">    }</span>
+
+
+    @Override
+   // @Scheduled(fixedDelay = 60000
+    @Scheduled(cron = &quot;0 0 1 * * *&quot;) // EveryDay at 01AM
+    public void updateFinishedReservationsStatusAndAssignBadges() {
+<span class="nc" id="L64">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="nc" id="L65">        List&lt;Reservation&gt; reservations = reservationRepository.findByEndDateBeforeAndResStatus(now, Rstatus.finished);</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        for (Reservation reservation : reservations) {</span>
+<span class="nc" id="L67">            reservation.setResStatus(Rstatus.finished);</span>
+<span class="nc" id="L68">            reservationRepository.save(reservation);</span>
+<span class="nc" id="L69">        }</span>
+
+
+<span class="nc" id="L72">        List&lt;User&gt; usersWithUpdatedBadges = userRepository.findUsersWithUpdatedBadges();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        for (User user : usersWithUpdatedBadges) {</span>
+<span class="nc" id="L74">            int numReservations = user.getReservations().size();</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">            if (numReservations &gt;= 5) {</span>
+<span class="nc" id="L76">                user.setBadge(Badge.DIAMOND);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">            } else if (numReservations &gt;= 3) {</span>
+<span class="nc" id="L78">                user.setBadge(Badge.GOLD);</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            } else if (numReservations &gt;= 1) {</span>
+<span class="nc" id="L80">                user.setBadge(Badge.SILVER);</span>
+            }
+<span class="nc" id="L82">            userRepository.save(user);</span>
+<span class="nc" id="L83">        }</span>
+<span class="nc" id="L84">    }</span>
+
+
+
+
+    @Override
+    public Reservation addReservation(Reservation reservation) {
+<span class="nc" id="L91">        return reservationRepository.save(reservation);</span>
+    }
+
+    @Override
+    public Reservation updateReservation( Long reservationId,Reservation updatedReservation) {
+<span class="nc" id="L96">        Reservation reservation = reservationRepository.findById(reservationId).orElse(null);</span>
+
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (reservation != null) {</span>
+<span class="nc" id="L99">            reservation.setStartDate(updatedReservation.getStartDate());</span>
+<span class="nc" id="L100">            reservation.setEndDate(updatedReservation.getEndDate());</span>
+<span class="nc" id="L101">            reservation.setNbPlayers(updatedReservation.getNbPlayers());</span>
+<span class="nc" id="L102">            reservation.setResStatus(updatedReservation.getResStatus());</span>
+<span class="nc" id="L103">            reservation.setResType(updatedReservation.getResType());</span>
+
+<span class="nc" id="L105">            return reservationRepository.save(reservation);</span>
+        }
+
+<span class="nc" id="L108">        return null;</span>
+    }
+
+    @Override
+    public void deleteReservation(Long reservationId) {
+<span class="nc" id="L113">        reservationRepository.deleteById(reservationId);</span>
+<span class="nc" id="L114">    }</span>
+
+    @Override
+    public Reservation getReservationById(Long reservationId) {
+<span class="nc" id="L118">        return reservationRepository.findById(reservationId).orElse(null);</span>
+    }
+
+    @Override
+    public List&lt;Reservation&gt; getAll() {
+<span class="nc" id="L123">        return (List&lt;Reservation&gt;) reservationRepository.findAll();</span>
+    }
+
+@Override
+public List&lt;Reservation&gt; getAllReservationsWithField() {
+<span class="nc" id="L128">    return reservationRepository.findAllWithField();</span>
+}
+    @Override
+    public List&lt;Object[]&gt; getAllReservationsWithFieldId() {
+<span class="nc" id="L132">        return reservationRepository.findAllReservationsWithFieldId();</span>
+    }
+
+    @Override
+    public Reservation getReservationWithField(Long reservationId) {
+<span class="nc" id="L137">        return reservationRepository.findByIdWithField(reservationId);</span>
+    }
+
+    @Override
+    public Reservation cancelReservation(Long reservationId){
+<span class="nc" id="L142">       Reservation reservation= reservationRepository.findById(reservationId).orElse(null);</span>
+<span class="nc" id="L143">        reservation.setResStatus(Rstatus.cancelled);</span>
+<span class="nc" id="L144">        return reservationRepository.save(reservation);</span>
+    }
+//
+//@Override
+//public Reservation addReservationForUser(Long userId, Long fieldId, Reservation reservation) {
+//    if (!userRepository.existsById(userId) || !fieldRepository.existsById(fieldId)) {
+//        return null;
+//    }
+//    User user = userRepository.findById(userId).orElse(null);
+//    Field field = fieldRepository.findById(fieldId).orElse(null);
+//    if (user == null || field == null) {
+//        return null;
+//    }
+//    reservation.setUsers(new HashSet&lt;&gt;(Collections.singletonList(user)));
+//    reservation.setFields(field);
+//    reservation.updateStatus();
+//    reservation.setNbPlayers((long) reservation.getUsers().size());
+//    user.getReservations().add(reservation);
+//    userRepository.save(user);
+//    return reservationRepository.save(reservation);
+//}
+//changed after merge
+@Override
+public Reservation addReservationForUser(Long userId, Long fieldId, Reservation reservation) {
+
+<span class="nc bnc" id="L169" title="All 4 branches missed.">    if (!userRepository.existsById(userId) || !fieldRepository.existsById(fieldId)) {</span>
+<span class="nc" id="L170">        return null;</span>
+    }
+
+<span class="nc" id="L173">    User user = userRepository.findById(userId).orElse(null);</span>
+<span class="nc" id="L174">    Field field = fieldRepository.findById(fieldId).orElse(null);</span>
+
+<span class="nc bnc" id="L176" title="All 4 branches missed.">    if (user == null || field == null) {</span>
+<span class="nc" id="L177">        return null; // User or field not found</span>
+    }
+
+<span class="nc bnc" id="L180" title="All 2 branches missed.">    if (!isFieldAvailableForReservation(fieldId, reservation.getStartDate(), reservation.getEndDate())) {</span>
+<span class="nc" id="L181">        throw new IllegalArgumentException(&quot;The field is not available for the specified time slot.&quot;);</span>
+
+    }
+
+<span class="nc" id="L185">    reservation.setUsers(new HashSet&lt;&gt;(Collections.singletonList(user)));</span>
+<span class="nc" id="L186">    reservation.setFields(field);</span>
+<span class="nc" id="L187">    reservation.updateStatus();</span>
+<span class="nc" id="L188">    reservation.setNbPlayers((long) reservation.getUsers().size());</span>
+<span class="nc" id="L189">    user.getReservations().add(reservation);</span>
+
+<span class="nc" id="L191">    userRepository.save(user);</span>
+<span class="nc" id="L192">    return reservationRepository.save(reservation);</span>
+}
+
+
+    //changed after merge
+    @Override
+    public boolean isFieldAvailableForReservation(Long fieldId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+<span class="nc" id="L199">        List&lt;Reservation&gt; existingReservations = reservationRepository.findByFieldsFieldId(fieldId);</span>
+
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        for (Reservation existingReservation : existingReservations) {</span>
+<span class="nc" id="L202">            LocalDateTime existingStart = existingReservation.getStartDate();</span>
+<span class="nc" id="L203">            LocalDateTime existingEnd = existingReservation.getEndDate();</span>
+
+
+<span class="nc bnc" id="L206" title="All 4 branches missed.">            if ((startDateTime.isBefore(existingEnd) || startDateTime.isEqual(existingEnd))</span>
+<span class="nc bnc" id="L207" title="All 4 branches missed.">                    &amp;&amp; (endDateTime.isAfter(existingStart) || endDateTime.isEqual(existingStart))) {</span>
+<span class="nc" id="L208">                return false;</span>
+            }
+<span class="nc" id="L210">        }</span>
+
+<span class="nc" id="L212">        return true;</span>
+    }
+
+
+
+    @Override
+    public void deleteReservationForUser(Long userId, Long reservationId) {
+<span class="nc" id="L219">        User user = userRepository.findById(userId).orElse(null);</span>
+<span class="nc" id="L220">        Reservation reservation = reservationRepository.findById(reservationId).orElse(null);</span>
+
+<span class="nc bnc" id="L222" title="All 4 branches missed.">        if (user != null &amp;&amp; reservation != null) {</span>
+<span class="nc" id="L223">            user.getReservations().remove(reservation);</span>
+<span class="nc" id="L224">            userRepository.save(user);</span>
+<span class="nc" id="L225">            reservationRepository.delete(reservation);</span>
+        }
+<span class="nc" id="L227">    }</span>
+
+    @Override
+    public Reservation updateReservationForUser(Long userId, Long reservationId, Reservation updatedReservation) {
+<span class="nc" id="L231">        User user = userRepository.findById(userId).orElse(null);</span>
+<span class="nc" id="L232">        Reservation reservation = reservationRepository.findById(reservationId).orElse(null);</span>
+
+<span class="nc bnc" id="L234" title="All 4 branches missed.">        if (user != null &amp;&amp; reservation != null) {</span>
+<span class="nc" id="L235">            reservation.setStartDate(updatedReservation.getStartDate());</span>
+<span class="nc" id="L236">            reservation.setEndDate(updatedReservation.getEndDate());</span>
+<span class="nc" id="L237">            reservation.setNbPlayers(updatedReservation.getNbPlayers());</span>
+<span class="nc" id="L238">            reservation.setResStatus(updatedReservation.getResStatus());</span>
+<span class="nc" id="L239">            reservation.setResType(updatedReservation.getResType());</span>
+
+<span class="nc" id="L241">            return reservationRepository.save(reservation);</span>
+        }
+
+<span class="nc" id="L244">        return null;</span>
+    }
+
+    @Override
+    public List&lt;Reservation&gt; getReservationsForUser(Long userId) {
+<span class="nc" id="L249">        return reservationRepository.findByUsersUserId(userId);</span>
+    }
+
+    @Override
+    public List&lt;Reservation&gt; getReservationsByField(Long fieldId) {
+<span class="nc" id="L254">        return reservationRepository.findByFieldsFieldId(fieldId);</span>
+    }
+
+    @Override
+    public List&lt;Reservation&gt; getReservationsByUserAndField(Long userId, Long fieldId) {
+<span class="nc" id="L259">        return reservationRepository.findByUsersUserIdAndFieldsFieldId(userId, fieldId);</span>
+    }
+
+    @Override
+    public List&lt;Reservation&gt; getReservationsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+<span class="nc" id="L264">        return reservationRepository.findByStartDateBetween(startDate, endDate);</span>
+    }
+
+    @Override
+    public Long countReservationsByUser(Long userId) {
+<span class="nc" id="L269">        return reservationRepository.countByUsersUserId(userId);</span>
+    }
+
+
+
+    public Reservation addReservationSportTeam(Long sportTeamId, Reservation reservation) {
+<span class="nc" id="L275">        User captain = getCaptainOfSportTeam(sportTeamId);</span>
+<span class="nc" id="L276">        reservation.setUsers(new HashSet&lt;&gt;(Collections.singletonList(captain)));</span>
+<span class="nc" id="L277">        return reservationRepository.save(reservation);</span>
+    }
+
+    @Override
+    public User getCaptainOfSportTeam(Long sportTeamId) {
+<span class="nc" id="L282">        SportTeam sportTeam = sportTeamRepository.findById(sportTeamId)</span>
+<span class="nc" id="L283">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;SportTeam not found with ID &quot; + sportTeamId));</span>
+<span class="nc" id="L284">        return sportTeam.getCaptain();</span>
+    }
+
+
+
+    @Override
+    public Set&lt;User&gt; getUsersByReservation(Long reservationId) {
+<span class="nc" id="L291">        Optional&lt;Reservation&gt; reservationOptional = reservationRepository.findById(reservationId);</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">        if (reservationOptional.isPresent()) {</span>
+<span class="nc" id="L293">            Reservation reservation = reservationOptional.get();</span>
+<span class="nc" id="L294">            return reservation.getUsers();</span>
+        }
+<span class="nc" id="L296">        return Collections.emptySet();</span>
+    }
+
+    @Override
+    public void cancelReservationForSportTeam(Long reservationId, Long captainId) {
+
+<span class="fc" id="L302">        Reservation reservation = reservationRepository.findById(reservationId).orElse(null);</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">        if (reservation == null) {</span>
+<span class="fc" id="L304">            throw new IllegalArgumentException(&quot;Reservation not found&quot;);</span>
+        }
+
+
+<span class="fc" id="L308">        User captain = userRepository.findById(captainId).orElse(null);</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">        if (captain == null) {</span>
+<span class="fc" id="L310">            throw new IllegalArgumentException(&quot;Captain not found&quot;);</span>
+        }
+
+
+<span class="fc" id="L314">        SportTeam sportTeam = captain.getSportTeams();</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">        if (sportTeam == null) {</span>
+<span class="fc" id="L316">            throw new IllegalStateException(&quot;Captain is not associated with any sport team&quot;);</span>
+        }
+
+
+<span class="fc bfc" id="L320" title="All 2 branches covered.">        if (!sportTeam.getCaptain().equals(captain)) {</span>
+<span class="fc" id="L321">            throw new IllegalArgumentException(&quot;Only the captain can cancel the reservation for the sport team&quot;);</span>
+        }
+
+
+<span class="fc" id="L325">        Set&lt;User&gt; teamMembers = sportTeam.getUsers();</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">        for (User member : teamMembers) {</span>
+<span class="fc" id="L327">            member.getReservations().remove(reservation);</span>
+<span class="fc" id="L328">            userRepository.save(member);</span>
+<span class="fc" id="L329">        }</span>
+
+
+<span class="fc" id="L332">        reservationRepository.delete(reservation);</span>
+<span class="fc" id="L333">    }</span>
+
+@Override
+public void joinReservation(Long userId, Long reservationId) {
+<span class="nc" id="L337">    Reservation reservation = reservationRepository.findById(reservationId)</span>
+<span class="nc" id="L338">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Reservation not found with ID &quot; + reservationId));</span>
+
+<span class="nc bnc" id="L340" title="All 2 branches missed.">    if (reservation.getNbPlayers() &gt;= reservation.getFields().getCapacityField()) {</span>
+<span class="nc" id="L341">        throw new IllegalStateException(&quot;No space available in the reservation.&quot;);</span>
+    }
+
+<span class="nc" id="L344">    User user = userRepository.findById(userId)</span>
+<span class="nc" id="L345">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;User not found with ID &quot; + userId));</span>
+<span class="nc" id="L346">    reservation.getUsers().add(user);</span>
+<span class="nc" id="L347">    user.getReservations().add(reservation);</span>
+<span class="nc" id="L348">    reservation.setNbPlayers(reservation.getNbPlayers() + 1);</span>
+<span class="nc" id="L349">    reservationRepository.save(reservation);</span>
+<span class="nc" id="L350">    userRepository.save(user);</span>
+<span class="nc" id="L351">}</span>
+
+    @Override
+    public void cancelUserReservation(Long userId, Long reservationId) {
+
+<span class="nc" id="L356">        Reservation reservation = reservationRepository.findById(reservationId)</span>
+<span class="nc" id="L357">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Reservation not found with ID &quot; + reservationId));</span>
+
+<span class="nc" id="L359">        User user = userRepository.findById(userId)</span>
+<span class="nc" id="L360">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;User not found with ID &quot; + userId));</span>
+
+<span class="nc" id="L362">        reservation.getUsers().remove(user);</span>
+<span class="nc" id="L363">        user.getReservations().remove(reservation);</span>
+
+<span class="nc" id="L365">        reservation.setNbPlayers(reservation.getNbPlayers() - 1);</span>
+
+<span class="nc" id="L367">        reservationRepository.save(reservation);</span>
+<span class="nc" id="L368">        userRepository.save(user);</span>
+<span class="nc" id="L369">    }</span>
+
+    @Override
+    public List&lt;Reservation&gt; getReservationsWithAvailableSpace() {
+
+<span class="nc" id="L374">        List&lt;Reservation&gt; reservations = reservationRepository.findAll();</span>
+
+
+<span class="nc" id="L377">        return reservations.stream()</span>
+<span class="nc" id="L378">                .filter(reservation -&gt; {</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">                    if (reservation.getNbPlayers() != null) {</span>
+<span class="nc bnc" id="L380" title="All 2 branches missed.">                        return reservation.getNbPlayers() &lt; reservation.getFields().getCapacityField();</span>
+                    }
+<span class="nc" id="L382">                    return false;</span>
+                })
+<span class="nc" id="L384">                .collect(Collectors.toList());</span>
+    }
+
+
+
+//    @Scheduled(cron = &quot;0 0 10 * * *&quot;)
+//    public void sendReservationReminders() {
+//        List&lt;Reservation&gt; allReservations = reservationRepository.findAll();
+//
+//        LocalDate tomorrow = LocalDate.now().plusDays(1);
+//
+//        List&lt;Reservation&gt; reservationsForTomorrow = allReservations.stream()
+//                .filter(reservation -&gt; reservation.getStartDate().toLocalDate().equals(tomorrow))
+//                .collect(Collectors.toList());
+//
+//        for (Reservation reservation : reservationsForTomorrow) {
+//            String userEmail = getUserEmailFromReservation(reservation);
+//            if (userEmail != null) {
+//                sendReminderEmail(userEmail, reservation.getStartDate().toString());
+//            }
+//        }
+//    }
+    @Override
+    @Scheduled(cron = &quot;0 0 10 * * *&quot;)
+    public void sendReservationReminders() {
+<span class="nc" id="L409">        List&lt;Reservation&gt; allReservations = reservationRepository.findAll();</span>
+<span class="nc" id="L410">        LocalDate tomorrow = LocalDate.now().plusDays(1);</span>
+
+//        List&lt;Reservation&gt; reservationsForTomorrow = allReservations.stream()
+//                .filter(reservation -&gt; reservation.getStartDate().toLocalDate().equals(tomorrow))
+//                .collect(Collectors.toList());
+<span class="nc" id="L415">        List&lt;Reservation&gt; reservationsForTomorrow = allReservations.stream()</span>
+<span class="nc" id="L416">                .filter(reservation -&gt;</span>
+<span class="nc bnc" id="L417" title="All 2 branches missed.">                        reservation.getStartDate().toLocalDate().equals(tomorrow) &amp;&amp;</span>
+<span class="nc bnc" id="L418" title="All 2 branches missed.">                                reservation.getResStatus() == Rstatus.confirmed)</span>
+<span class="nc" id="L419">                .collect(Collectors.toList());</span>
+
+<span class="nc bnc" id="L421" title="All 2 branches missed.">        for (Reservation reservation : reservationsForTomorrow) {</span>
+<span class="nc" id="L422">            String userEmail = getUserEmailFromReservation(reservation);</span>
+<span class="nc bnc" id="L423" title="All 2 branches missed.">            if (userEmail != null) {</span>
+<span class="nc" id="L424">                String subject = &quot;Reservation Reminder&quot;;</span>
+<span class="nc" id="L425">                String text = &quot;This is a reminder for your reservation scheduled for &quot; + reservation.getStartDate().toString();</span>
+<span class="nc" id="L426">                emailService.sendEmailSport(userEmail, subject, text);</span>
+            }
+<span class="nc" id="L428">        }</span>
+<span class="nc" id="L429">    }</span>
+
+    @Override
+    public void sendReminderEmail(String to, String reservationDate) {
+
+<span class="nc" id="L434">    }</span>
+
+    public String getUserEmailFromReservation(Reservation reservation) {
+<span class="nc" id="L437">        return reservationRepository.getUserEmailByReservationId(reservation.getReservationId());</span>
+    }
+
+//    @Override
+//    public void sendReminderEmail(String to, String reservationDate) {
+//        String subject = &quot;Reservation Reminder&quot;;
+//        String text = &quot;This is a reminder for your reservation scheduled for &quot; + reservationDate;
+//
+//        MailRequest mailRequest = new MailRequest();
+//        mailRequest.setTo(to);
+//        mailRequest.setSubject(subject);
+//        mailRequest.setText(text);
+//
+//        emailService.sendReservationReminder(mailRequest);
+//    }
+
+    //    public void sendReminderEmail(String to, String reservationDate) {
+//        // Construct the email message
+//        String subject = &quot;Reservation Reminder&quot;;
+//        String text = &quot;This is a reminder for your reservation scheduled for &quot; + reservationDate;
+//
+//
+//        emailService.sendEmailSport(to, subject, text);
+//    }
+    @Override
+    public boolean hasUserJoinedReservation(Long reservationId, Long userId) {
+<span class="nc" id="L463">        Reservation reservation = reservationRepository.findByIdWithUsers(reservationId);</span>
+<span class="nc bnc" id="L464" title="All 4 branches missed.">        return reservation != null &amp;&amp; reservation.getUsers().stream().anyMatch(user -&gt; user.getUserId().equals(userId));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
