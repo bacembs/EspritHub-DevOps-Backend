@@ -20,25 +20,25 @@ import java.util.Collections;
 
 
 @Configuration
-<span class="nc" id="L23">@RequiredArgsConstructor</span>
+<span class="fc" id="L23">@RequiredArgsConstructor</span>
 public class BeansConfig {
     private final UserDetailsService userDetailsService;
     @Bean
     public AuthenticationProvider authenticationProvider() {
-<span class="nc" id="L28">        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();</span>
-<span class="nc" id="L29">        authProvider.setUserDetailsService(userDetailsService);</span>
-<span class="nc" id="L30">        authProvider.setPasswordEncoder(passwordEncoder());</span>
-<span class="nc" id="L31">        return authProvider;</span>
+<span class="fc" id="L28">        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();</span>
+<span class="fc" id="L29">        authProvider.setUserDetailsService(userDetailsService);</span>
+<span class="fc" id="L30">        authProvider.setPasswordEncoder(passwordEncoder());</span>
+<span class="fc" id="L31">        return authProvider;</span>
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-<span class="nc" id="L36">        return config.getAuthenticationManager();</span>
+<span class="fc" id="L36">        return config.getAuthenticationManager();</span>
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-<span class="nc" id="L41">        return new BCryptPasswordEncoder();</span>
+<span class="fc" id="L41">        return new BCryptPasswordEncoder();</span>
     }
 
 //    @Bean

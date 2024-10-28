@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-<span class="nc" id="L19">public class JwtService {</span>
-<span class="nc" id="L20">    private long jwtExpiration = 8640000;</span>
-<span class="nc" id="L21">    private String secretKey = &quot;62e703bc825ea9f59ed74388ab76879b9cdcd82bb6eb552a8a8f71435095450e&quot;;</span>
+<span class="fc" id="L19">public class JwtService {</span>
+<span class="fc" id="L20">    private long jwtExpiration = 8640000;</span>
+<span class="fc" id="L21">    private String secretKey = &quot;62e703bc825ea9f59ed74388ab76879b9cdcd82bb6eb552a8a8f71435095450e&quot;;</span>
     public String extractUsername(String token) {
 <span class="nc" id="L23">        return extractClaim(token, Claims::getSubject);</span>
     }

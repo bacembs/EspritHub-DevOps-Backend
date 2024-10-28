@@ -13,7 +13,7 @@ import java.util.List;
 
 @Getter
 <span class="nc" id="L15">@Setter</span>
-<span class="nc" id="L16">@NoArgsConstructor</span>
+<span class="fc" id="L16">@NoArgsConstructor</span>
 <span class="nc" id="L17">@AllArgsConstructor</span>
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
@@ -48,7 +48,7 @@ public class Housing implements Serializable {
     @OneToOne
 @JsonIgnore
 <span class="nc" id="L50">    Transaction transaction;</span>
-<span class="nc" id="L51">    @JsonIgnore</span>
+<span class="pc" id="L51">    @JsonIgnore</span>
     @OneToMany(mappedBy = &quot;housing&quot;, cascade = CascadeType.ALL, orphanRemoval = true)
 <span class="nc" id="L53">    private List&lt;AvailabilityTimeSlot&gt; availabilityTimeSlots = new ArrayList&lt;&gt;();</span>
 

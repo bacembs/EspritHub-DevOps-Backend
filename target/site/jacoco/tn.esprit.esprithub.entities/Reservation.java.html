@@ -13,16 +13,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-<span class="nc" id="L16">@Setter</span>
+<span class="pc" id="L16">@Setter</span>
 <span class="pc" id="L17">@Builder</span>
-<span class="nc" id="L18">@NoArgsConstructor</span>
+<span class="fc" id="L18">@NoArgsConstructor</span>
 <span class="fc" id="L19">@AllArgsConstructor</span>
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Reservation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-<span class="nc" id="L25">    Long reservationId;</span>
+<span class="fc" id="L25">    Long reservationId;</span>
 
     @JsonFormat(pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS'Z'&quot;)
 <span class="nc" id="L28">    LocalDateTime startDate;</span>
@@ -31,12 +31,12 @@ public class Reservation implements Serializable {
 <span class="nc" id="L31">    LocalDateTime endDate;</span>
 
 <span class="pc" id="L33">    Long nbPlayers =1L;</span>
-<span class="pc" id="L34">    @Enumerated(EnumType.STRING)</span>
+<span class="fc" id="L34">    @Enumerated(EnumType.STRING)</span>
 <span class="nc" id="L35">    Rstatus resStatus = Rstatus.pending;</span>
     @Enumerated(EnumType.STRING)
 <span class="nc" id="L37">    TypeR  resType;</span>
 
-<span class="pc" id="L39">    @ManyToMany(mappedBy = &quot;reservations&quot;)</span>
+<span class="fc" id="L39">    @ManyToMany(mappedBy = &quot;reservations&quot;)</span>
     @JsonIgnore
 <span class="fc" id="L41">    private Set&lt;User&gt; users = new HashSet&lt;&gt;();</span>
 //    @ManyToMany(mappedBy=&quot;reservations&quot;)

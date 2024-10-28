@@ -27,7 +27,7 @@ import tn.esprit.esprithub.services.UserService;
 
 
 @RestController
-<span class="nc" id="L30">@AllArgsConstructor</span>
+<span class="fc" id="L30">@AllArgsConstructor</span>
 @RequestMapping(&quot;/Articles&quot;)
 public class
 ArticleController {
@@ -91,7 +91,7 @@ ArticleController {
     public List&lt;String&gt; getConditions() {
 <span class="nc" id="L92">        return Arrays.asList(&quot;Good&quot;, &quot;Fair&quot;, &quot;Damaged&quot;);</span>
     }
-<span class="nc" id="L94">    private final String uploadPath = &quot;./src/main/resources/static/photos/&quot;;</span>
+<span class="fc" id="L94">    private final String uploadPath = &quot;./src/main/resources/static/photos/&quot;;</span>
 
     @GetMapping(&quot;/a/{userId}&quot;)
     public ResponseEntity&lt;List&lt;Article&gt;&gt; getAllArticles(@PathVariable Long userId) {

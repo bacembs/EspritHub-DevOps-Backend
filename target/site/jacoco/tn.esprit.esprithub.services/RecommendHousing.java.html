@@ -17,15 +17,15 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-<span class="nc" id="L20">@Slf4j</span>
+<span class="fc" id="L20">@Slf4j</span>
 
-<span class="nc" id="L22">public class RecommendHousing {</span>
+<span class="fc" id="L22">public class RecommendHousing {</span>
     @Autowired
     private GeocodingService geocodingService;
 
     @Autowired
     private IHousingRepository ihousingRepository;
-<span class="nc" id="L28">    private static final Logger logger = LoggerFactory.getLogger(RecommendHousing.class);</span>
+<span class="fc" id="L28">    private static final Logger logger = LoggerFactory.getLogger(RecommendHousing.class);</span>
 
     public List&lt;Housing&gt; recommendHousesNearUser(String userAddress) {
 

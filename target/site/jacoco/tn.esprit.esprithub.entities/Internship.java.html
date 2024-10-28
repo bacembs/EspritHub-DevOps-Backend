@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Getter
 <span class="nc" id="L16">@Setter</span>
-<span class="nc" id="L17">@NoArgsConstructor</span>
+<span class="fc" id="L17">@NoArgsConstructor</span>
 <span class="nc" id="L18">@AllArgsConstructor</span>
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
@@ -39,7 +39,7 @@ public class Internship implements Serializable {
 
 
 
-<span class="nc" id="L42">    @OneToMany(mappedBy = &quot;internship&quot;, cascade = CascadeType.ALL)</span>
+<span class="pc" id="L42">    @OneToMany(mappedBy = &quot;internship&quot;, cascade = CascadeType.ALL)</span>
 <span class="nc" id="L43">    private List&lt;Filee&gt; files = new ArrayList&lt;&gt;();</span>
 
     @ManyToOne // Relation Many-to-One avec User

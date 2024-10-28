@@ -16,18 +16,18 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 @Configuration
 @EnableWebSecurity
-<span class="nc" id="L19">@RequiredArgsConstructor</span>
+<span class="fc" id="L19">@RequiredArgsConstructor</span>
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final JwtFilter jwtAuthFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-<span class="nc" id="L26">        http</span>
-<span class="nc" id="L27">                .cors(withDefaults())   //allow requests from other sources</span>
-<span class="nc" id="L28">                .csrf(AbstractHttpConfigurer::disable)  //security measure, not needed khater nesta3mlou fel jwt</span>
-<span class="nc" id="L29">                .authorizeHttpRequests(req -&gt;</span>
-<span class="nc" id="L30">                        req.requestMatchers(</span>
+<span class="fc" id="L26">        http</span>
+<span class="fc" id="L27">                .cors(withDefaults())   //allow requests from other sources</span>
+<span class="fc" id="L28">                .csrf(AbstractHttpConfigurer::disable)  //security measure, not needed khater nesta3mlou fel jwt</span>
+<span class="fc" id="L29">                .authorizeHttpRequests(req -&gt;</span>
+<span class="fc" id="L30">                        req.requestMatchers(</span>
                                         &quot;/**&quot;,
                                         &quot;/auth/**&quot;,
                                         &quot;/v2/api-docs&quot;,
@@ -43,14 +43,14 @@ public class SecurityConfig {
                                         &quot;/webjars/**&quot;,
                                         &quot;/swagger-ui.html&quot;
 
-<span class="nc" id="L46">                        ).permitAll()    //dont require login</span>
-<span class="nc" id="L47">                                .anyRequest()</span>
-<span class="nc" id="L48">                                .authenticated()  //require login</span>
+<span class="fc" id="L46">                        ).permitAll()    //dont require login</span>
+<span class="fc" id="L47">                                .anyRequest()</span>
+<span class="fc" id="L48">                                .authenticated()  //require login</span>
                 )
-<span class="nc" id="L50">                .sessionManagement(session -&gt; session.sessionCreationPolicy(STATELESS))   //dont create session for users, bech nesta3mlou jwt</span>
-<span class="nc" id="L51">                .authenticationProvider(authenticationProvider)  //custom authentication provider lel user logins</span>
-<span class="nc" id="L52">                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);</span>
-<span class="nc" id="L53">        return http.build();</span>
+<span class="fc" id="L50">                .sessionManagement(session -&gt; session.sessionCreationPolicy(STATELESS))   //dont create session for users, bech nesta3mlou jwt</span>
+<span class="fc" id="L51">                .authenticationProvider(authenticationProvider)  //custom authentication provider lel user logins</span>
+<span class="fc" id="L52">                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);</span>
+<span class="fc" id="L53">        return http.build();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
