@@ -116,25 +116,6 @@ public class ReservationServiceJUnitTest {
         assertEquals("Captain not found", exception.getMessage());
     }
 
-//    @Test
-//    public void testCancelReservationForSportTeam_NotCaptain() {
-//        // Setup: Create a user who is not a captain
-//        User nonCaptainUser  = new User();
-//        nonCaptainUser .setRole("USER"); // Ensure this user is not a captain
-//
-//        // Create a reservation associated with a sport team
-//        Reservation reservation = new Reservation();
-//        reservation.setSportTeam(captainSportTeam); // This should be a team with a captain
-//
-//        // Act: Attempt to cancel the reservation
-//        Exception exception = assertThrows(YourCustomException.class, () -> {
-//            reservationService.cancelReservation(nonCaptainUser , reservation);
-//        });
-//
-//        // Assert: Check the exception message
-//        assertEquals("Only the captain can cancel the reservation for the sport team", exception.getMessage());
-//    }
-
     @Test
     public void testCancelReservationForSportTeam_CaptainNotAssociatedWithTeam() {
         // Arrange
