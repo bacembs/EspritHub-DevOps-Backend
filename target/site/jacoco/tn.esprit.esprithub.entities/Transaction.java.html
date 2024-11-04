@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Transaction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.entities</a> &gt; <span class="el_source">Transaction.java</span></div><h1>Transaction.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.entities;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Set;
+
+@Getter
+<span class="nc" id="L14">@Setter</span>
+<span class="fc" id="L15">@NoArgsConstructor</span>
+<span class="nc" id="L16">@AllArgsConstructor</span>
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity
+public class Transaction implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="nc" id="L22">    Long transactionId;</span>
+<span class="nc" id="L23">    Float amountTransaction;</span>
+    @JsonFormat(pattern = &quot;yyyy-MM-dd'T'HH:mm:ss&quot;)
+
+<span class="nc" id="L26">    LocalDateTime payementDateTransaction;</span>
+
+    @OneToMany(mappedBy = &quot;transactions&quot;)
+<span class="nc" id="L29">    Set&lt;Feedback&gt; feedbacks;</span>
+
+    @OneToMany(mappedBy = &quot;transactions&quot;)
+<span class="nc" id="L32">    Set&lt;Article&gt; articles;</span>
+    @OneToOne(mappedBy = &quot;transaction&quot;)
+<span class="nc" id="L34">    Housing housing;</span>
+
+    @ManyToOne
+<span class="nc" id="L37">    User users;</span>
+
+
+    public Transaction(Long transactionId,Float amountTransaction, LocalDateTime
+<span class="nc" id="L41">            payementDateTransaction, Set&lt;Feedback&gt; feedbacks, Set&lt;Article&gt; articles, User users) {</span>
+<span class="nc" id="L42">        this.transactionId = transactionId;</span>
+
+<span class="nc" id="L44">        this.amountTransaction = amountTransaction;</span>
+<span class="nc" id="L45">        this.payementDateTransaction = payementDateTransaction;</span>
+<span class="nc" id="L46">        this.feedbacks = feedbacks;</span>
+<span class="nc" id="L47">        this.articles = articles;</span>
+<span class="nc" id="L48">        this.users = users;</span>
+<span class="nc" id="L49">    }</span>
+
+    public Transaction(Long transactionId, Float amountTransaction, LocalDateTime payementDateTransaction,
+<span class="nc" id="L52">                       Set&lt;Feedback&gt; feedbacks, Housing housing, User users) {</span>
+<span class="nc" id="L53">        this.transactionId = transactionId;</span>
+<span class="nc" id="L54">        this.amountTransaction = amountTransaction;</span>
+<span class="nc" id="L55">        this.payementDateTransaction = payementDateTransaction;</span>
+<span class="nc" id="L56">        this.feedbacks = feedbacks;</span>
+<span class="nc" id="L57">        this.housing = housing;</span>
+<span class="nc" id="L58">        this.users = users;</span>
+<span class="nc" id="L59">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserRestController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.controllers</a> &gt; <span class="el_source">UserRestController.java</span></div><h1>UserRestController.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.controllers;
+
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.esprithub.entities.User;
+import tn.esprit.esprithub.services.IUserService;
+
+import java.util.List;
+
+<span class="fc" id="L10">@AllArgsConstructor</span>
+@RestController
+@RequestMapping(&quot;/User&quot;)
+public class UserRestController {
+    private IUserService userService;
+
+    @PostMapping(&quot;/add&quot;)
+    public User addUser (@RequestBody User user){
+<span class="nc" id="L18">        return userService.addUser(user);</span>
+    }
+    @PutMapping(&quot;/update&quot;)
+    public User updateUser (@RequestBody User user){
+<span class="nc" id="L22">        return userService.updateUser(user);</span>
+    }
+    @GetMapping  (&quot;/{userId}&quot;)
+    public User getUser (@PathVariable Long userId){
+<span class="nc" id="L26">        return userService.getUserById(userId);</span>
+    }
+    @DeleteMapping  (&quot;/delete/{userId}&quot;)
+    public void removeUser (@PathVariable Long userId){
+<span class="nc" id="L30">        userService.deleteUser(userId);</span>
+<span class="nc" id="L31">    }</span>
+    @GetMapping  (&quot;/all&quot;)
+    public List&lt;User&gt; getAll (){
+<span class="nc" id="L34">        return userService.getAll();}</span>
+    @GetMapping(&quot;/user&quot;)
+    public User getbyuser(@RequestBody User user){
+<span class="nc" id="L37">        return userService.getByNom(user.getUsername());</span>
+    }
+    @GetMapping(&quot;/users/{userId}&quot;)
+    public String getUserAddress(@PathVariable Long userId) {
+        // Récupérer l'adresse du user à partir de son ID
+<span class="nc" id="L42">        String address = userService.getUserAddressById(userId);</span>
+
+
+<span class="nc" id="L45">            return address;</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

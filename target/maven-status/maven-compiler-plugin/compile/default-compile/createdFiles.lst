@@ -63,6 +63,7 @@ tn/esprit/esprithub/config/EmailTemplateName.class
 tn/esprit/esprithub/requestsresponses/RegistrationRequest$RegistrationRequestBuilder.class
 tn/esprit/esprithub/requestsresponses/AuthenticationRequest.class
 tn/esprit/esprithub/controllers/VisitRestController.class
+tn/esprit/esprithub/entities/Reservation$ReservationBuilder.class
 tn/esprit/esprithub/entities/GeocodingResponse.class
 tn/esprit/esprithub/services/IfeedBackServices.class
 tn/esprit/esprithub/security/UserDetailsServiceImpl.class
@@ -119,6 +120,7 @@ tn/esprit/esprithub/esprithubApplication.class
 tn/esprit/esprithub/handler/ExceptionResponse.class
 tn/esprit/esprithub/services/FreelanceJobService.class
 tn/esprit/esprithub/repository/IarticleRepository.class
+tn/esprit/esprithub/entities/SportTeam$SportTeamBuilder.class
 tn/esprit/esprithub/services/UserService.class
 tn/esprit/esprithub/entities/Event.class
 tn/esprit/esprithub/repositories/IComplaintRepository.class
@@ -126,6 +128,7 @@ tn/esprit/esprithub/requestsresponses/AuthenticationResponse$AuthenticationRespo
 tn/esprit/esprithub/repository/IfeedBackRepository.class
 tn/esprit/esprithub/entities/Transaction.class
 tn/esprit/esprithub/repository/FreelanceJobRepository.class
+tn/esprit/esprithub/entities/Field$FieldBuilder.class
 tn/esprit/esprithub/controllers/feedBackRestController.class
 tn/esprit/esprithub/services/IVisitServices.class
 tn/esprit/esprithub/services/IInternshipService.class

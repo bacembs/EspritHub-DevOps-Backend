@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmailService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.services</a> &gt; <span class="el_source">EmailService.java</span></div><h1>EmailService.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.services;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import tn.esprit.esprithub.config.EmailTemplateName;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+<span class="fc" id="L20">@RequiredArgsConstructor</span>
+public class EmailService {
+
+
+    private final JavaMailSender mailSender;
+    private final SpringTemplateEngine templateEngine;
+    @Async
+    public void sendEmail(
+            String to,
+            String username,
+            EmailTemplateName emailTemplate,
+            String confirmationUrl,
+            String activationCode,
+            String subject
+    ) throws MessagingException {
+        String templateName;
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (emailTemplate == null) {</span>
+<span class="nc" id="L37">            templateName = &quot;confirm-email&quot;;</span>
+        } else {
+<span class="nc" id="L39">            templateName = emailTemplate.name();</span>
+        }
+<span class="nc" id="L41">        MimeMessage mimeMessage = mailSender.createMimeMessage();</span>
+<span class="nc" id="L42">        MimeMessageHelper helper = new MimeMessageHelper(</span>
+                mimeMessage,
+                MimeMessageHelper.MULTIPART_MODE_MIXED,
+<span class="nc" id="L45">                StandardCharsets.UTF_8.name()</span>
+        );
+<span class="nc" id="L47">        Map&lt;String, Object&gt; properties = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L48">        properties.put(&quot;username&quot;, username);</span>
+<span class="nc" id="L49">        properties.put(&quot;confirmationUrl&quot;, confirmationUrl);</span>
+<span class="nc" id="L50">        properties.put(&quot;activation_code&quot;, activationCode);</span>
+
+<span class="nc" id="L52">        Context context = new Context();</span>
+<span class="nc" id="L53">        context.setVariables(properties);</span>
+
+<span class="nc" id="L55">        helper.setFrom(&quot;mradara@gmail.com&quot;);</span>
+<span class="nc" id="L56">        helper.setTo(to);</span>
+<span class="nc" id="L57">        helper.setSubject(subject);</span>
+
+<span class="nc" id="L59">        String template = templateEngine.process(templateName, context);</span>
+
+<span class="nc" id="L61">        helper.setText(template, true);</span>
+
+<span class="nc" id="L63">        mailSender.send(mimeMessage);</span>
+<span class="nc" id="L64">    }</span>
+
+    public void sendEmailSport(String to, String subject, String text) {
+<span class="nc" id="L67">        SimpleMailMessage message = new SimpleMailMessage();</span>
+<span class="nc" id="L68">        message.setTo(to);</span>
+<span class="nc" id="L69">        message.setSubject(subject);</span>
+<span class="nc" id="L70">        message.setText(text);</span>
+<span class="nc" id="L71">        mailSender.send(message);</span>
+<span class="nc" id="L72">    }</span>
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

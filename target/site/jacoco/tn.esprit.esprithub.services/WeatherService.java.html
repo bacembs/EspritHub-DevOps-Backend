@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WeatherService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.services</a> &gt; <span class="el_source">WeatherService.java</span></div><h1>WeatherService.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.services;
+
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
+
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+
+@Service
+<span class="fc" id="L22">public class WeatherService {</span>
+
+<span class="fc" id="L24">    private String apiKey = &quot;d0f0a438761295bcde444344fac2472a&quot;;</span>
+<span class="fc" id="L25">    private final String CITY = &quot;Ariana&quot;;</span>
+<span class="fc" id="L26">    private final String COUNTRY = &quot;TN&quot;;</span>
+
+
+
+    public boolean isRainyToday() {
+        try {
+<span class="nc" id="L32">            LocalDate currentDate = LocalDate.now();</span>
+
+<span class="nc" id="L34">            String weatherResponse = getWeatherForCity(CITY, COUNTRY);</span>
+
+<span class="nc bnc" id="L36" title="All 2 branches missed.">            if (weatherResponse.contains(&quot;rain&quot;)) {</span>
+<span class="nc" id="L37">                return true;</span>
+            }
+
+<span class="nc" id="L40">            return false;</span>
+<span class="nc" id="L41">        } catch (Exception e) {</span>
+<span class="nc" id="L42">            e.printStackTrace();</span>
+<span class="nc" id="L43">            return false;</span>
+        }
+    }
+
+
+
+
+    public String getWeatherForCity(String city, String country) {
+        try {
+<span class="nc" id="L52">            String apiUrl = &quot;http://api.openweathermap.org/data/2.5/weather?q=&quot; + city + &quot;,&quot; + country + &quot;&amp;appid=&quot; + apiKey;</span>
+<span class="nc" id="L53">            URL url = new URL(apiUrl);</span>
+<span class="nc" id="L54">            HttpURLConnection conn = (HttpURLConnection) url.openConnection();</span>
+<span class="nc" id="L55">            conn.setRequestMethod(&quot;GET&quot;);</span>
+
+<span class="nc" id="L57">            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));</span>
+<span class="nc" id="L58">            StringBuilder response = new StringBuilder();</span>
+            String line;
+<span class="nc bnc" id="L60" title="All 2 branches missed.">            while ((line = reader.readLine()) != null) {</span>
+<span class="nc" id="L61">                response.append(line);</span>
+            }
+<span class="nc" id="L63">            reader.close();</span>
+
+<span class="nc" id="L65">            return response.toString();</span>
+<span class="nc" id="L66">        } catch (Exception e) {</span>
+<span class="nc" id="L67">            e.printStackTrace();</span>
+<span class="nc" id="L68">            return null;</span>
+        }
+    }
+
+
+
+
+    //Zeydin
+    public String getTomorrowWeatherForecastForAriana() throws IOException, InterruptedException {
+
+<span class="nc" id="L78">        LocalDate tomorrow = LocalDate.now().plusDays(1);</span>
+
+<span class="nc" id="L80">        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&quot;);</span>
+<span class="nc" id="L81">        String tomorrowDate = tomorrow.format(formatter);</span>
+
+
+<span class="nc" id="L84">        String url = &quot;http://api.openweathermap.org/data/2.5/forecast?q=&quot; + CITY + &quot;,&quot; + COUNTRY +</span>
+                &quot;&amp;appid=&quot; + apiKey;
+
+
+<span class="nc" id="L88">        HttpClient client = HttpClient.newHttpClient();</span>
+<span class="nc" id="L89">        HttpRequest request = HttpRequest.newBuilder()</span>
+<span class="nc" id="L90">                .uri(URI.create(url))</span>
+<span class="nc" id="L91">                .build();</span>
+<span class="nc" id="L92">        HttpResponse&lt;String&gt; response = client.send(request, HttpResponse.BodyHandlers.ofString());</span>
+
+
+<span class="nc" id="L95">        String responseBody = response.body();</span>
+
+<span class="nc" id="L97">        return &quot;Rainy&quot;;</span>
+    }
+
+
+    public String getWeatherForecast() throws IOException, InterruptedException {
+<span class="nc" id="L102">        String url = &quot;http://api.openweathermap.org/data/2.5/forecast?q=Ariana,TN&amp;appid=&quot; + apiKey;</span>
+
+<span class="nc" id="L104">        HttpClient client = HttpClient.newHttpClient();</span>
+<span class="nc" id="L105">        HttpRequest request = HttpRequest.newBuilder()</span>
+<span class="nc" id="L106">                .uri(URI.create(url))</span>
+<span class="nc" id="L107">                .build();</span>
+
+<span class="nc" id="L109">        HttpResponse&lt;String&gt; response = client.send(request, HttpResponse.BodyHandlers.ofString());</span>
+
+<span class="nc" id="L111">        return response.body();</span>
+    }
+
+    public boolean isWeatherCritical(String city, String country) {
+        try {
+<span class="nc" id="L116">            String apiUrl = &quot;http://api.openweathermap.org/data/2.5/weather?q=&quot; + city + &quot;,&quot; + country + &quot;&amp;appid=&quot; + apiKey;</span>
+<span class="nc" id="L117">            URL url = new URL(apiUrl);</span>
+<span class="nc" id="L118">            HttpURLConnection conn = (HttpURLConnection) url.openConnection();</span>
+<span class="nc" id="L119">            conn.setRequestMethod(&quot;GET&quot;);</span>
+
+<span class="nc" id="L121">            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));</span>
+<span class="nc" id="L122">            StringBuilder response = new StringBuilder();</span>
+            String line;
+<span class="nc bnc" id="L124" title="All 2 branches missed.">            while ((line = reader.readLine()) != null) {</span>
+<span class="nc" id="L125">                response.append(line);</span>
+            }
+<span class="nc" id="L127">            reader.close();</span>
+
+<span class="nc" id="L129">            ObjectMapper objectMapper = new ObjectMapper();</span>
+<span class="nc" id="L130">            Map&lt;String, Object&gt; weatherMap = objectMapper.readValue(response.toString(), Map.class);</span>
+
+            // Access the weather details from the map and check if it's critical
+            // Example: Check wind speed and weather conditions for rain
+<span class="nc" id="L134">            Map&lt;String, Object&gt; wind = (Map&lt;String, Object&gt;) weatherMap.get(&quot;wind&quot;);</span>
+<span class="nc" id="L135">            double windSpeed = (double) wind.get(&quot;speed&quot;); // Wind speed in meter/sec</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">            if (windSpeed &gt; 15) { // Example threshold, adjust as needed</span>
+<span class="nc" id="L137">                return true;</span>
+            }
+
+            // Check weather conditions for rain
+<span class="nc" id="L141">            Object weatherObject = weatherMap.get(&quot;weather&quot;);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">            if (weatherObject instanceof Iterable) {</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">                for (Object item : (Iterable&lt;?&gt;) weatherObject) {</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                    if (item instanceof Map) {</span>
+<span class="nc" id="L145">                        Map&lt;String, Object&gt; weatherItem = (Map&lt;String, Object&gt;) item;</span>
+<span class="nc" id="L146">                        String description = (String) weatherItem.get(&quot;description&quot;);</span>
+<span class="nc bnc" id="L147" title="All 4 branches missed.">                        if (description != null &amp;&amp; description.contains(&quot;rain&quot;)) {</span>
+<span class="nc" id="L148">                            return true;</span>
+                        }
+                    }
+<span class="nc" id="L151">                }</span>
+            }
+
+<span class="nc" id="L154">        } catch (Exception e) {</span>
+<span class="nc" id="L155">            e.printStackTrace();</span>
+<span class="nc" id="L156">        }</span>
+<span class="nc" id="L157">        return false;</span>
+    }
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

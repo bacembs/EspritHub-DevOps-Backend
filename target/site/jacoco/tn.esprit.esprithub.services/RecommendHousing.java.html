@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RecommendHousing.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.services</a> &gt; <span class="el_source">RecommendHousing.java</span></div><h1>RecommendHousing.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.services;
+
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import tn.esprit.esprithub.entities.DistanceCalculator;
+import tn.esprit.esprithub.entities.Housing;
+import tn.esprit.esprithub.entities.Location;
+import tn.esprit.esprithub.repository.IHousingRepository;
+
+
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+@Service
+<span class="fc" id="L20">@Slf4j</span>
+
+<span class="fc" id="L22">public class RecommendHousing {</span>
+    @Autowired
+    private GeocodingService geocodingService;
+
+    @Autowired
+    private IHousingRepository ihousingRepository;
+<span class="fc" id="L28">    private static final Logger logger = LoggerFactory.getLogger(RecommendHousing.class);</span>
+
+    public List&lt;Housing&gt; recommendHousesNearUser(String userAddress) {
+
+<span class="nc" id="L32">        Location userCoordinates = geocodingService.geocodeAddress(userAddress);</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        if (userCoordinates == null) {</span>
+//            // Gestion de l'adresse non valide
+<span class="nc" id="L35">            return Collections.emptyList();</span>
+        }
+
+
+<span class="nc" id="L39">        List&lt;Housing&gt; allHouses = ihousingRepository.findAll();</span>
+<span class="nc" id="L40">        List&lt;Housing&gt; recommendedHouses = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L41">        DistanceCalculator distanceCalculator = new DistanceCalculator();</span>
+<span class="nc" id="L42">        double maxDistance = 20.0; // Distance maximale en kilomètres</span>
+<span class="nc" id="L43">log.info(&quot;max dis&quot;);</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        for (int i=0;i&lt;allHouses.size();i++){//(Housing housing : allHouses) {</span>
+<span class="nc" id="L45">            log.info(&quot;if&quot;);</span>
+<span class="nc" id="L46">            String loc = allHouses.get(i).getLocationHousing();</span>
+<span class="nc" id="L47">            log.info(loc);</span>
+<span class="nc" id="L48">            Location houseCoordinates = geocodingService.geocodeAddress(loc);</span>
+<span class="nc" id="L49">            log.info(&quot;geocode&quot;);</span>
+//            if (houseCoordinates == null) {
+//                // Afficher un message de journalisation
+//                logger.warn(&quot;L'adresse de la maison {} est invalide. La maison est ignorée.&quot;, housing.getLocationHousing());
+//                // Passer à la maison suivante
+//                continue;
+//            }
+<span class="nc" id="L56">            double distance = distanceCalculator.calculateDistance(userCoordinates, houseCoordinates);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">            if (distance &lt;= maxDistance) {</span>
+<span class="nc" id="L58">                log.info(&quot;bravo&quot;);</span>
+<span class="nc" id="L59">                 recommendedHouses.add(allHouses.get(i));</span>
+            }
+            //}
+
+
+        }
+<span class="nc" id="L65">        return recommendedHouses;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

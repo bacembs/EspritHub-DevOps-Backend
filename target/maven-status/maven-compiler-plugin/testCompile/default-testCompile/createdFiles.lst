@@ -1,2 +1,2 @@
-tn/esprit/esprithub/services/ReservationServiceTest.class
-tn/esprit/esprithub/services/SportTeamServiceTest.class
+tn/esprit/esprithub/services/ReservationServiceJUnitTest.class
+tn/esprit/esprithub/services/ReservationServiceMockitoTest.class

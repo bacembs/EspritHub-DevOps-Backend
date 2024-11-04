@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HousingServices.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.services</a> &gt; <span class="el_source">HousingServices.java</span></div><h1>HousingServices.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.services;
+
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import tn.esprit.esprithub.entities.AvailabilityTimeSlot;
+import tn.esprit.esprithub.entities.Housing;
+import tn.esprit.esprithub.repository.IHousingRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+<span class="fc" id="L11">@Service</span>
+<span class="fc" id="L12">@AllArgsConstructor</span>
+public class HousingServices implements IHousingServices {
+
+
+
+    private IHousingRepository housingRepository;
+
+
+    @Override
+    public Housing addHousing(Housing housing) {
+
+
+<span class="nc" id="L24">        return housingRepository.save(housing);</span>
+    }
+    @Override
+    public Housing upHousing(Housing housing) {
+
+
+<span class="nc" id="L30">        return housingRepository.save(housing);</span>
+    }
+
+    @Override
+    public void deleteHousing(Long idHousing) {
+<span class="nc" id="L35">        housingRepository.deleteById(idHousing);</span>
+
+<span class="nc" id="L37">    }</span>
+
+//    @Override
+//    public Housing updateHousing(Long idHousing ,Housing housing) {
+//        return housingRepository.save(housing);
+//    }
+@Override
+public Housing updateHousing(Long id, Housing housing) {
+<span class="nc" id="L45">    Housing existingHousing = getById(id);</span>
+<span class="nc" id="L46">    existingHousing.setTypeHousing(housing.getTypeHousing());</span>
+<span class="nc" id="L47">    existingHousing.setDescriptionHousing(housing.getDescriptionHousing());</span>
+<span class="nc" id="L48">    existingHousing.setLocationHousing(housing.getLocationHousing());</span>
+<span class="nc" id="L49">    existingHousing.setAvailabilityHousing(housing.getAvailabilityHousing());</span>
+<span class="nc" id="L50">    existingHousing.setPriceHousing(housing.getPriceHousing());</span>
+<span class="nc" id="L51">    return housingRepository.save(existingHousing);</span>
+}
+
+    @Override
+    public Housing getById(Long idHousing) {
+
+
+<span class="nc" id="L58">        return housingRepository.findById(idHousing).orElse(null);</span>
+    }
+
+    @Override
+    public List&lt;Housing&gt; getAll() {
+<span class="nc" id="L63">        return (List&lt;Housing&gt;) housingRepository.findAll();</span>
+    }
+
+
+@Override
+    public int getHousingWithOwnerPhoneNumber(Long id) {
+<span class="nc" id="L69">    Housing housing = housingRepository.getById(id);</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (housing.getOwner() != null) {</span>
+            // Accéder au numéro de téléphone de l'owner de ce housing
+<span class="nc" id="L72">             int phone = housing.getOwner().getPhone();</span>
+<span class="nc" id="L73">            return phone;</span>
+        }
+
+
+<span class="nc" id="L77">    return 0;</span>
+}
+    public void addAvailabilityTimeSlotsToHousing(Long housingId, List&lt;AvailabilityTimeSlot&gt; timeSlots) {
+<span class="nc" id="L80">        Housing housing = housingRepository.findById(housingId)</span>
+<span class="nc" id="L81">                .orElse(null);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        for (AvailabilityTimeSlot timeSlot : timeSlots) {</span>
+<span class="nc" id="L83">            timeSlot.setHousing(housing);</span>
+<span class="nc" id="L84">        }</span>
+
+        // Ajouter les nouveaux AvailabilityTimeSlot au Housing
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        assert housing != null;</span>
+<span class="nc" id="L88">        housing.getAvailabilityTimeSlots().addAll(timeSlots);</span>
+
+        // Mettre à jour le Housing dans la base de données
+<span class="nc" id="L91">        housingRepository.save(housing);</span>
+<span class="nc" id="L92">    }</span>
+
+    public void addAvailabilityTimeSlotToHousing(Long housingId,AvailabilityTimeSlot timeSlot){
+<span class="nc" id="L95">        Housing housing = housingRepository.findById(housingId)</span>
+<span class="nc" id="L96">                .orElse(null);</span>
+
+<span class="nc" id="L98">            timeSlot.setHousing(housing);</span>
+
+
+        // Ajouter les nouveaux AvailabilityTimeSlot au Housing
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        assert housing != null;</span>
+<span class="nc" id="L103">        housing.getAvailabilityTimeSlots().add(timeSlot);</span>
+
+        // Mettre à jour le Housing dans la base de données
+<span class="nc" id="L106">        housingRepository.save(housing);</span>
+
+<span class="nc" id="L108">    }</span>
+
+
+
+    public List&lt;AvailabilityTimeSlot&gt; getAvailableTimeSlotsForHousing(Long housingId) {
+<span class="nc" id="L113">        Housing housing = housingRepository.findById(housingId)</span>
+<span class="nc" id="L114">                .orElse(null);</span>
+
+<span class="nc" id="L116">        List&lt;AvailabilityTimeSlot&gt; availabilityTimeSlots = housing.getAvailabilityTimeSlots();</span>
+
+        // Créer une nouvelle liste pour stocker les objets AvailabilityTimeSlot
+<span class="nc" id="L119">        List&lt;AvailabilityTimeSlot&gt; availableTimeSlots = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        for (AvailabilityTimeSlot timeSlot : availabilityTimeSlots) {</span>
+            // Ajouter directement l'objet AvailabilityTimeSlot à la nouvelle liste
+<span class="nc" id="L122">            availableTimeSlots.add(timeSlot);</span>
+<span class="nc" id="L123">        }</span>
+
+<span class="nc" id="L125">        return availableTimeSlots;</span>
+    }
+
+
+    @Override
+    public void addAvailabilityTimeSlotsToHousing(Long housingId, AvailabilityTimeSlot timeSlot) {
+
+<span class="nc" id="L132">    }</span>
+    public List&lt;Housing&gt; getHousingsByOwnerId(Long ownerId) {
+<span class="nc" id="L134">        return housingRepository.findHousingByOwner_UserId(ownerId);</span>
+    }
+}
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthenticationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">esprithub</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.esprithub.services</a> &gt; <span class="el_source">AuthenticationService.java</span></div><h1>AuthenticationService.java</h1><pre class="source lang-java linenums">package tn.esprit.esprithub.services;
+
+import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import tn.esprit.esprithub.config.EmailTemplateName;
+import tn.esprit.esprithub.requestsresponses.AuthenticationResponse;
+import tn.esprit.esprithub.requestsresponses.AuthenticationRequest;
+import tn.esprit.esprithub.requestsresponses.RegistrationRequest;
+import tn.esprit.esprithub.entities.Roles;
+import tn.esprit.esprithub.entities.Token;
+import tn.esprit.esprithub.entities.User;
+import tn.esprit.esprithub.repositories.TokenRepository;
+import tn.esprit.esprithub.repositories.IUserRepository;
+import tn.esprit.esprithub.security.JwtService;
+
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+
+@Service
+<span class="fc" id="L27">@RequiredArgsConstructor</span>
+public class AuthenticationService {
+
+    private final PasswordEncoder passwordEncoder;
+    private final IUserRepository userRepository;
+    private final TokenRepository tokenRepository;
+    private final EmailService emailService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+
+    @Value(&quot;http://localhost:4200/activate-account&quot;)
+    private String activationUrl;
+
+    public void register(RegistrationRequest request) throws MessagingException {
+        //var userRole = &quot;STUDENT&quot;;
+<span class="nc" id="L42">        var user = User.builder()</span>
+<span class="nc" id="L43">                .username(request.getUsername())</span>
+<span class="nc" id="L44">                .firstName(request.getFirstName())</span>
+<span class="nc" id="L45">                .lastName(request.getLastName())</span>
+<span class="nc" id="L46">                .email(request.getEmail())</span>
+<span class="nc" id="L47">                .password(passwordEncoder.encode(request.getPassword()))</span>
+<span class="nc" id="L48">                .phone(request.getPhone())</span>
+<span class="nc" id="L49">                .accountLocked(false)</span>
+<span class="nc" id="L50">                .enabled(false)</span>
+<span class="nc" id="L51">                .role(Roles.student)</span>
+<span class="nc" id="L52">                .build();</span>
+<span class="nc" id="L53">        userRepository.save(user);</span>
+<span class="nc" id="L54">        sendValidationEmail(user);</span>
+<span class="nc" id="L55">    }</span>
+
+    private void sendValidationEmail(User user) throws MessagingException {
+<span class="nc" id="L58">        var newToken = generateAndSaveActivationToken(user);</span>
+<span class="nc" id="L59">        emailService.sendEmail(</span>
+<span class="nc" id="L60">                user.getEmail(),</span>
+<span class="nc" id="L61">                user.fullname(),</span>
+                EmailTemplateName.ACTIVATE_ACCOUNT,
+                activationUrl,
+                newToken,
+                &quot;Account activation&quot;
+        );
+<span class="nc" id="L67">    }</span>
+
+    private String generateAndSaveActivationToken(User user) {
+<span class="nc" id="L70">        String generatedToken = generateActivationCode(6);</span>
+<span class="nc" id="L71">        var token = Token.builder()</span>
+<span class="nc" id="L72">                .token(generatedToken)</span>
+<span class="nc" id="L73">                .createdAt(LocalDateTime.now())</span>
+<span class="nc" id="L74">                .expiresAt(LocalDateTime.now().plusMinutes(15))</span>
+<span class="nc" id="L75">                .user(user)</span>
+<span class="nc" id="L76">                .build();</span>
+<span class="nc" id="L77">        tokenRepository.save(token);</span>
+<span class="nc" id="L78">        return generatedToken;</span>
+    }
+
+    private String generateActivationCode(int length) {
+<span class="nc" id="L82">        String characters = &quot;0123456789&quot;;</span>
+<span class="nc" id="L83">        StringBuilder codeBuilder = new StringBuilder();</span>
+<span class="nc" id="L84">        SecureRandom secureRandom = new SecureRandom();</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        for (int i = 0; i &lt; length; i++) {</span>
+<span class="nc" id="L86">            int randomIndex = secureRandom.nextInt(characters.length());</span>
+<span class="nc" id="L87">            codeBuilder.append(characters.charAt(randomIndex));</span>
+        }
+<span class="nc" id="L89">        return codeBuilder.toString();</span>
+    }
+
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+<span class="nc" id="L93">        var auth = authenticationManager.authenticate(</span>
+                new UsernamePasswordAuthenticationToken(
+<span class="nc" id="L95">                        request.getEmail(),</span>
+<span class="nc" id="L96">                        request.getPassword()</span>
+                )
+        );
+<span class="nc" id="L99">        var claims = new HashMap&lt;String, Object&gt;();</span>
+<span class="nc" id="L100">        var user = ((User)auth.getPrincipal());</span>
+<span class="nc" id="L101">        claims.put(&quot;user ID&quot;, user.getUserId());</span>
+<span class="nc" id="L102">        var jwtToken = jwtService.generateToken(claims, user);</span>
+<span class="nc" id="L103">        return AuthenticationResponse.builder().token(jwtToken).build();</span>
+    }
+
+
+    public void activateAccount(String token) throws MessagingException {
+<span class="nc" id="L108">        Token savedToken = tokenRepository.findByToken(token)</span>
+<span class="nc" id="L109">                .orElseThrow(() -&gt; new RuntimeException(&quot;Invalid token&quot;));</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {</span>
+<span class="nc" id="L111">            sendValidationEmail(savedToken.getUser());</span>
+<span class="nc" id="L112">            throw new RuntimeException(&quot;Activation token has expired. A new token has been sent to the same email address&quot;);</span>
+        }
+<span class="nc" id="L114">        var user = userRepository.findById(savedToken.getUser().getUserId())</span>
+<span class="nc" id="L115">                .orElseThrow(() -&gt; new UsernameNotFoundException(&quot;User not found&quot;));</span>
+<span class="nc" id="L116">        user.setEnabled(true);</span>
+<span class="nc" id="L117">        userRepository.save(user);</span>
+<span class="nc" id="L118">        savedToken.setValidatedAt(LocalDateTime.now());</span>
+<span class="nc" id="L119">        tokenRepository.save(savedToken);</span>
+<span class="nc" id="L120">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
