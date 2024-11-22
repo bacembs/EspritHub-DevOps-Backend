@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     git branch: 'main',
-                        url: 'https://github.com/Devops-5Arctic/5ARCTIC3-G1-EspritHub',
+                        url: 'https://github.com/bacembs/EspritHub-DevOps-Backend.git',
                         credentialsId: 'github-credentials'
                 }
             }
@@ -176,11 +176,11 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        sudo kubectl apply -f /home/bacembensoltana/terraform-aks/backend-mysql.yaml
+                        sudo kubectl apply -f terraform-aks/backend-mysql.yaml
                         sudo kubectl rollout status deployment/backend
                         sudo kubectl rollout status deployment/mysql
 
-                        sudo kubectl apply -f /home/bacembensoltana/terraform-aks/frontend.yaml
+                        sudo kubectl apply -f terraform-aks/frontend.yaml
                         sudo kubectl rollout status deployment/frontend
                     '''
                 }

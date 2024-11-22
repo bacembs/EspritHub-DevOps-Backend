@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: angular
+          image: bacem12/devops-project-esprit:front
+          ports:
+            - containerPort: 80
+              name: http
+          env:
+            - name: BACKEND_API_URL
+              value: "http://13.80.12.13:8089/projectARCTIC3"
